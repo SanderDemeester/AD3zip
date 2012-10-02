@@ -8,7 +8,9 @@ AD3zip: $(obj)
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 clean:
-	rm AD3zip
+	if [ -f "AD3zip" ]; then \
+	rm AD3zip; \
+	fi; done
 	@for file in $(obj); do \
 	if [ -f $$file ]; then \
 	rm "$$file"; \
