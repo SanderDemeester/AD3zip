@@ -1,5 +1,6 @@
 src=$(wildcard src/*.c)
 obj=$(addprefix obj/,$(notdir $(src:.c=.o)))
+CC=gcc
 all: AD3zip
 AD3zip: $(obj)
 	$(CC) $(CFLAGS) $(obj) -o $@

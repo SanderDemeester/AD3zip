@@ -8,12 +8,16 @@ int main(int argc, char* argv[]){
   int methode;
   int compressie_methode = 0;
   int blocksize = 0;
+
+  ssize_t input_lenth = 0; //default input len
   if(argc < 4){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
   }
   
   if(!strcmp(argv[1],"encodeer")) methode = ENCODEER;
   if(!strcmp(argv[1],"decodeer")) methode = DECODEER;
+  compressie_methode = atoi(argv[2]);
+  blocksize = atoi(argv[3]);
   
   return 0;
 }
