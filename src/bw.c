@@ -6,6 +6,8 @@
 
 int main(int argc, char* argv[]){
   int methode;
+  int compressie_methode = 0;
+  int blocksize = 0;
   if(argc < 4){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
   }
