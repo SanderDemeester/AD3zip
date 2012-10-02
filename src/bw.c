@@ -5,13 +5,14 @@
 #define ENCODEER 1
 
 int main(int argc, char* argv[]){
-  int methode;
+  int methode = 0; //default methode is decodeer
   int compressie_methode = 0;
   int blocksize = 0;
   char *input_buffer = NULL; //input buffer
   char c;
+  char * buffer = "Sander Demeester";
   
-  if(argc < 4 && (argc == 2 && strcmp(argv[1],"decodeer"))){
+  if(argc < 4 && (argc == 2 && strcmp(argv[1],"decodeer")) || argc==1){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
     exit(-1);
   }
