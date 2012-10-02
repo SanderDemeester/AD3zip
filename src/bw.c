@@ -21,12 +21,9 @@ int main(int argc, char* argv[]){
   compressie_methode = atoi(argv[2]);
   blocksize = atoi(argv[3]);
   
-  while((c = getc(stdin) != EOF)){
-      printf("%c \n", c);
-    }
-
-  
-  
+  while((fread(&c,1,1,stdin))) {
+    printf("%c", c);
+  }
   
   return 0;
 }
