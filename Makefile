@@ -7,5 +7,9 @@ AD3zip: $(obj)
 	$(CC) $(CFLAGS) $(obj) -o $@
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-bw : move_to_font
-move_to_front: huffman
+clean:
+	@for file in $(obj); do \
+	if [ -f $$file ]; then \
+	rm "$$file"; \
+	fi; done
+

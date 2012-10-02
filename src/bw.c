@@ -11,7 +11,6 @@ int main(int argc, char* argv[]){
   char *input_buffer = NULL; //input buffer
   char c;
 
-  ssize_t input_lenth = 0; //default input len
   if(argc < 4){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
   }
