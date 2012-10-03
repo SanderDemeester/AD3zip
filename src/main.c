@@ -38,14 +38,13 @@ int main(int argc, char* argv[]){
       exit(-1);
     }
   }
-    
   if(ENCODEER){
   /***************************************************************/
   /* input_buffer is de buffer die input tekens van stdin bevat	 */
   /* input_lengte is het aantal tekens dat input_buffer bevat	 */
   /* input_block  is de buffer die de tekens van de buffer bevat */
   /***************************************************************/
-    
+    input_lengte--; //remove the newline
     char *input_block = (char*) malloc(sizeof(char)*blocksize);
 #ifdef DEBUG
     printf("Encodeer\n");
@@ -56,7 +55,7 @@ int main(int argc, char* argv[]){
 	blocksize = input_lengte;
       }
       memcpy((void*)input_block, (void*) input_buffer, blocksize);
-      printf("%s", input_block);
+      printf("%s \n", input_block);
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
     }
