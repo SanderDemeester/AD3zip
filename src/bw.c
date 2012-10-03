@@ -38,8 +38,10 @@ static void printlist(char *rij, int *rij_index){
   }
 }
 static int partioneer(char *rij, int *rij_index, int begin, int einde){
+  einde--;
   int midden = (int)begin+einde/2;
   
+
   printf("%d \n", midden);
   
   if(rij[rij_index[begin]] > rij[rij_index[midden]]){
@@ -54,8 +56,28 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
     printf("swap3 \n");
     swap(&rij_index[einde],&rij_index[begin]);
   }
-  printlist(rij,rij_index);
+  
 
-  return 0;
+  
+  int spil_index = midden;
+  char spil = rij[rij_index[midden]];
+  
+  int links = begin;
+  int rechts = einde-1;
+
+  while(rij[rij_index[++links]] < spil);
+  while(rij[rij_index[--rechts]] > spil);
+  
+  
+  while(links < rechts){
+    swap(&rij_index[links],&rij_index[rechts]);
+    while(rij[rij_index[++links]] < spil);
+    while(rij[rij_index[--rechts]] > spil);
+  }
+  
+  spil_index = links;
+  swap(&rij_index[spil_index],&rij_index[einde-1]);
+
+  return spil_index;
 }
 
