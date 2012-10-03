@@ -2,9 +2,9 @@ src=$(wildcard src/*.c)
 obj=$(addprefix obj/,$(notdir $(src:.c=.o)))
 CC=gcc
 CFLAGS=-I. -Wall -std=c99 -lm
-debug: CC += -g -DDEBUG
-debug: all
 all: AD3zip
+debug: CC += -g -DDEBUG
+debug: AD3zip
 AD3zip: $(obj)
 	$(CC) $(CFLAGS) $(obj) -o $@
 obj/%.o: src/%.c
