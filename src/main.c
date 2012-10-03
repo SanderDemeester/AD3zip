@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
       }
       input_block = (char*) malloc(sizeof(char)*blocksize);
       memcpy((void*)input_block, (void*) input_buffer, blocksize);
-      bwt(input_block);
+      bwt(input_block, blocksize);
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
     }

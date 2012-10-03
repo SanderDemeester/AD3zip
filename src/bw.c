@@ -1,6 +1,5 @@
 #include "header/bw.h"
 
-char *bwt(char *bwt_input_block){
-  printf("%s \n", bwt_input_block);
-  return NULL;
+char *bwt(char *bwt_block, int blocksize){
+  char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
 }
