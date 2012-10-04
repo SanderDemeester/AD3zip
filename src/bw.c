@@ -41,8 +41,9 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   einde--;
   int midden = (int)begin+einde/2;
   
-
-  printf("%d \n", midden);
+  #ifdef DEBUG
+  printf("midden: %d \n", midden);
+  #endif
   
   if(rij[rij_index[begin]] > rij[rij_index[midden]]){
     printf("swap1 \n");
@@ -78,6 +79,9 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   spil_index = links;
   swap(&rij_index[spil_index],&rij_index[einde-1]);
 
+  #ifdef DEBUG
+  printlist(rij,rij_index);
+  #endif
   return spil_index;
 }
 
