@@ -11,7 +11,7 @@ char *bwt(char *bwt_block, int blocksize){
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
 
   //  quicksort(bwt_transformatie, rij_index, 0,blocksize);
-  partioneer(bwt_transformatie, rij_index, 0, blocksize);
+  int spil = partioneer(bwt_transformatie, rij_index, 0, blocksize);
   return NULL;
 }
 static void swap(int *a, int *b){
@@ -21,14 +21,25 @@ static void swap(int *a, int *b){
 }
 
 static void quicksort(char *rij, int* rij_index, int begin, int einde){
-  if(begin >= einde) return;
-  else if(begin + 10 > einde){
-    //insertionsort
-  }else{
+  if(begin >= einde) return; //stop
+  /***************************************/
+  /* else if(begin + 10 > einde){	 */
+  /*   #ifdef DEBUG			 */
+  /*   printf("voer insertionsort uit"); */
+  /*   #endif				 */
+  /*   //insertionsort			 */
+  /* }else{				 */
+  /***************************************/
     int spil_index = partioneer(rij, rij_index, begin,einde);
+    #ifdef DEBUG
+    printf("execute 1");
+    #endif
     quicksort(rij, rij_index, begin,spil_index-1);
+    #ifdef DEBUG
     quicksort(rij, rij_index, spil_index+1, einde);
-  }
+    #endif
+    
+    //  }
 }
 
 static void printlist(char *rij, int *rij_index){
@@ -62,10 +73,13 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   
   int spil_index = midden;
   char spil = rij[rij_index[midden]];
-  
+  swap(&rij_index[einde],&rij_index[spil_index]);
   int links = begin;
   int rechts = einde-1;
 
+#ifdef DEBUG
+  printf("spil element is: %c \n", spil);
+#endif
   while(rij[rij_index[++links]] < spil);
   while(rij[rij_index[--rechts]] > spil);
   
