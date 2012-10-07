@@ -11,8 +11,7 @@ char *bwt(char *bwt_block, int blocksize){
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
 
-  quicksort(bwt_transformatie, rij_index, 0,blocksize-1);
-  //  int spil = partioneer(bwt_transformatie, rij_index, 0, blocksize);
+  quicksort(bwt_transformatie, rij_index, 0,(sizeof(bwt_transformatie)/sizeof(char))-1);
   return NULL;
 }
 static void swap(int *a, int *b){
@@ -96,12 +95,17 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 #endif
   //laat links wijzen naar het eerste element groter dan de spil
   while(rij[rij_index[links]] < spil){
+    #ifdef DEBUG
     printf("links->element in rij: %c < spil: %c \n", rij[rij_index[links]], spil);
+    #endif
     links++;
   }
+  
   //laat rechts wijzen naar het eerste element kleiner dan de spil.
   while(rij[rij_index[rechts]] > spil){
+    #ifdef DEBUG
     printf("rechts->element in rij: %c > spil: %c \n", rij[rij_index[rechts]], spil);
+    #endif
     rechts--;
   }
   
