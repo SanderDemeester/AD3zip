@@ -3,12 +3,12 @@ obj=$(addprefix obj/,$(notdir $(src:.c=.o)))
 CC=gcc
 CFLAGS=-I. -Wall -std=c99 -lm
 all: AD3zip
-debug: CC += -g -DDEBUG
+debug: CC += -g -DDEBUG -lm
 debug: AD3zip
 AD3zip: $(obj)
-	$(CC) $(CFLAGS) $(obj) -o $@
+	$(CC) $(CFLAGS) $(obj) -lm -o $@
 obj/%.o: src/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -lm -c -o $@ $<
 clean:
 	if [ -f "AD3zip" ]; then \
 	rm AD3zip; \
