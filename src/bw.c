@@ -11,7 +11,7 @@ char *bwt(char *bwt_block, int blocksize){
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
 
-  quicksort(bwt_transformatie, rij_index, 0,blocksize);
+  quicksort(bwt_transformatie, rij_index, 0,blocksize-1);
   //  int spil = partioneer(bwt_transformatie, rij_index, 0, blocksize);
   return NULL;
 }
@@ -51,9 +51,11 @@ static void printlist(char *rij, int *rij_index){
   }
 }
 static int partioneer(char *rij, int *rij_index, int begin, int einde){
-  int midden = floor((int)begin+einde/2);
 
-  
+  einde--;
+  int midden = (begin+einde)/2;
+  einde++;
+
   #ifdef DEBUG
   printf("begin:  %d \n", begin);
   printf("midden: %d \n", midden);
@@ -82,16 +84,17 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   int rechts = einde-1;
 
 #ifdef DEBUG
+  printf("einde: %d \n", einde);
   printf("spil element is: %c \n", spil);
   printlist(rij,rij_index);
   printf("------------\n");
 #endif
   while(rij[rij_index[links]] < spil){
-    printf("links->element in rij: %c | spil: %c \n", rij[rij_index[links]], spil);
+    printf("links->element in rij: %c < spil: %c \n", rij[rij_index[links]], spil);
     links++;
   }
   while(rij[rij_index[rechts]] > spil){
-    printf("rechts->element in rij: %c | spil: %c \n", rij[rij_index[rechts]], spil);
+    printf("rechts->element in rij: %c > spil: %c \n", rij[rij_index[rechts]], spil);
     rechts--;
   }
   
@@ -99,6 +102,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   printf("------------\n");
   printf("links: %d \n", links);
   printf("rechts: %d \n", rechts);
+  printlist(rij,rij_index);
   printf("------------\n");
 #endif
   
