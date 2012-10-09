@@ -1,8 +1,8 @@
 #include "header/bw.h"
 #include <math.h>
-static void quicksort(char *rij, int* rij_index, int begin, int einde);
-static int partioneer(char *rij, int *rij_inex, int begin, int einde);
-static void printlist(char *rij, int *rij_index);
+static void quicksort(char *rij, int* rij_index, int begin, int einde, int len);
+static int partioneer(char *rij, int *rij_inex, int begin, int einde, int len);
+static void printlist(char *rij, int *rij_index, int len);
 
 char *bwt(char *bwt_block, int blocksize){
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
@@ -10,8 +10,7 @@ char *bwt(char *bwt_block, int blocksize){
   int i = 0;
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
-  printlist(bwt_transformatie, rij_index);
-  //  quicksort(bwt_transformatie, rij_index, 0,(sizeof(bwt_transformatie)/sizeof(char))-1);
+  quicksort(bwt_transformatie, rij_index, 0,blocksize-1,blocksize);
   return NULL;
 }
 static void swap(int *a, int *b){
@@ -20,7 +19,7 @@ static void swap(int *a, int *b){
   *b = t;
 }
 
-static void quicksort(char *rij, int* rij_index, int begin, int einde){
+static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
   if(begin >= einde) return; //stop
   /***************************************/
   /* else if(begin + 10 > einde){	 */
@@ -30,34 +29,33 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde){
   /*   //insertionsort			 */
   /* }else{				 */
   /***************************************/
-    int spil_index = partioneer(rij, rij_index, begin,einde);
+  int spil_index = partioneer(rij, rij_index, begin,einde,len);
     #ifdef DEBUG
     printf("execute 1\n");
     #endif
-    quicksort(rij, rij_index, begin,spil_index-1);
+    quicksort(rij, rij_index, begin,spil_index-1,len);
     #ifdef DEBUG
     printf("execute 2\n");
     #endif
-    quicksort(rij, rij_index, spil_index+1, einde);
+    quicksort(rij, rij_index, spil_index+1, einde, len);
     
     //  }
 }
 
-static void printlist(char *rij, int *rij_index){
+static void printlist(char *rij, int *rij_index, int len){
   int i = 0;
   int j = 0;
-  int aantal_element = sizeof(rij)/sizeof(char);
-  for(i=0; i < aantal_element; i++){
-    for(j = 0; j < aantal_element; j++){
+  printf("aantal element: %s -> %d \n", rij, len);
+  for(i=0; i < len; i++){
+    for(j = 0; j < len; j++){
       //printf("%c \n", rij[rij_index[i]]);
-      printf("%c", *(&rij[rij_index[i+j] % aantal_element]));
+      printf("%c", *(&rij[rij_index[(i+j) % len]]));
     }
     printf("\n");
   }
 }
-static int partioneer(char *rij, int *rij_index, int begin, int einde){
- 
-  int aantal = sizeof(rij)/sizeof(char);
+static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
+  int aantal = len;
   int midden = (begin+(einde-1))/2; 
 
   #ifdef DEBUG
@@ -97,7 +95,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 #ifdef DEBUG
   printf("einde: %d \n", einde);
   printf("spil element is: %c \n", spil);
-  printlist(rij,rij_index);
+  printlist(rij,rij_index, einde);
   printf("------------\n");
 #endif
 
@@ -176,7 +174,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   printf("------------\n");
   printf("links: %d \n", links);
   printf("rechts: %d \n", rechts);
-  printlist(rij,rij_index);
+  printlist(rij,rij_index,einde);
   printf("------------\n");
 #endif
   
@@ -189,12 +187,12 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
     printf("rechts: %d \n", rechts);
     printf("------------\n");
     printf("voor swap \n");
-    printlist(rij,rij_index);
+    printlist(rij,rij_index, einde);
     #endif
     swap(&rij_index[links],&rij_index[rechts]);
     #ifdef DEBUG
     printf("na swap\n");
-    printlist(rij,rij_index);
+    printlist(rij,rij_index,einde);
     printf("------------\n");
     #endif
     if(rij[rij_index[links]] == spil){
@@ -211,7 +209,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   swap(&rij_index[spil_index],&rij_index[einde]);
   
   #ifdef DEBUG
-  printlist(rij,rij_index);
+  printlist(rij,rij_index, aantal);
   #endif
   return spil_index;
 }
