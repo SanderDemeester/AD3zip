@@ -45,7 +45,6 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde){
 
 static void printlist(char *rij, int *rij_index){
   int i = 0;
-  int j = 0;
   for(; i < 4; i++){
     printf("%c \n", rij[rij_index[i]]);
   }
