@@ -156,7 +156,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 	rechts++;
 	break;
       }else{
-	
+	break;
       }
       
     }
