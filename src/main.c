@@ -28,7 +28,8 @@ int main(int argc, char* argv[]){
   
   while((fread(&c,1,1,stdin))) {
     input_lengte++;
-    t = (char*) realloc(input_buffer,sizeof(char));
+    printf("sizeof(char): %d \n", sizeof(char));
+    t = (char*) realloc(input_buffer,input_lengte*sizeof(char));
     if(t != NULL){
       input_buffer = t;
       input_buffer[input_lengte-1] = c;

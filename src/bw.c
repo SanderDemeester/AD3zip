@@ -93,6 +93,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   printlist(rij,rij_index);
   printf("------------\n");
 #endif
+
   //laat links wijzen naar het eerste element groter dan de spil
   while(rij[rij_index[links]] < spil || rij[rij_index[links]] == spil){
     if(rij[rij_index[links]] == spil && links != spil_index){
@@ -109,7 +110,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[links]]+offset));
 	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
 #endif
-	offset++ % 3;
+	offset++ % sizeof(rij)/sizeof(char)-1;
       }
       if(*(&rij[rij_index[spil_index]]+offset) > *(&rij[rij_index[spil_index]]+offset)){
 #ifdef DEBUG
@@ -147,7 +148,24 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
       printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset), links);
       printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset), spil_index);
 #endif
-      break;
+      while(*(&rij[rij_index[spil_index]]+offset) == *(&rij[rij_index[rechts]]+offset)){
+	#ifdef DEBUG
+	printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
+	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[rechts]]+offset));
+	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
+#endif
+	offset++ % sizeof(rij)/sizeof(char)-1;
+      }
+      if(*(&rij[rij_index[spil_index]]+offset) < *(&rij[rij_index[spil_index]]+offset)){
+#ifdef DEBUG
+	printf("%c < %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
+#endif
+	rechts++;
+	break;
+      }else{
+	
+      }
+      
     }
     #ifdef DEBUG
     printf("rechts->element in rij: %c > spil: %c \n", rij[rij_index[rechts]], spil);
