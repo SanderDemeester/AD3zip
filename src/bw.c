@@ -55,7 +55,7 @@ static void printlist(char *rij, int *rij_index){
     printf("\n");
   }
 }
-static int partioneer(char *rij, int *rij_index, int beginco, int einde){
+static int partioneer(char *rij, int *rij_index, int begin, int einde){
 
   int midden = (begin+(einde-1))/2; 
 
