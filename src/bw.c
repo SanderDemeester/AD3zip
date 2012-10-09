@@ -45,6 +45,7 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde){
 
 static void printlist(char *rij, int *rij_index){
   int i = 0;
+  int j = 0;
   for(; i < 4; i++){
     printf("%c \n", rij[rij_index[i]]);
   }
@@ -94,15 +95,38 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   printf("------------\n");
 #endif
   //laat links wijzen naar het eerste element groter dan de spil
-  while(rij[rij_index[links]] < spil){
-    #ifdef DEBUG
+  while(rij[rij_index[links]] < spil || rij[rij_index[links]] == spil){
+    if(rij[rij_index[links]] == spil && links != spil_index){
+      int offset_spil_index = 1;
+      int offset_links_index = 1;
+      printf("de pointer vanaf links is gelijk aan de spil\n");
+      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset_links_index), links);
+      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset_spil_index), spil_index);
+      while(*(&rij[rij_index[spil_index]]+offset_spil_index) == *(&rij[rij_index[spil_index]]+offset_links_index)){
+	offset_spil_index++  % sizeof(rij)/sizeof(char);
+	offset_links_index++ % sizeof(rij)/sizeof(char);
+      }
+      
+      
+      if(*(&rij[rij_index[spil_index]]+offset_spil_index) > *(&rij[rij_index[spil_index]]+offset_links_index)){
+	links++;
+	break;
+      }else{
+	break;
+      }
+    }
+#ifdef DEBUG
     printf("links->element in rij: %c < spil: %c \n", rij[rij_index[links]], spil);
-    #endif
+#endif
     links++;
   }
   
   //laat rechts wijzen naar het eerste element kleiner dan de spil.
-  while(rij[rij_index[rechts]] > spil){
+  while(rij[rij_index[rechts]] > spil || rij[rij_index[rechts]] == spil){
+    if(rij[rij_index[rechts]] == spil && rechts != spil_index){
+      printf("de pointer vanaf rechts is gelijk aan de spil");
+      break;
+    }
     #ifdef DEBUG
     printf("rechts->element in rij: %c > spil: %c \n", rij[rij_index[rechts]], spil);
     #endif
@@ -134,6 +158,9 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
     printlist(rij,rij_index);
     printf("------------\n");
     #endif
+    if(rij[rij_index[links]] == spil){
+      printf("found double match");
+    }
     while(rij[rij_index[links]] < spil) links++;
     while(rij[rij_index[rechts]] > spil) rechts--;
   }
