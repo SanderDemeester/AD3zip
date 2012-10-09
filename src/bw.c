@@ -50,7 +50,7 @@ static void printlist(char *rij, int *rij_index){
   for(i=0; i < aantal_element; i++){
     for(j = 0; j < aantal_element; j++){
       //printf("%c \n", rij[rij_index[i]]);
-      printf("%c", *(&rij[rij_index[i]]+j % aantal_element));
+      printf("%c", *(&rij[rij_index[i+j] % aantal_element]));
     }
     printf("\n");
   }
