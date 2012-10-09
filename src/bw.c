@@ -135,7 +135,11 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
     if(rij[rij_index[rechts]] == spil && rechts != spil_index){
       printf("de pointer vanaf rechts is gelijk aan de spil");
       int offset = 1;
-      
+#ifdef DEBUG
+      printf("de pointer vanaf rechts is gelijk aan de spil\n");
+      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset), links);
+      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset), spil_index);
+#endif
       break;
     }
     #ifdef DEBUG
