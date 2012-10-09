@@ -121,6 +121,8 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 #ifdef DEBUG
 	printf("%c < %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
 #endif
+	while(*(&rij[rij_index[spil_index]]+offset) == *(&rij[rij_index[rechts]]+offset)){
+	}
 	break;
       }
     }
