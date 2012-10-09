@@ -110,9 +110,15 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 	offset_links_index++ % sizeof(rij)/sizeof(char);
       }
       if(*(&rij[rij_index[spil_index]]+offset_spil_index) > *(&rij[rij_index[spil_index]]+offset_links_index)){
+#ifdef DEBUG
+	printf("de string waar de spil mee werkt is groter\n");
+#endif
 	links++;
 	break;
       }else{
+#ifdef DEBUG
+	printf("de string waar de spil mee werkt is kleiner, we mogen niet verder advanced \n");
+#endif
 	break;
       }
     }
