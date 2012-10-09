@@ -124,8 +124,8 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 	while(*(&rij[rij_index[spil_index]]+offset) == *(&rij[rij_index[rechts]]+offset)){
 	  #ifdef DEBUG
 	  printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
-	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[rechts]]+offset));
-	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
+	  printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[rechts]]+offset));
+	  printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
 	  #endif
 	}
 	break;
