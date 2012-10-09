@@ -103,11 +103,12 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
       printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset_links_index), links);
       printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset_spil_index), spil_index);
       while(*(&rij[rij_index[spil_index]]+offset_spil_index) == *(&rij[rij_index[spil_index]]+offset_links_index)){
+#ifdef DEBUG
+	printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
+#endif
 	offset_spil_index++  % sizeof(rij)/sizeof(char);
 	offset_links_index++ % sizeof(rij)/sizeof(char);
       }
-      
-      
       if(*(&rij[rij_index[spil_index]]+offset_spil_index) > *(&rij[rij_index[spil_index]]+offset_links_index)){
 	links++;
 	break;
