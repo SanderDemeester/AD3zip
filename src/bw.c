@@ -153,12 +153,11 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 #ifdef DEBUG
 	printf("%c < %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
 #endif
-	rechts++;
+	rechts--;
 	break;
       }else{
 	break;
       }
-      
     }
     #ifdef DEBUG
     printf("rechts->element in rij: %c > spil: %c \n", rij[rij_index[rechts]], spil);
