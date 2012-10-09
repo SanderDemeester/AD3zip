@@ -110,13 +110,13 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
       }
       if(*(&rij[rij_index[spil_index]]+offset) > *(&rij[rij_index[spil_index]]+offset)){
 #ifdef DEBUG
-	printf("de string waar de spil mee werkt is groter\n");
+	printf("%c > %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
 #endif
 	links++;
 	break;
       }else{
 #ifdef DEBUG
-	printf("de string waar de spil mee werkt is kleiner, we mogen niet verder advanced \n");
+	printf("%c < %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
 #endif
 	break;
       }
