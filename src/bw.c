@@ -97,21 +97,19 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
   //laat links wijzen naar het eerste element groter dan de spil
   while(rij[rij_index[links]] < spil || rij[rij_index[links]] == spil){
     if(rij[rij_index[links]] == spil && links != spil_index){
-      int offset_spil_index = 1;
-      int offset_links_index = 1;
+      int offset = 1;
       printf("de pointer vanaf links is gelijk aan de spil\n");
-      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset_links_index), links);
-      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset_spil_index), spil_index);
-      while(*(&rij[rij_index[spil_index]]+offset_spil_index) == *(&rij[rij_index[spil_index]]+offset_links_index)){
+      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset), links);
+      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset), spil_index);
+      while(*(&rij[rij_index[spil_index]]+offset) == *(&rij[rij_index[links]]+offset)){
 #ifdef DEBUG
 	printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
-	printf("volgende char om te vergelijken in de rij is: %c met %d \n", *(&rij[rij_index[links]]+offset_links_index), offset_links_index);
-	printf("char volgende op de spil: %c met %d\n", *(&rij[rij_index[spil_index]]+offset_spil_index),offset_spil_index);
+	printf("volgende char om te vergelijken in de rij is: %c met %d \n", *(&rij[rij_index[links]]+offset));
+	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
 #endif
-	offset_spil_index = offset_spil_index+1 % sizeof(rij)/sizeof(char);
-	offset_links_index = offset_links_index+1 % sizeof(rij)/sizeof(char);
+	offset++ % 3;
       }
-      if(*(&rij[rij_index[spil_index]]+offset_spil_index) > *(&rij[rij_index[spil_index]]+offset_links_index)){
+      if(*(&rij[rij_index[spil_index]]+offset) > *(&rij[rij_index[spil_index]]+offset)){
 #ifdef DEBUG
 	printf("de string waar de spil mee werkt is groter\n");
 #endif
