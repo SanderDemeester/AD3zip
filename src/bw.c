@@ -56,7 +56,8 @@ static void printlist(char *rij, int *rij_index){
   }
 }
 static int partioneer(char *rij, int *rij_index, int begin, int einde){
-
+ 
+  int aantal = sizeof(rij)/sizeof(char);
   int midden = (begin+(einde-1))/2; 
 
   #ifdef DEBUG
@@ -106,11 +107,11 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
       int offset = 1;
 #ifdef DEBUG
       printf("de pointer vanaf links is gelijk aan de spil\n");
-      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links]]+offset), links);
-      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index]]+offset), spil_index);
+      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links+offset] % aantal]),links);
+      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index+offset] % aantal]), spil_index);
 #endif
 														  
-      while(*(&rij[rij_index[spil_index]]+offset) == *(&rij[rij_index[links]]+offset)){
+      while(*(&rij[rij_index[spil_index+offset] % aantal]) == *(&rij[rij_index[links+offset] % aantal])){
 #ifdef DEBUG
 	printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
 	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[links]]+offset));
@@ -118,15 +119,15 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde){
 #endif
 	offset++ % sizeof(rij)/sizeof(char);
       }
-      if(*(&rij[rij_index[spil_index]]+offset) > *(&rij[rij_index[spil_index]]+offset)){
+      if(*(&rij[rij_index[spil_index+offset] % aantal]) > *(&rij[rij_index[spil_index+offset] % aantal])){
 #ifdef DEBUG
-	printf("%c > %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
+	printf("%c > %c\n", *(&rij[rij_index[spil_index+offset] % aantal]), *(&rij[rij_index[spil_index+offset] % aantal]));
 #endif
 	links++;
 	break;
       }else{
 #ifdef DEBUG
-	printf("%c < %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
+	printf("%c < %c\n", *(&rij[rij_index[spil_index+offset] % aantal]), *(&rij[rij_index[spil_index+offset] % aantal]));
 #endif
 	break;
       }
