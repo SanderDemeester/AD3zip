@@ -13,10 +13,10 @@ int main(int argc, char* argv[]){
   int blocksize = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   char *t = NULL;
-  char c = NULL;
+  char c = '\0';
   int input_lengte = 0; 
   
-  if(argc < 4 && (argc == 2 && strcmp(argv[1],"decodeer")) || argc==1){
+  if(argc < 4 && (argc == 2 && (strcmp(argv[1],"decodeer")) || argc==1)){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
     exit(-1);
   }
