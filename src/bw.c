@@ -18,12 +18,11 @@ void bwt(char *bwt_block, int blocksize){
   printlist(bwt_transformatie,rij_index, blocksize);
   printf("-----------------\n");
   bwt_block[1] = '_';
-  char buffer[1];
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
     if(i-2 == 0){ 
-      sprintf(buffer, "%d", rij_index[((i-2)+(blocksize-2)) % blocksize]);
-      memcpy(bwt_block, buffer,1);
+      sprintf(bwt_block, "%d", rij_index[((i-2)+(blocksize-2)) % blocksize]);
+      //      memcpy(bwt_block, buffer,1);
       bwt_block[1] = '_';
     }
     bwt_block[i] = bwt_transformatie[rij_index[((i-2)+(blocksize-1)) % blocksize]];
