@@ -4,7 +4,7 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len);
 static int partioneer(char *rij, int *rij_inex, int begin, int einde, int len);
 static void printlist(char *rij, int *rij_index, int len);
 
-char *bwt(char *bwt_block, int blocksize){
+void bwt(char *bwt_block, int blocksize){
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
   int i = 0;
@@ -12,7 +12,11 @@ char *bwt(char *bwt_block, int blocksize){
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
   quicksort(bwt_transformatie, rij_index, 0,blocksize-1,blocksize);
   printlist(bwt_transformatie,rij_index, blocksize);
-  return NULL;
+  printf("-----------------\n");
+  for(i = 0; i < blocksize; i++){
+    //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
+    bwt_block[i] = bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]];
+  }
 }
 static void swap(int *a, int *b){
   int t = *a;

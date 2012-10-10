@@ -63,6 +63,9 @@ int main(int argc, char* argv[]){
       bwt(input_block, blocksize);
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
+      for(int i = 0; i < blocksize; i++){
+	printf("%c \n", input_block[i]);
+      }
     }
   }
   return 0;
