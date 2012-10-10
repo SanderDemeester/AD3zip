@@ -75,5 +75,6 @@ int main(int argc, char* argv[]){
     printf("Decodeer\n");
 #endif
   }
+  free(t);
   return 0;
 }
