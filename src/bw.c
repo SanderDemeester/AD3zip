@@ -136,7 +136,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
 	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[links]]+offset));
 	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
 #endif
-	offset++ % sizeof(rij)/sizeof(char);
+	offset = (offset+1) % aantal;
       }
       if(*(&rij[rij_index[(spil_index+offset) % aantal]]) > *(&rij[rij_index[(spil_index+offset) % aantal]])){
 #ifdef DEBUG
@@ -173,7 +173,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
 	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[rechts]]+offset));
 	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
 #endif
-	offset++ % sizeof(rij)/sizeof(char);
+	offset = (offset+1) % aantal;
       }
       if(*(&rij[rij_index[(spil_index+offset) % aantal]]) < *(&rij[rij_index[(spil_index+offset) % aantal]])){
 #ifdef DEBUG
