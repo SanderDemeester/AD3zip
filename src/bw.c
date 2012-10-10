@@ -73,6 +73,11 @@ static void printlist(char *rij, int *rij_index, int len){
 static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
   int aantal = len;
   int midden = (begin+(einde-1))/2; 
+  int spil_index = 0;
+  char spil = 0;
+  int links = 0;
+  int rechts = 0;
+
 
   #ifdef DEBUG
   printf("begin:  %d \n", begin);
@@ -102,11 +107,11 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
   }
   
   
-  int spil_index = midden; //het middelste element is de index van de spil.
-  char spil = rij[rij_index[midden]]; //het spil element.
+  spil_index = midden; //het middelste element is de index van de spil.
+  spil = rij[rij_index[midden]]; //het spil element.
   swap(&rij_index[einde],&rij_index[spil_index]); //wissel de index van het laatste element in de rij met de index van het spil element.
-  int links = begin; //links is gelijk aan het begin van de rij index
-  int rechts = einde-1; //begin te testen van het einde 
+  links = begin; //links is gelijk aan het begin van de rij index
+  rechts = einde-1; //begin te testen van het einde 
 
 #ifdef DEBUG
   printf("einde: %d \n", einde);
