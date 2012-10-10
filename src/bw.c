@@ -35,6 +35,7 @@ static void swap(int *a, int *b){
 }
 
 static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
+  int spil_index = 0; 
   if(begin >= einde) return; //stop
   /***************************************/
   /* else if(begin + 10 > einde){	 */
@@ -44,17 +45,17 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
   /*   //insertionsort			 */
   /* }else{				 */
   /***************************************/
-  int spil_index = partioneer(rij, rij_index, begin,einde,len);
-    #ifdef DEBUG
-    printf("execute 1\n");
-    #endif
-    quicksort(rij, rij_index, begin,spil_index-1,len);
-    #ifdef DEBUG
-    printf("execute 2\n");
-    #endif
-    quicksort(rij, rij_index, spil_index+1, einde, len);
-    
-    //  }
+  spil_index = partioneer(rij, rij_index, begin,einde,len);
+#ifdef DEBUG
+  printf("execute 1\n");
+#endif
+  quicksort(rij, rij_index, begin,spil_index-1,len);
+#ifdef DEBUG
+  printf("execute 2\n");
+#endif
+  quicksort(rij, rij_index, spil_index+1, einde, len);
+  
+  //  }
 }
 
 static void printlist(char *rij, int *rij_index, int len){
