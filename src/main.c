@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _GENERIC
+#include "header/generic.h"
+#endif
 #define DECODEER 0
 #define ENCODEER 1
 
