@@ -70,6 +70,11 @@ int main(int argc, char* argv[]){
 	printf("%c \n", input_block[i]);
       }
     }
+  }else{
+#ifdef DEBUG
+    printf("Encodeer\n");
+#endif
+
   }
   return 0;
 }
