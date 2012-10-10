@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
   char c = '\0';
   int input_lengte = 0; 
   
-  if(argc < 4 && (argc == 2 && (strcmp(argv[1],"decodeer")) || argc==1)){
+  if(argc < 4 && ((argc == 2 && !strcmp(argv[1],"decodeer")) || argc==1)){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
     exit(-1);
   }
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]){
       exit(-1);
     }
   }
-  if(ENCODEER){
+  if(methode){ //encodeer
     char *input_block = NULL; 
   /***************************************************************/
   /* input_buffer is de buffer die input tekens van stdin bevat	 */
@@ -72,9 +72,8 @@ int main(int argc, char* argv[]){
     }
   }else{
 #ifdef DEBUG
-    printf("Encodeer\n");
+    printf("Decodeer\n");
 #endif
-
   }
   return 0;
 }

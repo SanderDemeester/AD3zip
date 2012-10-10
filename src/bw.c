@@ -61,7 +61,6 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
 static void printlist(char *rij, int *rij_index, int len){
   int i = 0;
   int j = 0;
-  printf("aantal element: %s -> %d \n", rij, len);
   for(i=0; i < len; i++){
     for(j = 0; j < len; j++){
       //printf("%c \n", rij[rij_index[i]]);
