@@ -18,7 +18,8 @@ void bwt(char *bwt_block, int blocksize){
   bwt_block[1] = '_';
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
-    bwt_block[i] = bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]];
+    if(i-2 == 0) bwt_block[0] = rij_index[((i-2)+(blocksize-2)) % blocksize];
+    bwt_block[i] = bwt_transformatie[rij_index[((i-2)+(blocksize-1)) % blocksize]];
   }
 }
 static void swap(int *a, int *b){
