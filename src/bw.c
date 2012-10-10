@@ -7,7 +7,7 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len);
 static int partioneer(char *rij, int *rij_inex, int begin, int einde, int len);
 static void printlist(char *rij, int *rij_index, int len);
 
-void bwt(char *bwt_block, int blocksize){
+void generate_bwt(char *bwt_block, int blocksize){
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
   int i = 0;
