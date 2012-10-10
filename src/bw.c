@@ -9,6 +9,7 @@ void bwt(char *bwt_block, int blocksize){
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
   int i = 0;
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
+  bwt_block = (char*) realloc(bwt_block, blocksize+2);
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
   quicksort(bwt_transformatie, rij_index, 0,blocksize-1,blocksize);
   printlist(bwt_transformatie,rij_index, blocksize);
