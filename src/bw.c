@@ -28,6 +28,11 @@ void encoderen_bwt(char *bwt_block, int blocksize){
     bwt_block[i] = bwt_transformatie[rij_index[((i-2)+(blocksize-1)) % blocksize]];
   }
 }
+
+void decoderen_bwt(char *bwt_vector, int len){
+  
+}
+
 static void swap(int *a, int *b){
   int t = *a;
   *a = *b;

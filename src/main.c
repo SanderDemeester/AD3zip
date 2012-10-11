@@ -74,6 +74,8 @@ int main(int argc, char* argv[]){
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
+    //we weten wat we hier krijgen al in blokken zal zijn.
+    printf("input buffer: %s \n", input_buffer);
   }
   free(t);
   return 0;
