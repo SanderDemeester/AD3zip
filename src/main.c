@@ -76,6 +76,7 @@ int main(int argc, char* argv[]){
     printf("Decodeer\n");
 #endif
     //we weten wat we hier krijgen al in blokken zal zijn.
+    input_buffer[input_lengte-1] = '\0'; //verwijderen van extra \n
     printf("input buffer: %s \n", input_buffer);
   }
   free(t);
