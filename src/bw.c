@@ -22,10 +22,8 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   bwt_block = (char*) realloc(bwt_block, blocksize+2);
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
   quicksort(bwt_transformatie, rij_index, 0,blocksize-1,blocksize);
-  #ifdef DEBUG
   printlist(bwt_transformatie,rij_index, blocksize);
   printf("-----------------\n");
-  #endif
   bwt_block[1] = '_';
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
@@ -137,7 +135,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
 #ifdef DEBUG
   printf("einde: %d \n", einde);
   printf("spil element is: %c \n", spil);
-  printlist(rij,rij_index, einde);
+  printlist(rij,rij_index, len);
   printf("------------\n");
 #endif
 
@@ -146,28 +144,28 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
     if(rij[rij_index[links]] == spil && links != spil_index){
       int offset = 1;
 #ifdef DEBUG
-      printf("de pointer vanaf links is gelijk aan de spil\n");
-      printf("volgende char om te vergelijken in de rij is: %c met index %d \n", *(&rij[rij_index[links+offset] % aantal]),links);
-      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[spil_index+offset] % aantal]), spil_index);
+      printf("de pointer vanaf links is gelijk aan de spil, de spil is: %c = %c \n",spil);
+      printf("volgende char om te vergelijken in de rij (vanaf links) is: %c met index %d \n", *(&rij[rij_index[(links+offset) % aantal]]),links);
+      printf("char volgende op de spil: %c met index %d \n", *(&rij[rij_index[(spil_index+offset) % aantal]]), spil_index);
 #endif
 														  
       while(*(&rij[rij_index[(spil_index+offset) % aantal]]) == *(&rij[rij_index[(links+offset) % aantal]])){
 #ifdef DEBUG
 	printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
-	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[links]]+offset));
-	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
+	printf("volgende char om te vergelijken (vanaf links) in de rij is: %c\n", *(&rij[rij_index[(links+offset) % aantal]]));
+	printf("volgende char om te vergelijken (vanaf spil)  in de rij is:  %c",  *(&rij[rij_index[(spil_index+offset) % aantal]]));
 #endif
 	offset = (offset+1) % aantal;
       }
-      if(*(&rij[rij_index[(spil_index+offset) % aantal]]) > *(&rij[rij_index[(spil_index+offset) % aantal]])){
+      if(*(&rij[rij_index[(links+offset) % aantal]]) > *(&rij[rij_index[(spil_index+offset) % aantal]])){
 #ifdef DEBUG
-	printf("%c > %c\n", *(&rij[rij_index[spil_index+offset] % aantal]), *(&rij[rij_index[spil_index+offset] % aantal]));
+	printf("%c > %c\n", *(&rij[rij_index[spil_index+offset] % aantal]), *(&rij[rij_index[(spil_index+offset) % aantal]]));
 #endif
 	links++;
 	break;
       }else{
 #ifdef DEBUG
-	printf("%c < %c\n", *(&rij[rij_index[(spil_index+offset) % aantal]]), *(&rij[rij_index[(spil_index+offset) % aantal]]));
+	printf("|%c < %c\n", *(&rij[rij_index[(links+offset) % aantal]]), *(&rij[rij_index[(spil_index+offset) % aantal]]));
 #endif
 	break;
       }
@@ -193,14 +191,14 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
       while(*(&rij[rij_index[(spil_index+offset) % aantal]]) == *(&rij[rij_index[(rechts+offset) % aantal]])){
 	#ifdef DEBUG
 	printf("De volgende chars zijn nog altijd aan elkaar gelijk\n");
-	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[rechts]]+offset));
-	printf("char volgende op de spil: %c", *(&rij[rij_index[spil_index]]+offset));
+	printf("volgende char om te vergelijken in de rij is: %c\n", *(&rij[rij_index[(rechts+offset)%aantal]]));
+	printf("char volgende op de spil: %c", *(&rij[rij_index[(spil_index+offset) % aantal]]));
 #endif
 	offset = (offset+1) % aantal;
       }
-      if(*(&rij[rij_index[(spil_index+offset) % aantal]]) < *(&rij[rij_index[(spil_index+offset) % aantal]])){
+      if(*(&rij[rij_index[(rechts+offset) % aantal]]) < *(&rij[rij_index[(spil_index+offset) % aantal]])){
 #ifdef DEBUG
-	printf("%c < %c\n", *(&rij[rij_index[spil_index]]+offset), *(&rij[rij_index[spil_index]]+offset));
+	printf("%c < %c\n", *(&rij[rij_index[(spil_index+offset) % aantal]]), *(&rij[rij_index[(spil_index+offset) % aantal]]));
 #endif
 	rechts--;
 	break;
@@ -218,7 +216,7 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
   printf("------------\n");
   printf("links: %d \n", links);
   printf("rechts: %d \n", rechts);
-  printlist(rij,rij_index,einde);
+  printlist(rij,rij_index,len);
   printf("------------\n");
 #endif
   
@@ -231,12 +229,12 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
     printf("rechts: %d \n", rechts);
     printf("------------\n");
     printf("voor swap \n");
-    printlist(rij,rij_index, einde);
+    printlist(rij,rij_index, len);
 #endif
     swap(&rij_index[links],&rij_index[rechts]);
 #ifdef DEBUG
     printf("na swap\n");
-    printlist(rij,rij_index,einde);
+    printlist(rij,rij_index,len);
     printf("------------\n");
     if(rij[rij_index[links]] == spil){
       printf("found double match");
