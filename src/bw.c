@@ -39,16 +39,23 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 }
 
 void decoderen_bwt(char *bwt_vector, int len){
+  //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
   int start_pos = atoi(&bwt_vector[0]);
-  int *rij_index = (int*) malloc(sizeof(int)*len);
-  //het maken van de array van indexen
+
+  //Rij van indexen
+  int *rij_index = (int*) malloc(sizeof(int)*len-1);
+
+  //Get maken van de array van indexen
   for(int i = 0; i < len; i++) rij_index[i] = i;
+  
   //we tellen 2 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
   bwt_vector+=2;
   
   quicksort(bwt_vector, rij_index, 0,len-1,len);
-  printf("%d \n", len);
-  printf("%s \n", bwt_vector);
+  for(int i = 0; i < len; i++){
+    printf("%c", bwt_vector[rij_index[i]]);
+  }
+  printf("\n");
   
 }
 
