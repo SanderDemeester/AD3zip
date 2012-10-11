@@ -3,6 +3,13 @@
 #include "header/generic.h"
 #endif
 
+/**********************************************************************************************************************************/
+/* Het eerste argument is een pointer naar de rij van karakters.								  */
+/* Het tweede argument is een pointer naar de rij van indexen van de karakters							  */
+/* Het derde argument is het begin van de rij, voor de eerste oproep 0								  */
+/* Het vierde argument is de index van het laatste element van de rij. BV: als er 4 elementen zijn 0,1,2,3 dan is dit argument 3. */
+/* Het vijfde argument is het aantal elementen in de rij. Bij het voorbeeld hierboven zijn dit dus 4 zijn.  			  */
+/**********************************************************************************************************************************/
 static void quicksort(char *rij, int* rij_index, int begin, int einde, int len);
 static int partioneer(char *rij, int *rij_inex, int begin, int einde, int len);
 static void printlist(char *rij, int *rij_index, int len);
@@ -32,7 +39,17 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 }
 
 void decoderen_bwt(char *bwt_vector, int len){
-  printf("%s met lengte: %d\n", bwt_vector, len);
+  int start_pos = atoi(&bwt_vector[0]);
+  int *rij_index = (int*) malloc(sizeof(int)*len);
+  //het maken van de array van indexen
+  for(int i = 0; i < len; i++) rij_index[i] = i;
+  //we tellen 2 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
+  bwt_vector+=2;
+  
+  quicksort(bwt_vector, rij_index, 0,len-1,len);
+  printf("%d \n", len);
+  printf("%s \n", bwt_vector);
+  
 }
 
 static void swap(int *a, int *b){
@@ -44,14 +61,6 @@ static void swap(int *a, int *b){
 static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
   int spil_index = 0; 
   if(begin >= einde) return; //stop
-  /***************************************/
-  /* else if(begin + 10 > einde){	 */
-  /*   #ifdef DEBUG			 */
-  /*   printf("voer insertionsort uit"); */
-  /*   #endif				 */
-  /*   //insertionsort			 */
-  /* }else{				 */
-  /***************************************/
   spil_index = partioneer(rij, rij_index, begin,einde,len);
 #ifdef DEBUG
   printf("execute 1\n");
@@ -62,7 +71,6 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
 #endif
   quicksort(rij, rij_index, spil_index+1, einde, len);
   
-  //  }
 }
 
 static void printlist(char *rij, int *rij_index, int len){
@@ -166,7 +174,9 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
   //laat rechts wijzen naar het eerste element kleiner dan de spil.
   while(rij[rij_index[rechts]] > spil || rij[rij_index[rechts]] == spil){
     if(rij[rij_index[rechts]] == spil && rechts != spil_index){
+#ifdef DEBUG
       printf("de pointer vanaf rechts is gelijk aan de spil");
+#endif
       int offset = 1;
 #ifdef DEBUG
       printf("de pointer vanaf rechts is gelijk aan de spil\n");
@@ -215,16 +225,16 @@ static int partioneer(char *rij, int *rij_index, int begin, int einde, int len){
     printf("------------\n");
     printf("voor swap \n");
     printlist(rij,rij_index, einde);
-    #endif
+#endif
     swap(&rij_index[links],&rij_index[rechts]);
-    #ifdef DEBUG
+#ifdef DEBUG
     printf("na swap\n");
     printlist(rij,rij_index,einde);
     printf("------------\n");
-    #endif
     if(rij[rij_index[links]] == spil){
       printf("found double match");
     }
+#endif
     while(rij[rij_index[links]] < spil) links++;
     while(rij[rij_index[rechts]] > spil) rechts--;
   }
