@@ -17,8 +17,8 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   quicksort(bwt_transformatie, rij_index, 0,blocksize-1,blocksize);
   #ifdef DEBUG
   printlist(bwt_transformatie,rij_index, blocksize);
-  #endif
   printf("-----------------\n");
+  #endif
   bwt_block[1] = '_';
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);

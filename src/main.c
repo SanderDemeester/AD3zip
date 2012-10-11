@@ -67,8 +67,9 @@ int main(int argc, char* argv[]){
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       for(int i = 0; i < blocksize+2; i++){
-	printf("%c \n", input_block[i]);
+	printf("%c", input_block[i]);
       }
+      printf("\n");
     }
   }else{
 #ifdef DEBUG
