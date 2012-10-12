@@ -78,7 +78,7 @@ int main(int argc, char* argv[]){
     //We weten wat we hier krijgen al in blokken zal zitten.
     //We verwijderen de extra '\n'
     input_buffer[input_lengte-1] = '\0'; 
-    
+
     //De -3 is voor '\0' en de start pos en '_'
     decoderen_bwt(input_buffer, input_lengte-3);
     
