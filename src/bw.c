@@ -49,8 +49,10 @@ void decoderen_bwt(char *bwt_vector, int len){
   
   //we tellen 2 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
   bwt_vector+=2;
-  
+  //sorteren van indexen van de bwt transformatie.
   quicksort(bwt_vector, rij_index, 0,len-1,len);
+  
+  printf("De start pos is: %d \n", start_pos);
   for(int i = 0; i < len; i++){
     printf("%c", bwt_vector[rij_index[i]]);
   }
