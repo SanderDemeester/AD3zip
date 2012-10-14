@@ -5,6 +5,9 @@ CFLAGS=-I. -Wall -std=c99 -lm
 all: AD3zip
 debug: CC += -g -DDEBUG -lm
 debug: AD3zip
+decode_debug: CC += -g -DDECODE_DEBUG -lm
+decode_debug: AD3zip
+
 AD3zip: $(obj)
 	$(CC) $(CFLAGS) $(obj) -lm -o $@
 obj/%.o: src/%.c
