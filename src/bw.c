@@ -29,18 +29,22 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
     if(i-2 == 0){ 
-      sprintf(bwt_block, "%d", rij_index[((i-2)+(blocksize-1)) % blocksize]);
+      sprintf(bwt_block, "%d", rij_index[0]-1);
       //      memcpy(bwt_block, buffer,1);
       bwt_block[1] = '_';
     }
-    bwt_block[i] = bwt_transformatie[rij_index[((i-2)+(blocksize-1)) % blocksize]];
+    bwt_block[i] = *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]);
+    //    printf("(%d,%d) - %c\n", i-2,blocksize-1,*(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
+    
   }
 }
 
 void decoderen_bwt(char *bwt_vector, int len){
   //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
   int start_pos = atoi(&bwt_vector[0]);
-
+  
+  //We houden de huidige positie bij tijdens het decoderen.
+  int print_index = start_pos;
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
   int *bwt_rij_index    = (int*) malloc(sizeof(int)*len-1);
@@ -108,7 +112,8 @@ static void printlist(char *rij, int *rij_index, int len){
   for(i=0; i < len; i++){
     for(j = 0; j < len; j++){
       //printf("%c \n", rij[rij_index[i]]);
-      printf("%c", *(&rij[rij_index[(i+j) % len]]));
+      //Deze structuur gaat mij dus echt blijven achtervolgen
+      printf("(%d,%d) - %c", i,j,*(&rij[(rij_index[i]+j) % len]));
     }
     printf("\n");
   }
