@@ -43,10 +43,14 @@ void decoderen_bwt(char *bwt_vector, int len){
 
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
+  int *bwt_rij_index    = (int*) malloc(sizeof(int)*len-1);
 
 
   //Get maken van de array van indexen
-  for(int i = 0; i < len; i++) sorted_rij_index[i] = i;
+  for(int i = 0; i < len; i++){
+    sorted_rij_index[i] = i;
+    bwt_rij_index[i] = i;
+  }
   
   //we tellen 2 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
   bwt_vector+=2;
@@ -58,6 +62,8 @@ void decoderen_bwt(char *bwt_vector, int len){
     printf("%c", bwt_vector[sorted_rij_index[i]]);
   }
   printf("\n");
+  free(sorted_rij_index);
+  free(bwt_rij_index);
   
 }
 
