@@ -29,7 +29,8 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
     if(i-2 == 0){ 
-      sprintf(bwt_block, "%d", rij_index[0]+1);
+      printf("%d \n", abs(rij_index[0]-1));
+      sprintf(bwt_block, "%d", abs(rij_index[0]-1));
       //      memcpy(bwt_block, buffer,1);
       bwt_block[1] = '_';
     }
