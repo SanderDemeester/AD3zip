@@ -29,7 +29,7 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
     if(i-2 == 0){ 
-      sprintf(bwt_block, "%d", rij_index[0]-1);
+      sprintf(bwt_block, "%d", rij_index[0]+1);
       //      memcpy(bwt_block, buffer,1);
       bwt_block[1] = '_';
     }
@@ -58,8 +58,9 @@ void decoderen_bwt(char *bwt_vector, int len){
   
   //we tellen 2 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
   bwt_vector+=2;
+
   //sorteren van indexen van de bwt transformatie.
-  quicksort(bwt_vector, sorted_rij_index, 0,len-1,len);
+  quicksort(bwt_vector, sorted_rij_index, 0,len,len);
   
   printf("De start pos is: %d \n", start_pos);
   for(int i = 0; i < len; i++){
