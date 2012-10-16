@@ -75,12 +75,43 @@ int main(int argc, char* argv[]){
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
-    //We weten wat we hier krijgen al in blokken zal zitten.
-    //We verwijderen de extra '\n'
-    input_buffer[input_lengte-1] = '\0'; 
+    //We weten wat we hier krijgen al in blokken zal zitten, gescheiden door een newline
+    //Een pointer naar de first match
+    char *p = NULL;
+    //newline die gebruiken bij strchr()
+    char *newline = '\n';
+    
+    //Working buffer, in deze buffer komen de substrings
+    char *working_buffer = NULL;
+    
+    //We verwijderen de extra '\n' (niet meer nodig)
+    //input_buffer[input_lengte-1] = '\0'; 
+    
+    //Vind de eerste substring
+    p = strchr(input_buffer, newline);
+    
+    //zolang er nog newlines mogen we doorgaan
+    while(p){
+#ifdef decode_debug
+      printf("de gevonden index: %d \n", p - input_buffer);
+#endif
+      working_buffer = (char*) malloc(sizeof(char)*(p-input_buffer));
+      memcpy(working_buffer, input_buffer, p-input_buffer);
+#ifdef decode_debug
+      printf("de working buffer: %s \n", working_buffer);
+#endif
+      decoderen_bwt(working_buffer, (p-input_buffer)-2);
+      input_buffer += (p-input_buffer)+1;
+#ifdef decode_debug
+      printf("de aangepaste input_buffer: %s", input_buffer);
+#endif
+      p = strchr(input_buffer, newline);
+#ifdef decode_debug
+      printf("de nieuwe gevonden index: %d \n", p - input_buffer);
+#endif
+      free(working_buffer);
+    }
 
-    //De -3 is voor '\0' en de start pos en '_'
-    decoderen_bwt(input_buffer, input_lengte-3);
     
   }
   free(t);
