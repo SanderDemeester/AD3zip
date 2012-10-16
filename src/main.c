@@ -71,30 +71,38 @@ int main(int argc, char* argv[]){
       input_buffer += blocksize; //add to input_buffer
       for(int i = 0; i < blocksize+2; i++){
 	fwrite(&input_block[i], 1, sizeof(input_block[i]), stdout);
-	//	printf("%c", input_block[i]);
       }
-      //      printf("\n");
     }
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
-    //We weten wat we hier krijgen al in blokken zal zitten, gescheiden door een newline
-    //Een pointer naar de first match
-    char *p = NULL;
-    //newline die gebruiken bij strchr()
-    char *newline = '\n';
-    
     //Working buffer, in deze buffer komen de substrings
-    char *working_buffer = NULL;
+    char *input_block = NULL;
     
     //We verwijderen de extra '\n' (niet meer nodig)
-    //input_buffer[input_lengte-1] = '\0'; 
+    //    input_buffer[input_lengte-1] = '\0'; 
     
     //Vind de eerste substring
     //p = strchr(input_buffer, newline);
+    
+    //blocksize
+    int blocksize = input_buffer[0];
+    input_buffer++;
 
-    printf("%s \n", input_buffer);
+    while(input_lengte > 0){
+      if(input_lengte < blocksize){
+	blocksize = input_lengte;
+      }
+      input_block = (char*) malloc(sizeof(char)*blocksize+2);
+      memcpy((void*)input_block, (void*) input_buffer, blocksize+2);
+      input_lengte -= blocksize+2; //substract from input_lengte;
+      input_buffer += blocksize+2; //add to input_buffer
+      //printf("%s \n", input_block);
+      decoderen_bwt(input_block, blocksize);
+
+    }
+
 /*************************************************************************/
 /*     //Zolang er nog newlines mogen we doorgaan			 */
 /*     while(p){							 */
@@ -118,10 +126,7 @@ int main(int argc, char* argv[]){
 /*       free(working_buffer);						 */
 /*     }								 */
 /*************************************************************************/
-
-    
   }
-
   free(t);
   return 0;
 }
