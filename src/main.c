@@ -15,6 +15,7 @@ int main(int argc, char* argv[]){
   char *t = NULL;
   char c = '\0';
   int input_lengte = 0; 
+
   
   if((argc < 4 && ((argc == 2 && strcmp(argv[1],"decodeer"))) || argc==1)){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
@@ -54,6 +55,8 @@ int main(int argc, char* argv[]){
     printf("Encodeer\n");
     printf("%d \n", input_lengte);
 #endif
+    fwrite(&blocksize, 1, sizeof(blocksize)/sizeof(int), stdout);
+    //    printf("\n");
     while(input_lengte){
       if(input_lengte < blocksize){
 	blocksize = input_lengte;
@@ -67,9 +70,10 @@ int main(int argc, char* argv[]){
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       for(int i = 0; i < blocksize+2; i++){
-	printf("%c", input_block[i]);
+	fwrite(&input_block[i], 1, sizeof(input_block[i]), stdout);
+	//	printf("%c", input_block[i]);
       }
-      printf("\n");
+      //      printf("\n");
     }
   }else{
 #ifdef DEBUG
@@ -88,32 +92,36 @@ int main(int argc, char* argv[]){
     //input_buffer[input_lengte-1] = '\0'; 
     
     //Vind de eerste substring
-    p = strchr(input_buffer, newline);
-    
-    //zolang er nog newlines mogen we doorgaan
-    while(p){
-#ifdef decode_debug
-      printf("de gevonden index: %d \n", p - input_buffer);
-#endif
-      working_buffer = (char*) malloc(sizeof(char)*(p-input_buffer));
-      memcpy(working_buffer, input_buffer, p-input_buffer);
-#ifdef decode_debug
-      printf("de working buffer: %s \n", working_buffer);
-#endif
-      decoderen_bwt(working_buffer, (p-input_buffer)-2);
-      input_buffer += (p-input_buffer)+1;
-#ifdef decode_debug
-      printf("de aangepaste input_buffer: %s", input_buffer);
-#endif
-      p = strchr(input_buffer, newline);
-#ifdef decode_debug
-      printf("de nieuwe gevonden index: %d \n", p - input_buffer);
-#endif
-      free(working_buffer);
-    }
+    //p = strchr(input_buffer, newline);
+
+    printf("%s \n", input_buffer);
+/*************************************************************************/
+/*     //Zolang er nog newlines mogen we doorgaan			 */
+/*     while(p){							 */
+/* #ifdef decode_debug							 */
+/*       printf("de gevonden index: %d \n", p - input_buffer);		 */
+/* #endif								 */
+/*       working_buffer = (char*) malloc(sizeof(char)*(p-input_buffer)); */
+/*       memcpy(working_buffer, input_buffer, p-input_buffer);		 */
+/* #ifdef decode_debug							 */
+/*       printf("de working buffer: %s \n", working_buffer);		 */
+/* #endif								 */
+/*       decoderen_bwt(working_buffer, (p-input_buffer)-2);		 */
+/*       input_buffer += (p-input_buffer)+1;				 */
+/* #ifdef decode_debug							 */
+/*       printf("de aangepaste input_buffer: %s", input_buffer);	 */
+/* #endif								 */
+/*       p = strchr(input_buffer, newline);				 */
+/* #ifdef decode_debug							 */
+/*       printf("de nieuwe gevonden index: %d \n", p - input_buffer);	 */
+/* #endif								 */
+/*       free(working_buffer);						 */
+/*     }								 */
+/*************************************************************************/
 
     
   }
+
   free(t);
   return 0;
 }
