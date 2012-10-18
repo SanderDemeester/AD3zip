@@ -60,7 +60,6 @@ void decoderen_bwt(char *bwt_vector, int len){
 
   //sorteren van indexen van de bwt transformatie.
   quicksort(bwt_vector, sorted_rij_index, 0,len,len);
-  
   #ifdef DECODE_DEBUG
   printf("De start pos is: %d \n", start_pos);
   #endif
