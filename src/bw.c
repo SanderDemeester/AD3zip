@@ -75,7 +75,6 @@ void decoderen_bwt(char *bwt_vector, int len){
     start_pos = sorted_rij_index[bwt_rij_index[start_pos]];
 
   }
-  printf("\n");
   free(sorted_rij_index);
   free(bwt_rij_index);
   
