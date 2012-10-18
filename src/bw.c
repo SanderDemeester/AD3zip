@@ -28,14 +28,12 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   bwt_block[1] = '_';
   for(i = 2; i < blocksize+2; i++){
     //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
-    if(i-2 == 0){ 
-      //      printf("%d \n", abs(rij_index[0]-1));
-      sprintf(bwt_block, "%d", abs(rij_index[0]-1));
-      //      memcpy(bwt_block, buffer,1);
-      bwt_block[1] = '_';
-    }
     bwt_block[i] = *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]);
     //    printf("(%d,%d) - %c\n", i-2,blocksize-1,*(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
+      if(bwt_block[i] == bwt_transformatie[0]){
+	sprintf(bwt_block, "%d", i-2);
+	bwt_block[1] = '_';
+      }
     
   }
 }
