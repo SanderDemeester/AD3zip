@@ -78,7 +78,6 @@ void decoderen_bwt(char *bwt_vector, int len){
   free(temp);
   free(sorted_rij_index);
   free(bwt_rij_index);
-  return temp;
 }
 
 static void swap(int *a, int *b){

@@ -3,19 +3,37 @@
 #include <string.h>
 #ifndef _GENERIC
 #include "header/generic.h"
+#include "header/compressie_methode.h"
 #endif
 #define DECODEER 0
 #define ENCODEER 1
 
 int main(int argc, char* argv[]){
   int methode = 0; //default methode is decodeer
-  int compressie_methode = 0;
   int blocksize = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   char *t = NULL;
   char c = '\0';
   int input_lengte = 0; 
+  compressie_argument **compressie_methode = (compressie_argument**) malloc(sizeof(compressie_argument*)*4);
 
+  for(int i = 0 ;i < 4; i++){
+    compressie_methode[i] = (compressie_argument*) malloc(sizeof(compressie_argument));
+  }
+  compressie_methode[0]->value = 1;
+  compressie_methode[0]->compressie_algoritme = mtf_huffman;
+
+  compressie_methode[1]->value = 2;
+  compressie_methode[1]->compressie_algoritme = not_implemented;
+
+  compressie_methode[2]->value = 3;
+  compressie_methode[2]->compressie_algoritme = semi_mtf;
+
+  compressie_methode[3]->value = 4;
+  compressie_methode[3]->compressie_algoritme = not_implemented;
+
+
+  
   
   if((argc < 4 && ((argc == 2 && strcmp(argv[1],"decodeer"))) || argc==1)){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
@@ -26,8 +44,9 @@ int main(int argc, char* argv[]){
   if(!strcmp(argv[1],"decodeer")) methode = DECODEER;
   
   if(methode){
-    compressie_methode = atoi(argv[2]);
-    printf("compressiemethode: %d \n", compressie_methode);
+    for(int i = 0; i < 4; i++){
+      if(compressie_methode[i]->value == atoi(argv[2])) compressie_methode[i]->compressie_algoritme(0,0);
+    }
     blocksize = atoi(argv[3]);
   }
   
