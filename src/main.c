@@ -27,6 +27,7 @@ int main(int argc, char* argv[]){
   
   if(methode){
     compressie_methode = atoi(argv[2]);
+    printf("compressiemethode: %d \n", compressie_methode);
     blocksize = atoi(argv[3]);
   }
   
