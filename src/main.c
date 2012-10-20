@@ -100,7 +100,7 @@ int main(int argc, char* argv[]){
       input_buffer += blocksize+2; //add to input_buffer
       //printf("%s \n", input_block);
       decoderen_bwt(input_block, blocksize);
-
+      printf("%s", input_block+2);
     }
 
 /*************************************************************************/
