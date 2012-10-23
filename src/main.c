@@ -11,7 +11,7 @@
 
 int main(int argc, char* argv[]){
   int methode = 0; //default methode is decodeer
-  int compressie_methode_ = 0; //default is debug
+  int compressie_function_pointer = 0; //default is debug.
   int blocksize = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   char *t = NULL;
@@ -23,6 +23,7 @@ int main(int argc, char* argv[]){
   for(int i = 0 ;i < NUMBER_OF_COMPRESSIE_METHODE; i++){
     compressie_methode[i] = (compressie_argument*) malloc(sizeof(compressie_argument));
   }
+  
   compressie_methode[0]->value = 1;
   compressie_methode[0]->compressie_algoritme = mtf_huffman;
 
@@ -48,9 +49,15 @@ int main(int argc, char* argv[]){
   if(!strcmp(argv[1],"encodeer")) methode = ENCODEER;
   if(!strcmp(argv[1],"decodeer")) methode = DECODEER;
   
+
+
   if(methode){
+    for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
+      if(compressie_methode[i]->value == atoi(argv[2])) compressie_function_pointer = i;
+    }
     blocksize = atoi(argv[3]);
-    compressie_methode_ = atoi(argv[2]);
+  }else{
+    compressie_function_pointer = 4; //Debug methode.
   }
   
   while((fread(&c,1,1,stdin))) {
@@ -93,15 +100,13 @@ int main(int argc, char* argv[]){
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       
-      for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
-	if(compressie_methode[i]->value == compressie_methode_) compressie_methode[i]->compressie_algoritme(input_block,blocksize+2);
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2);
       }
       /************************************************************************/
       /* for(int i = 0; i < blocksize+2; i++){				      */
       /* 	fwrite(&input_block[i], 1, sizeof(input_block[i]), stdout);   */
       /* }								      */
       /************************************************************************/
-    }
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
@@ -136,12 +141,12 @@ int main(int argc, char* argv[]){
       /* 	fwrite(&input_block[i],1,sizeof(input_block[i]),stdout);   */
       /*********************************************************************/
       //}
-      for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
-	if(compressie_methode[i]->value == compressie_methode_) compressie_methode[i]->compressie_algoritme(input_block,blocksize);
-      }
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize);
     }
   }
   
+  
   free(t);
   return 0;
+  
 }
