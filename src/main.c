@@ -7,17 +7,20 @@
 #endif
 #define DECODEER 0
 #define ENCODEER 1
+#define NUMBER_OF_COMPRESSIE_METHODE 5 //+1 for debug
 
 int main(int argc, char* argv[]){
   int methode = 0; //default methode is decodeer
+  int compressie_methode_ = 0; //default is debug
   int blocksize = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   char *t = NULL;
   char c = '\0';
+  char *input_block = NULL;
   int input_lengte = 0; 
-  compressie_argument **compressie_methode = (compressie_argument**) malloc(sizeof(compressie_argument*)*4);
+  compressie_argument **compressie_methode = (compressie_argument**) malloc(sizeof(compressie_argument*)*NUMBER_OF_COMPRESSIE_METHODE);
 
-  for(int i = 0 ;i < 4; i++){
+  for(int i = 0 ;i < NUMBER_OF_COMPRESSIE_METHODE; i++){
     compressie_methode[i] = (compressie_argument*) malloc(sizeof(compressie_argument));
   }
   compressie_methode[0]->value = 1;
@@ -31,7 +34,9 @@ int main(int argc, char* argv[]){
 
   compressie_methode[3]->value = 4;
   compressie_methode[3]->compressie_algoritme = not_implemented;
-
+  
+  compressie_methode[4]->value = 0; //debug
+  compressie_methode[4]->compressie_algoritme = debug;
 
   
   
@@ -44,10 +49,8 @@ int main(int argc, char* argv[]){
   if(!strcmp(argv[1],"decodeer")) methode = DECODEER;
   
   if(methode){
-    for(int i = 0; i < 4; i++){
-      if(compressie_methode[i]->value == atoi(argv[2])) compressie_methode[i]->compressie_algoritme(0,0);
-    }
     blocksize = atoi(argv[3]);
+    compressie_methode_ = atoi(argv[2]);
   }
   
   while((fread(&c,1,1,stdin))) {
@@ -63,7 +66,7 @@ int main(int argc, char* argv[]){
     }
   }
   if(methode){ //encodeer
-    char *input_block = NULL; 
+    //    char *input_block = NULL; 
   /***************************************************************/
   /* input_buffer is de buffer die input tekens van stdin bevat	 */
   /* input_lengte is het aantal tekens dat input_buffer bevat	 */
@@ -89,16 +92,22 @@ int main(int argc, char* argv[]){
       encoderen_bwt(input_block, blocksize);
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
-      for(int i = 0; i < blocksize+2; i++){
-	fwrite(&input_block[i], 1, sizeof(input_block[i]), stdout);
+      
+      for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
+	if(compressie_methode[i]->value == compressie_methode_) compressie_methode[i]->compressie_algoritme(input_block,blocksize+2);
       }
+      /************************************************************************/
+      /* for(int i = 0; i < blocksize+2; i++){				      */
+      /* 	fwrite(&input_block[i], 1, sizeof(input_block[i]), stdout);   */
+      /* }								      */
+      /************************************************************************/
     }
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
     //Working buffer, in deze buffer komen de substrings
-    char *input_block = NULL;
+    //char *input_block = NULL;
     
     //We verwijderen de extra '\n' (niet meer nodig)
     //    input_buffer[input_lengte-1] = '\0'; 
@@ -120,9 +129,19 @@ int main(int argc, char* argv[]){
       input_buffer += blocksize+2; //add to input_buffer
       //printf("%s \n", input_block);
       decoderen_bwt(input_block, blocksize);
-      printf("%s", input_block+2);
+      //      printf("%s", input_block+2);
+      input_block += 2;
+      /*********************************************************************/
+      /* for(int i = 0; i < blocksize; i++){				   */
+      /* 	fwrite(&input_block[i],1,sizeof(input_block[i]),stdout);   */
+      /*********************************************************************/
+      //}
+      for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
+	if(compressie_methode[i]->value == compressie_methode_) compressie_methode[i]->compressie_algoritme(input_block,blocksize);
+      }
     }
   }
+  
   free(t);
   return 0;
 }
