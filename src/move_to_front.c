@@ -4,7 +4,14 @@
 #endif
 
 void move_to_front(char* string, int len){
-  for(int i = 0; i < len; i++){
-    fwrite(&string[i],1,sizeof(string[i]), stdout);
+  printf("begin move_to_front\n");
+  unsigned char index = 0;
+  unsigned char *alpha = (unsigned char*) malloc(sizeof(unsigned char)*255);
+  for(; index < (unsigned char) 255; index++){
+    alpha[index] = index;
   }
+  if(string[0] == alpha[49]){
+    printf("ok\n");
+  }
+  printf("end move to front\n");
 }
