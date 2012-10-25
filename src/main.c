@@ -100,7 +100,7 @@ int main(int argc, char* argv[]){
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2);
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, methode);
       }
       /************************************************************************/
       /* for(int i = 0; i < blocksize+2; i++){				      */
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]){
       /* 	fwrite(&input_block[i],1,sizeof(input_block[i]),stdout);   */
       /*********************************************************************/
       //}
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize);
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize, methode);
     }
   }
   

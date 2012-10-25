@@ -3,8 +3,7 @@
 #include "header/generic.h"
 #endif
 
-void move_to_front(char* string, int len){
-  printf("begin move_to_front\n");
+void move_to_front(char* string, int len, int actie){
   ascii_symbol *anker = (ascii_symbol*) malloc(sizeof(ascii_symbol)); //het anker element van onze linkedlist
   ascii_symbol *tijdelijk_anker = anker; //een symbool die we gebruiken om het anker tijdelijk in te bewaren
   ascii_symbol* backup_ascii_symbool; //een symbool die we gebruiken om tijdelijk 
@@ -19,22 +18,24 @@ void move_to_front(char* string, int len){
     anker->ascii_value = (unsigned char)i;
   }
   anker = tijdelijk_anker;
+  
+#ifdef MTF_DEBUG
   for(int i = 0; i <= 255; i++){
     anker = anker->next;
     printf("%d %c \n", i, anker->ascii_value);
   }
   anker = tijdelijk_anker;
+#endif MTF_DEBUG
 
 
   for(int i = 0; i < len; i++){
     int c = 0;
     tijdelijk_anker = anker; //terug bij start.
-    printf("%c \n", string[i]);
     while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
       tijdelijk_anker = tijdelijk_anker->next;
       c++;
     }
-    printf("match gevonden op: %d \n", c-1);
+    printf("%d\n", c-1);
     backup_ascii_symbool = tijdelijk_anker->prev;
     backup_ascii_symbool->next = tijdelijk_anker->next;
     
@@ -49,6 +50,4 @@ void move_to_front(char* string, int len){
     anker->next = tijdelijk_anker;
     
   }
-
-  printf("end move to front\n");
 }

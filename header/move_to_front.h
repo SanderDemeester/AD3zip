@@ -12,4 +12,4 @@ typedef struct{
 } ascii_symbol;
   
 
-void move_to_front(char *string, int len);
+void move_to_front(char *string, int len, int actie);
