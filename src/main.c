@@ -125,8 +125,9 @@ int main(int argc, char* argv[]){
     input_buffer++;
 
     while(input_lengte > 0){
-      if(input_lengte < blocksize){
-	blocksize = input_lengte;
+      if(input_lengte-2 < blocksize+1){
+	blocksize = input_lengte-3;
+	input_lengte=-1;
       }
       input_block = (char*) malloc(sizeof(char)*blocksize+2);
       memcpy((void*)input_block, (void*) input_buffer, blocksize+2);

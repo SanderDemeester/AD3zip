@@ -69,7 +69,8 @@ void decoderen_bwt(char *bwt_vector, int len){
   for(int i = 0; i < len; i++){
     #ifdef DECODE_DEBUG
     printf("%c <-> %c\n", bwt_vector[sorted_rij_index[i]], bwt_vector[bwt_rij_index[i]]);
-    #endif
+    #endif DECODE_DEBUG
+
     //printf("%c", bwt_vector[start_pos]);
     memcpy(&temp[i],&bwt_vector[start_pos],sizeof(char));
     start_pos = sorted_rij_index[bwt_rij_index[start_pos]];
