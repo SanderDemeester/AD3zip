@@ -5,32 +5,32 @@
 
 void move_to_front(char* string, int len){
   printf("begin move_to_front\n");
-  ascii_symbol *first = (ascii_symbol*) malloc(sizeof(ascii_symbol));
-  ascii_symbol *t = first;
-  ascii_symbol* b;
-  first->prev = NULL;
-  first->ascii_value = '\0';
+  ascii_symbol *anker = (ascii_symbol*) malloc(sizeof(ascii_symbol)); //het anker element van onze linkedlist
+  ascii_symbol *tijdelijk_anker = anker;
+  ascii_symbol* backup_ascii_symbool;
+  anker->prev = NULL;
+  anker->ascii_value = '\0';
   
   for(int i = 0; i <= 255; i++){
-    first->next = (ascii_symbol*) malloc(sizeof(ascii_symbol));
-    b = first;
-    first = first->next;
-    first->prev = b;
-    first->ascii_value = (unsigned char)i;
+    anker->next = (ascii_symbol*) malloc(sizeof(ascii_symbol));
+    backup_ascii_symbool = anker;
+    anker = anker->next;
+    anker->prev = backup_ascii_symbool;
+    anker->ascii_value = (unsigned char)i;
   }
-  first = t;
+  anker = tijdelijk_anker;
   for(int i = 0; i <= 255; i++){
-    first = first->next;
-    printf("%d %c \n", i, first->ascii_value);
+    anker = anker->next;
+    printf("%d %c \n", i, anker->ascii_value);
   }
 
 
   //start to free
-  ascii_symbol *f = first;
+  ascii_symbol *element_to_free = anker;
   for(int i = 0; i <= 255; i++){
-    t = first->next;
-    free(f);
-    f = t;
+    tijdelijk_anker = anker->next;
+    free(element_to_free);
+    element_to_free = tijdelijk_anker;
   }
   
   printf("end move to front\n");
