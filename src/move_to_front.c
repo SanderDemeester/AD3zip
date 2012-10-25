@@ -6,8 +6,8 @@
 void move_to_front(char* string, int len){
   printf("begin move_to_front\n");
   ascii_symbol *anker = (ascii_symbol*) malloc(sizeof(ascii_symbol)); //het anker element van onze linkedlist
-  ascii_symbol *tijdelijk_anker = anker;
-  ascii_symbol* backup_ascii_symbool;
+  ascii_symbol *tijdelijk_anker = anker; //een symbool die we gebruiken om het anker tijdelijk in te bewaren
+  ascii_symbol* backup_ascii_symbool; //een symbool die we gebruiken om tijdelijk 
   anker->prev = NULL;
   anker->ascii_value = '\0';
   
@@ -23,15 +23,32 @@ void move_to_front(char* string, int len){
     anker = anker->next;
     printf("%d %c \n", i, anker->ascii_value);
   }
+  anker = tijdelijk_anker;
 
 
-  //start to free
-  ascii_symbol *element_to_free = anker;
-  for(int i = 0; i <= 255; i++){
-    tijdelijk_anker = anker->next;
-    free(element_to_free);
-    element_to_free = tijdelijk_anker;
+  for(int i = 0; i < len; i++){
+    int c = 0;
+    tijdelijk_anker = anker; //terug bij start.
+    printf("%c \n", string[i]);
+    while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
+      tijdelijk_anker = tijdelijk_anker->next;
+      c++;
+    }
+    printf("match gevonden op: %d \n", c-1);
+    backup_ascii_symbool = tijdelijk_anker->prev;
+    backup_ascii_symbool->next = tijdelijk_anker->next;
+    
+    backup_ascii_symbool = backup_ascii_symbool->next;
+    backup_ascii_symbool->prev = tijdelijk_anker->prev;
+    
+    backup_ascii_symbool = anker->next;
+    backup_ascii_symbool->prev = tijdelijk_anker;
+    
+    tijdelijk_anker->next = anker->next;
+    tijdelijk_anker->prev = anker;
+    anker->next = tijdelijk_anker;
+    
   }
-  
+
   printf("end move to front\n");
 }
