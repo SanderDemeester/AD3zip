@@ -59,7 +59,6 @@ int main(int argc, char* argv[]){
   }else{
     compressie_function_pointer = 4; //Debug methode.
   }
-  
   while((fread(&c,1,1,stdin))) {
     input_lengte++;
     t = (char*) realloc(input_buffer,input_lengte*sizeof(char));
@@ -85,8 +84,8 @@ int main(int argc, char* argv[]){
     printf("Encodeer\n");
     printf("%d \n", input_lengte);
 #endif
-    fwrite(&blocksize, 1, sizeof(blocksize)/sizeof(int), stdout);
-    fwrite(&compressie_function_pointer, 1, sizeof(int), stdout);
+    fwrite(&blocksize, 1, 1, stdout);
+    fwrite(&compressie_function_pointer,1,1,stdout);
     //    printf("\n");
     while(input_lengte){
       if(input_lengte < blocksize){
@@ -122,6 +121,13 @@ int main(int argc, char* argv[]){
     input_buffer+=2;
     input_lengte-=2;
 
+    /******************************************************************************/
+    /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
+    /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
+    /******************************************************************************/
+    if(compressie_function_pointer < 4) 
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize, methode);
+
     //Zolang er nog input is 
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
@@ -141,7 +147,9 @@ int main(int argc, char* argv[]){
       decoderen_bwt(input_block, blocksize);
       //      printf("%s", input_block+2);
       input_block += 2;
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize, methode);
+      
+      //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
+      compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
     }
   }
   
