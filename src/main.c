@@ -112,16 +112,26 @@ int main(int argc, char* argv[]){
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
-    //blocksize
+    //blocksize, het eerste teken van de input buffer is de default blocksize.
     int blocksize = input_buffer[0];
+    
+    //Het tweede teken is de compressie function pointer.
     compressie_function_pointer = input_buffer[1];
-    printf("compressie_function_pointer: %d \n", compressie_function_pointer);
+    
+    //verhoof input buffer met 2 en verlaag de input lengte met 2
     input_buffer+=2;
     input_lengte-=2;
 
+    //Zolang er nog input is 
     while(input_lengte > 0){
+      //Als algiment niet klopt, pas dit aan.
       if(input_lengte < blocksize+2){
-	blocksize = input_lengte-2;
+	/********************************************************************************************************/
+        /* We gebruiken hier -2 omdat er rekening wordt gehouden met de 2 controle chars per deelstring         */
+	/* bij het decoderen van de bwt vector							                */
+        /********************************************************************************************************/
+	blocksize = input_lengte-2; 
+	
       }
       input_block = (char*) malloc(sizeof(char)*blocksize+2);
       memcpy((void*)input_block, (void*) input_buffer, blocksize+2);
@@ -131,11 +141,6 @@ int main(int argc, char* argv[]){
       decoderen_bwt(input_block, blocksize);
       //      printf("%s", input_block+2);
       input_block += 2;
-      /*********************************************************************/
-      /* for(int i = 0; i < blocksize; i++){				   */
-      /* 	fwrite(&input_block[i],1,sizeof(input_block[i]),stdout);   */
-      /*********************************************************************/
-      //}
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize, methode);
     }
   }
