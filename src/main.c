@@ -123,11 +123,11 @@ int main(int argc, char* argv[]){
     //blocksize
     int blocksize = input_buffer[0];
     input_buffer++;
+    input_lengte--;
 
     while(input_lengte > 0){
-      if(input_lengte-2 < blocksize+1){
-	blocksize = input_lengte-3;
-	input_lengte=-1;
+      if(input_lengte < blocksize+2){
+	blocksize = input_lengte-2;
       }
       input_block = (char*) malloc(sizeof(char)*blocksize+2);
       memcpy((void*)input_block, (void*) input_buffer, blocksize+2);
