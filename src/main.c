@@ -86,6 +86,7 @@ int main(int argc, char* argv[]){
     printf("%d \n", input_lengte);
 #endif
     fwrite(&blocksize, 1, sizeof(blocksize)/sizeof(int), stdout);
+    fwrite(&compressie_function_pointer, 1, sizeof(int), stdout);
     //    printf("\n");
     while(input_lengte){
       if(input_lengte < blocksize){
@@ -122,8 +123,10 @@ int main(int argc, char* argv[]){
     
     //blocksize
     int blocksize = input_buffer[0];
-    input_buffer++;
-    input_lengte--;
+    compressie_function_pointer = input_buffer[1];
+    printf("compressie_function_pointer: %d \n", compressie_function_pointer);
+    input_buffer+=2;
+    input_lengte-=2;
 
     while(input_lengte > 0){
       if(input_lengte < blocksize+2){
