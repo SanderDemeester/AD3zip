@@ -112,15 +112,6 @@ int main(int argc, char* argv[]){
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
-    //Working buffer, in deze buffer komen de substrings
-    //char *input_block = NULL;
-    
-    //We verwijderen de extra '\n' (niet meer nodig)
-    //    input_buffer[input_lengte-1] = '\0'; 
-    
-    //Vind de eerste substring
-    //p = strchr(input_buffer, newline);
-    
     //blocksize
     int blocksize = input_buffer[0];
     compressie_function_pointer = input_buffer[1];
