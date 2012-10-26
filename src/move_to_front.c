@@ -51,6 +51,9 @@ void move_to_front(char* string, int len, int actie){
       
     }
   }else{
-    printf("move to front decoderen\n");
+    printf("begin else\n");
+    printf("%d \n", len);
+    printf("%s \n", string);
+    printf("end else\n");
   }
 }

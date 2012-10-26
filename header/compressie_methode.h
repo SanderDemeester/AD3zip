@@ -2,7 +2,7 @@
 
 typedef struct{
   int value;
-  void (*compressie_algoritme)(int,int,int);
+  void (*compressie_algoritme)(char*,int,int);
 }compressie_argument;
 
 void not_implemented(char* input_buffer, int len, int actie);

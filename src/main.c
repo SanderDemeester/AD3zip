@@ -51,7 +51,7 @@ int main(int argc, char* argv[]){
   
 
 
-  if(methode){
+  if(methode == ENCODEER){
     for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
       if(compressie_methode[i]->value == atoi(argv[2])) compressie_function_pointer = i;
     }
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
       exit(-1);
     }
   }
-  if(methode){ //encodeer
+  if(methode == ENCODEER){ //encodeer
     //    char *input_block = NULL; 
   /***************************************************************/
   /* input_buffer is de buffer die input tekens van stdin bevat	 */
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]){
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, methode);
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER);
       }
       /************************************************************************/
       /* for(int i = 0; i < blocksize+2; i++){				      */
@@ -121,13 +121,6 @@ int main(int argc, char* argv[]){
     input_buffer+=2;
     input_lengte-=2;
 
-    /******************************************************************************/
-    /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
-    /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
-    /******************************************************************************/
-    if(compressie_function_pointer < 4) 
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize, methode);
-
     //Zolang er nog input is 
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
@@ -143,9 +136,16 @@ int main(int argc, char* argv[]){
       memcpy((void*)input_block, (void*) input_buffer, blocksize+2);
       input_lengte -= blocksize+2; //substract from input_lengte;
       input_buffer += blocksize+2; //add to input_buffer
-      //printf("%s \n", input_block);
-      decoderen_bwt(input_block, blocksize);
-      //      printf("%s", input_block+2);
+      
+    /******************************************************************************/
+    /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
+    /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
+    /******************************************************************************/
+      
+      if(compressie_function_pointer < 4){ 
+	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, DECODEER);
+      } 
+      // decoderen_bwt(input_block, blocksize);
       input_block += 2;
       
       //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
