@@ -84,7 +84,7 @@ int main(int argc, char* argv[]){
     printf("Encodeer\n");
     printf("%d \n", input_lengte);
 #endif
-    fwrite(&blocksize, 1, 1, stdout);
+    fwrite(&blocksize, 1, sizeof(blocksize)/sizeof(int), stdout);
     fwrite(&compressie_function_pointer,1,1,stdout);
     //    printf("\n");
     while(input_lengte){
@@ -97,6 +97,7 @@ int main(int argc, char* argv[]){
       input_block = (char*) malloc(sizeof(char)*blocksize);
       memcpy((void*)input_block, (void*) input_buffer, blocksize);
       encoderen_bwt(input_block, blocksize);
+
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       
@@ -113,7 +114,6 @@ int main(int argc, char* argv[]){
 #endif
     //blocksize, het eerste teken van de input buffer is de default blocksize.
     int blocksize = input_buffer[0];
-    
     //Het tweede teken is de compressie function pointer.
     compressie_function_pointer = input_buffer[1];
     

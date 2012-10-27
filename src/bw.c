@@ -92,42 +92,29 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len){
     char piv = rij[rij_index[begin]];
     int links = begin+1;
     int rechts = einde;
-    #ifdef DEBUG_Q
-    printf("begin qsort \n");
-    printlist(rij,rij_index, 3);
-    #endif
-
     while(links < rechts){
       if(rij[rij_index[links]] < piv){
 	links++;
       }else if(rij[rij_index[links]] == piv && links != rechts){
-	#ifdef DEBUG_Q
-	printf("dubbel gevonden, links: %c en piv: %c. De indexen zijn: links, %d en piv, %d\n", rij[rij_index[links]], piv, links, begin);
-	#endif
 	int offset = 1;
-	while(*(&rij[rij_index[links]]+offset) == *(&rij[rij_index[begin]]+offset)){
-	  if(offset+1 == len) break;
+	//	*(&rij[(rij_index[i]+j) % len]));
+      while(*(&rij[(rij_index[links]+offset)%len]) == *(&rij[(rij_index[begin]+offset)%len])){
+	  if(offset+1 == len){	  
+	    break;
+	  } 
 	  offset = (offset+1) % len;
 	}
-	
-	if(*(&rij[rij_index[links]]+offset)  > *(&rij[rij_index[begin]])+offset){
-	  swap(&rij_index[links],&rij_index[--rechts]);
+      
+	if(*(&rij[(rij_index[links]+offset) % len]) > *(&rij[(rij_index[begin]+offset) % len])){
+	  swap(&(rij_index[links]),&(rij_index[--rechts]));
 	}else{
 	  links++;
 	}
       }else{
 	swap(&rij_index[links],&rij_index[--rechts]);
-#ifdef DEBUG_Q
-	printf("else stuk, swap\n");
-	printlist(rij, rij_index, 3);
-#endif
       }
     }
     swap(&rij_index[--links] ,&rij_index[begin]);
-#ifdef DEBUG_Q
-    printf("einde quicksort\n");
-    printlist(rij,rij_index, 3);
-#endif
     quicksort(rij,rij_index  ,begin,links,len);
     quicksort(rij,rij_index  ,rechts,einde,len);
   }
