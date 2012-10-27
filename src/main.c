@@ -144,11 +144,11 @@ int main(int argc, char* argv[]){
       if(compressie_function_pointer < 4){ 
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, DECODEER);
       } 
-      // decoderen_bwt(input_block, blocksize);
+      decoderen_bwt(input_block, blocksize);
       input_block += 2;
       
       //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
-      //      compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
+      compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
     }
   }
   

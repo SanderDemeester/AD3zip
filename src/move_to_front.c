@@ -51,13 +51,17 @@ void move_to_front(char* string, int len, int actie){
     }
   }else{
     for(int i = 0; i < len; i++){
-      char c = 0;
       tijdelijk_anker = anker; //terug bij begin
-      printf("%c \n", string[i]);
-      while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
+      int j = 0;
+      while(j != (int)string[i]){ 
 	tijdelijk_anker = tijdelijk_anker->next;
-	c++;
+	j++;
       }
+      tijdelijk_anker = tijdelijk_anker->next;
+      //      printf("%d - %c \n",j, tijdelijk_anker->ascii_value);
+      string[i] = tijdelijk_anker->ascii_value;
+      
+      
       
       if(tijdelijk_anker->prev != NULL)
 	backup_ascii_symbool = tijdelijk_anker->prev;
