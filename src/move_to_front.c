@@ -6,7 +6,7 @@
 void move_to_front(char* string, int len, int actie){
   ascii_symbol *anker = (ascii_symbol*) malloc(sizeof(ascii_symbol)); //het anker element van onze linkedlist
   ascii_symbol *tijdelijk_anker = anker; //een symbool die we gebruiken om het anker tijdelijk in te bewaren
-  ascii_symbol* backup_ascii_symbool; //een symbool die we gebruiken om tijdelijk 
+  ascii_symbol* backup_ascii_symbool; //een symbool die we gebruiken om tijdelijk
   anker->prev = NULL;
   anker->ascii_value = '\0';
   
@@ -29,13 +29,13 @@ void move_to_front(char* string, int len, int actie){
   
   if(actie){
     for(int i = 0; i < len; i++){
-      int c = 0;
+      char c = 0;
       tijdelijk_anker = anker; //terug bij start.
       while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
 	tijdelijk_anker = tijdelijk_anker->next;
 	c++;
       }
-      printf("%d\n", c-1);
+      string[i] = c-1; //overschrijf origineel
       backup_ascii_symbool = tijdelijk_anker->prev;
       backup_ascii_symbool->next = tijdelijk_anker->next;
       
@@ -48,12 +48,12 @@ void move_to_front(char* string, int len, int actie){
       tijdelijk_anker->next = anker->next;
       tijdelijk_anker->prev = anker;
       anker->next = tijdelijk_anker;
-      
     }
   }else{
-    printf("begin else\n");
-    printf("%d \n", len);
-    printf("%s \n", string);
-    printf("end else\n");
+    printf("begin else decoderen van move to front\n");
+    for(int i = 0; i < len; i++){
+      fwrite(&string[i],1,sizeof(string[1]),stdout);
+    }
+    printf("\nend else decoderen van move to front\n");
   }
 }

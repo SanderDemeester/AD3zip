@@ -8,6 +8,7 @@ void mtf_huffman(char *input_buffer, int len, int actie){
   printf("Move to Front in combinatie met standaard huffman, optie 1\n");
   #endif
   move_to_front(input_buffer, len, actie);
+  printf("%s", input_buffer);
 }
 void semi_mtf(char *input_buffer, int len, int actie){
   printf("Semi move to front in combinatie met standaard huffman, optie 3\n");
