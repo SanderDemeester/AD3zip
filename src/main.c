@@ -141,7 +141,6 @@ int main(int argc, char* argv[]){
     /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
     /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
     /******************************************************************************/
-      printf("%c%c \n", input_block[0],input_block[1]);
       if(compressie_function_pointer < 4){ 
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, DECODEER);
       } 

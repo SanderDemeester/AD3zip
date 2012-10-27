@@ -50,10 +50,35 @@ void move_to_front(char* string, int len, int actie){
       anker->next = tijdelijk_anker;
     }
   }else{
-    printf("begin else decoderen van move to front\n");
     for(int i = 0; i < len; i++){
-      fwrite(&string[i],1,sizeof(string[1]),stdout);
+      char c = 0;
+      tijdelijk_anker = anker; //terug bij begin
+      printf("%c \n", string[i]);
+      while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
+	tijdelijk_anker = tijdelijk_anker->next;
+	c++;
+      }
+      
+      if(tijdelijk_anker->prev != NULL)
+	backup_ascii_symbool = tijdelijk_anker->prev;
+      else
+	backup_ascii_symbool = tijdelijk_anker;
+      
+      backup_ascii_symbool->next = tijdelijk_anker->next;
+      
+      backup_ascii_symbool = backup_ascii_symbool->next;
+      if(backup_ascii_symbool->prev != NULL)
+	backup_ascii_symbool->prev = tijdelijk_anker->prev;
+      
+      backup_ascii_symbool = anker->next;
+      if(backup_ascii_symbool->prev != NULL)
+	backup_ascii_symbool->prev = tijdelijk_anker;
+      
+      tijdelijk_anker->next = anker->next;
+      if(tijdelijk_anker->prev != NULL)
+	tijdelijk_anker->prev = anker;
+      anker->next = tijdelijk_anker;
+
     }
-    printf("\nend else decoderen van move to front\n");
   }
 }
