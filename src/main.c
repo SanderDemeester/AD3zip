@@ -73,13 +73,12 @@ int main(int argc, char* argv[]){
     }
   }
   if(methode == ENCODEER){ //encodeer
-    //    char *input_block = NULL; 
+    
   /***************************************************************/
   /* input_buffer is de buffer die input tekens van stdin bevat	 */
   /* input_lengte is het aantal tekens dat input_buffer bevat	 */
   /* input_block  is de buffer die de tekens van de buffer bevat */
   /***************************************************************/
-    input_lengte--; //remove the newline
 
 #ifdef DEBUG
     printf("Encodeer\n");
