@@ -96,6 +96,7 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
       if(rij[rij_index[links]] < piv){
 	links++;
       }else if(rij[rij_index[links]] == piv && links != rechts){
+	if(flag){
 	int offset = 1;
 	//	*(&rij[(rij_index[i]+j) % len]));
       while(*(&rij[(rij_index[links]+offset)%len]) == *(&rij[(rij_index[begin]+offset)%len])){
@@ -109,6 +110,9 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
 	  swap(&(rij_index[links]),&(rij_index[--rechts]));
 	}else{
 	  links++;	  
+	}
+	}else{ //flag is off
+	  
 	}
       }else{
 	swap(&rij_index[links],&rij_index[--rechts]);
