@@ -72,7 +72,6 @@ int main(int argc, char* argv[]){
       exit(-1);
     }
   }
-  aantal_ingelezen_bytes = input_lengte;
   if(methode == ENCODEER){ //encodeer
     //    char *input_block = NULL; 
   /***************************************************************/
@@ -103,9 +102,13 @@ int main(int argc, char* argv[]){
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
       
+      aantal_ingelezen_bytes += blocksize;
+
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER);
       free(input_block);
     }
+    input_buffer -= aantal_ingelezen_bytes;
+    free(input_buffer);
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
@@ -151,9 +154,10 @@ int main(int argc, char* argv[]){
       free(input_block);
     }
   }
-  
-  
-  free(t);
+  for(int i = 0 ;i < NUMBER_OF_COMPRESSIE_METHODE; i++){
+    free(compressie_methode[i]);
+  }
+  free(compressie_methode);
   return 0;
   
 }

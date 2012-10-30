@@ -46,6 +46,8 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	flag = 1; //Geef de andere nog een kans.
       }
   }
+  free(bwt_transformatie);
+  free(rij_index);
 }
 
 void decoderen_bwt(char *bwt_vector, int len){
