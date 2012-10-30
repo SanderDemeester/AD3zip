@@ -112,7 +112,9 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
 	  links++;	  
 	}
 	}else{ //flag is off
-	  
+	  #ifdef DEBUG
+	  printf("Decoderen\n");
+	  #endif
 	}
       }else{
 	swap(&rij_index[links],&rij_index[--rechts]);
