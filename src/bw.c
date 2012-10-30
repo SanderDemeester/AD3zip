@@ -28,15 +28,23 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   #endif
   bwt_block[1] = '_';
   for(i = 2; i < blocksize+2; i++){
-    //    printf("%c\n", bwt_transformatie[rij_index[(i+(blocksize-1)) % blocksize]]);
+    //printf("%c\n", *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
     bwt_block[i] = *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]);
-    //    printf("(%d,%d) - %c\n", i-2,blocksize-1,*(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
-      if(bwt_block[i] == bwt_transformatie[0] && flag){
-	sprintf(bwt_block, "%d", i-2);
-	bwt_block[1] = '_';
-	flag = 0;
+    //printf("(%d,%d) - %c\n", i-2,blocksize-1,*(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
+      if(bwt_block[i] == bwt_transformatie[0]){
+	for(int j = 0; j < blocksize; j++){
+	  // printf("%c | %c\n", *(&bwt_transformatie[(rij_index[i-2]+j-1) % blocksize]), bwt_transformatie[j]);
+	  if(*(&bwt_transformatie[(rij_index[i-2]+j-1) % blocksize]) != bwt_transformatie[j]){
+	    flag = 0;
+	     break;
+	  }
+	}
+	if(flag){
+	   sprintf(bwt_block, "%d", i-2);
+	   bwt_block[1] = '_';
+	}
+	flag = 1; //Geef de andere nog een kans.
       }
-    
   }
 }
 
@@ -67,9 +75,10 @@ void decoderen_bwt(char *bwt_vector, int len){
   printf("De start pos is: %d \n", start_pos);
   #endif
   for(int i = 0; i < len; i++){
-    #ifdef DECODE_DEBUG
+    #ifdef DEBUG
     printf("%c <-> %c\n", bwt_vector[sorted_rij_index[i]], bwt_vector[bwt_rij_index[i]]);
-    #endif DECODE_DEBUG
+    #endif
+
 
     //printf("%c", bwt_vector[start_pos]);
     memcpy(&temp[i],&bwt_vector[start_pos],sizeof(char));
@@ -110,11 +119,13 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
 	  swap(&(rij_index[links]),&(rij_index[--rechts]));
 	}else{
 	  links++;	  
-	}
+      }
 	}else{ //flag is off
-	  #ifdef DEBUG
-	  printf("Decoderen\n");
-	  #endif
+	  if(rij_index[links] < rij_index[begin]){
+	    links++;
+	  }else{
+	    swap(&(rij_index[links]),&(rij_index[--rechts]));
+	  }
 	}
       }else{
 	swap(&rij_index[links],&rij_index[--rechts]);
