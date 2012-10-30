@@ -13,6 +13,7 @@ int main(int argc, char* argv[]){
   int methode = 0; //default methode is decodeer
   int compressie_function_pointer = 0; //default is debug.
   int blocksize = 0;
+  int aantal_ingelezen_bytes = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   char *t = NULL;
   char c = '\0';
@@ -71,6 +72,7 @@ int main(int argc, char* argv[]){
       exit(-1);
     }
   }
+  aantal_ingelezen_bytes = input_lengte;
   if(methode == ENCODEER){ //encodeer
     //    char *input_block = NULL; 
   /***************************************************************/
@@ -102,12 +104,8 @@ int main(int argc, char* argv[]){
       input_buffer += blocksize; //add to input_buffer
       
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER);
-      }
-      /************************************************************************/
-      /* for(int i = 0; i < blocksize+2; i++){				      */
-      /* 	fwrite(&input_block[i], 1, sizeof(input_block[i]), stdout);   */
-      /* }								      */
-      /************************************************************************/
+      free(input_block);
+    }
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
@@ -149,6 +147,8 @@ int main(int argc, char* argv[]){
       
       //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
       compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
+      input_block-=2;
+      free(input_block);
     }
   }
   
