@@ -4,6 +4,7 @@
 #ifndef _GENERIC
 #include "header/generic.h"
 #include "header/compressie_methode.h"
+#include "header/bw.h"
 #endif
 #define DECODEER 0
 #define ENCODEER 1
@@ -42,8 +43,8 @@ int main(int argc, char* argv[]){
   
   compressie_methode[4]->value = 0; //debug
   compressie_methode[4]->compressie_algoritme = debug;
-
-  if((argc < 4 && ((argc == 2 && strcmp(argv[1],"decodeer"))) || argc==1)){
+  
+  if(argc == 1 || (argc < 4 && strcmp(argv[1],"decodeer"))){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
     exit(-1);
   }

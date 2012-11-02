@@ -11,10 +11,10 @@ void move_to_front(char* string, int len, int actie){
   anker->ascii_value = '\0';
   
   for(int i = 0; i <= 255; i++){
-    anker->next = (ascii_symbol*) malloc(sizeof(ascii_symbol));
+    anker->next = (struct ascii_symbol*) malloc(sizeof(ascii_symbol));
     backup_ascii_symbool = anker;
-    anker = anker->next;
-    anker->prev = backup_ascii_symbool;
+    anker = (ascii_symbol*)anker->next;
+    anker->prev = (struct ascii_symbol*)backup_ascii_symbool;
     anker->ascii_value = (unsigned char)i;
   }
   anker = tijdelijk_anker;
@@ -25,63 +25,63 @@ void move_to_front(char* string, int len, int actie){
     printf("%d %c \n", i, anker->ascii_value);
   }
   anker = tijdelijk_anker;
-#endif MTF_DEBUG
+#endif
   
   if(actie){
     for(int i = 0; i < len; i++){
       char c = 0;
       tijdelijk_anker = anker; //terug bij start.
       while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
-	tijdelijk_anker = tijdelijk_anker->next;
+	tijdelijk_anker = (ascii_symbol*)tijdelijk_anker->next;
 	c++;
       }
       string[i] = c-1; //overschrijf origineel
-      backup_ascii_symbool = tijdelijk_anker->prev;
+      backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;
       backup_ascii_symbool->next = tijdelijk_anker->next;
       
-      backup_ascii_symbool = backup_ascii_symbool->next;
-      backup_ascii_symbool->prev = tijdelijk_anker->prev;
+      backup_ascii_symbool = (ascii_symbol*) backup_ascii_symbool->next;
+      backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker->prev;
       
-      backup_ascii_symbool = anker->next;
-      backup_ascii_symbool->prev = tijdelijk_anker;
+      backup_ascii_symbool = (ascii_symbol*) anker->next;
+      backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker;
       
       tijdelijk_anker->next = anker->next;
-      tijdelijk_anker->prev = anker;
-      anker->next = tijdelijk_anker;
+      tijdelijk_anker->prev = (struct ascii_symbol*)anker;
+      anker->next = (struct ascii_symbol*)tijdelijk_anker;
     }
   }else{
     for(int i = 0; i < len; i++){
       tijdelijk_anker = anker; //terug bij begin
       int j = 0;
       while(j != (int)string[i]){ 
-	tijdelijk_anker = tijdelijk_anker->next;
+	tijdelijk_anker = (ascii_symbol*) tijdelijk_anker->next;
 	j++;
       }
-      tijdelijk_anker = tijdelijk_anker->next;
+      tijdelijk_anker = (ascii_symbol*)tijdelijk_anker->next;
       //      printf("%d - %c \n",j, tijdelijk_anker->ascii_value);
       string[i] = tijdelijk_anker->ascii_value;
       
       
       
       if(tijdelijk_anker->prev != NULL)
-	backup_ascii_symbool = tijdelijk_anker->prev;
+	backup_ascii_symbool = (ascii_symbol*)tijdelijk_anker->prev;
       else
 	backup_ascii_symbool = tijdelijk_anker;
       
       backup_ascii_symbool->next = tijdelijk_anker->next;
       
-      backup_ascii_symbool = backup_ascii_symbool->next;
+      backup_ascii_symbool = (ascii_symbol*)backup_ascii_symbool->next;
       if(backup_ascii_symbool->prev != NULL)
 	backup_ascii_symbool->prev = tijdelijk_anker->prev;
       
-      backup_ascii_symbool = anker->next;
+      backup_ascii_symbool = (ascii_symbol*)anker->next;
       if(backup_ascii_symbool->prev != NULL)
-	backup_ascii_symbool->prev = tijdelijk_anker;
+	backup_ascii_symbool->prev = (struct ascii_symbol*)tijdelijk_anker;
       
       tijdelijk_anker->next = anker->next;
       if(tijdelijk_anker->prev != NULL)
-	tijdelijk_anker->prev = anker;
-      anker->next = tijdelijk_anker;
+	tijdelijk_anker->prev = (struct ascii_symbol*)anker;
+      anker->next = (struct ascii_symbol*)tijdelijk_anker;
 
     }
   }
