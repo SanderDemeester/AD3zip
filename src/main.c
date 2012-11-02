@@ -15,7 +15,8 @@ int main(int argc, char* argv[]){
   int blocksize = 0;
   int aantal_ingelezen_bytes = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
-  unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char));
+  unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char)); //4 byte for header
+  unsigned char blocksize_header_format = '\0'; //we will use this to copy our blocksize
   char *t = NULL;
   char c = '\0';
   char *input_block = NULL;
