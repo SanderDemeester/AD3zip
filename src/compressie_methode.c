@@ -1,5 +1,7 @@
 #include "header/compressie_methode.h"
+#include "header/move_to_front.h"
 #include <stdio.h>
+
 void not_implemented(char *input_buffer, int len, int actie){
   printf("Not implemented, options 2 and 4.\n");
 }

@@ -11,7 +11,10 @@
 /* Het vijfde argument is het aantal elementen in de rij. Bij het voorbeeld hierboven zijn dit dus 4 zijn.  			  */
 /**********************************************************************************************************************************/
 static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, int flag);
+
+#ifdef DEBUG
 static void printlist(char *rij, int *rij_index, int len);
+#endif
 
 void encoderen_bwt(char *bwt_block, int blocksize){
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
