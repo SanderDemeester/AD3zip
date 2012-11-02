@@ -15,6 +15,7 @@ int main(int argc, char* argv[]){
   int blocksize = 0;
   int aantal_ingelezen_bytes = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
+  unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char));
   char *t = NULL;
   char c = '\0';
   char *input_block = NULL;
