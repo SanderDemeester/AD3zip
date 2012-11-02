@@ -17,22 +17,31 @@ static void printlist(char *rij, int *rij_index, int len);
 #endif
 
 void encoderen_bwt(char *bwt_block, int blocksize){
+
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
   int i = 0;
   int flag = 1;
+
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
   bwt_block = (char*) realloc(bwt_block, blocksize+2);
+
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
+
   quicksort(bwt_transformatie, rij_index, 0,blocksize,blocksize,1); //lelijke hack
+
   #ifdef DEBUG
   printlist(bwt_transformatie,rij_index, blocksize);
   printf("-----------------\n");
   #endif
+
   bwt_block[1] = '_';
+
   for(i = 2; i < blocksize+2; i++){
+
     //printf("%c\n", *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
     bwt_block[i] = *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]);
+
     //printf("(%d,%d) - %c\n", i-2,blocksize-1,*(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
       if(bwt_block[i] == bwt_transformatie[0]){
 	for(int j = 0; j < blocksize; j++){
@@ -49,11 +58,13 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	flag = 1; //Geef de andere nog een kans.
       }
   }
+
   free(bwt_transformatie);
   free(rij_index);
 }
 
 void decoderen_bwt(char *bwt_vector, int len){
+
   //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
   int start_pos = atoi(&bwt_vector[0]);
   
@@ -74,20 +85,23 @@ void decoderen_bwt(char *bwt_vector, int len){
 
   //sorteren van indexen van de bwt transformatie.
   quicksort(bwt_vector, sorted_rij_index, 0,len,len,0);
+
   #ifdef DECODE_DEBUG
   printf("De start pos is: %d \n", start_pos);
   #endif
+
   for(int i = 0; i < len; i++){
+
     #ifdef DEBUG
     printf("%c <-> %c\n", bwt_vector[sorted_rij_index[i]], bwt_vector[bwt_rij_index[i]]);
     #endif
 
-
-    //printf("%c", bwt_vector[start_pos]);
     memcpy(&temp[i],&bwt_vector[start_pos],sizeof(char));
     start_pos = sorted_rij_index[bwt_rij_index[start_pos]];
   }
+
   memcpy(bwt_vector, temp,len);
+  
   free(temp);
   free(sorted_rij_index);
   free(bwt_rij_index);
@@ -99,7 +113,7 @@ static void swap(int *a, int *b){
   *b = t;
 }
 
-static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, int flag){
+static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, int flag){  
   if(einde > begin + 1){
     char piv = rij[rij_index[begin]];
     int links = begin+1;
@@ -109,20 +123,20 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
 	links++;
       }else if(rij[rij_index[links]] == piv && links != rechts){
 	if(flag){
-	int offset = 1;
-	//	*(&rij[(rij_index[i]+j) % len]));
-      while(*(&rij[(rij_index[links]+offset)%len]) == *(&rij[(rij_index[begin]+offset)%len])){
-	  if(offset+1 == len){	  
-	    break;
-	  } 
-	  offset = (offset+1) % len;
-	}
-      
-      if(*(&rij[(rij_index[links]+offset) % len]) > *(&rij[(rij_index[begin]+offset) % len])){
-	  swap(&(rij_index[links]),&(rij_index[--rechts]));
-	}else{
-	  links++;	  
-      }
+	  int offset = 1;
+	  //	*(&rij[(rij_index[i]+j) % len]));
+	  while(*(&rij[(rij_index[links]+offset)%len]) == *(&rij[(rij_index[begin]+offset)%len])){
+	    if(offset+1 == len){	  
+	      break;
+	    } 
+	    offset = (offset+1) % len;
+	  }
+	  
+	  if(*(&rij[(rij_index[links]+offset) % len]) > *(&rij[(rij_index[begin]+offset) % len])){
+	    swap(&(rij_index[links]),&(rij_index[--rechts]));
+	  }else{
+	    links++;	  
+	  }
 	}else{ //flag is off
 	  if(rij_index[links] < rij_index[begin]){
 	    links++;

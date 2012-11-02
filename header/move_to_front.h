@@ -10,6 +10,11 @@ typedef struct{
   struct ascii_symbol *next;
   struct ascii_symbol *prev;
 } ascii_symbol;
-  
-
+ 
+/******************************************************/
+/* Deze functie voert move_to_front.		      */
+/* De string is een pointer naar de reeks van tekens. */
+/* De len is het aantal tekens			      */
+/* De actie is encoderen of decoderen		      */
+/******************************************************/
 void move_to_front(char *string, int len, int actie);
