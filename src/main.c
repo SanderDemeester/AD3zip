@@ -120,13 +120,17 @@ int main(int argc, char* argv[]){
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
-    //blocksize, het eerste teken van de input buffer is de default blocksize.
-    int blocksize = input_buffer[0];
-    //Het tweede teken is de compressie function pointer.
-    compressie_function_pointer = input_buffer[1];
     
-    //verhoof input buffer met 2 en verlaag de input lengte met 2
-    input_buffer+=2;
+    //Defineer blocksize
+    int blocksize = 0; 
+
+    //Methode is de eerste byte van de header
+    methode = input_buffer[0];
+    
+    //De volgende 3 bytes zijn de blocksize
+    memcpy(&blocksize,&input_buffer[1],3);
+    
+    input_buffer+=4;
     input_lengte-=2;
 
     
