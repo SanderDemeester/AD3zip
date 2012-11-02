@@ -104,7 +104,7 @@ int main(int argc, char* argv[]){
       aantal_ingelezen_bytes += blocksize;
 
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER);
-      free(input_block);
+      //free(input_block);
     }
     input_buffer -= aantal_ingelezen_bytes;
     free(input_buffer);
@@ -121,6 +121,7 @@ int main(int argc, char* argv[]){
     input_buffer+=2;
     input_lengte-=2;
 
+    
     //Zolang er nog input is 
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
