@@ -7,12 +7,13 @@
 #endif
 #define DECODEER 0
 #define ENCODEER 1
-#define NUMBER_OF_COMPRESSIE_METHODE 5 //+1 for debug
+#define NUMBER_OF_COMPRESSIE_METHODE 5 //+1 for debug mode.
 
 int main(int argc, char* argv[]){
+
   int methode = 0; //default methode is decodeer
   int compressie_function_pointer = 0; //default is debug.
-  int blocksize = 0;
+  int blocksize = 0; 
   int aantal_ingelezen_bytes = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char)); //4 byte for header
@@ -42,8 +43,6 @@ int main(int argc, char* argv[]){
   compressie_methode[4]->value = 0; //debug
   compressie_methode[4]->compressie_algoritme = debug;
 
-  
-  
   if((argc < 4 && ((argc == 2 && strcmp(argv[1],"decodeer"))) || argc==1)){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
     exit(-1);
@@ -52,8 +51,6 @@ int main(int argc, char* argv[]){
   if(!strcmp(argv[1],"encodeer")) methode = ENCODEER;
   if(!strcmp(argv[1],"decodeer")) methode = DECODEER;
   
-
-
   if(methode == ENCODEER){
     for(int i = 0; i < NUMBER_OF_COMPRESSIE_METHODE; i++){
       if(compressie_methode[i]->value == atoi(argv[2])) compressie_function_pointer = i;
@@ -88,7 +85,7 @@ int main(int argc, char* argv[]){
 #endif
 
     blocksize = (blocksize & 0x00FFFFFF);
-    methode_header_format = (unsigned char) ((methode & 0x000000FF));
+    methode_header_format = (unsigned char) ((compressie_function_pointer & 0x000000FF));
 
     memcpy(&header[0],&methode_header_format,1);
     memcpy(&header[1],&blocksize,3);
@@ -102,28 +99,26 @@ int main(int argc, char* argv[]){
 	printf("%d \n", blocksize);
 	#endif
       }
+      
       input_block = (char*) malloc(sizeof(char)*blocksize);
       memcpy((void*)input_block, (void*) input_buffer, blocksize);
+
       encoderen_bwt(input_block, blocksize);
 
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
-      
-      aantal_ingelezen_bytes += blocksize;
 
+      aantal_ingelezen_bytes += blocksize;
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER);
       //free(input_block);
     }
+
     input_buffer -= aantal_ingelezen_bytes;
     free(input_buffer);
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
 #endif
-    
-    //Defineer blocksize
-    int blocksize = 0; 
-
     //Methode is de eerste byte van de header
     methode = input_buffer[0];
     
@@ -131,32 +126,33 @@ int main(int argc, char* argv[]){
     memcpy(&blocksize,&input_buffer[1],3);
     
     input_buffer+=4;
-    input_lengte-=2;
+    input_lengte-=4;
 
-    
     //Zolang er nog input is 
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
+
       if(input_lengte < blocksize+2){
 	/********************************************************************************************************/
         /* We gebruiken hier -2 omdat er rekening wordt gehouden met de 2 controle chars per deelstring         */
 	/* bij het decoderen van de bwt vector							                */
         /********************************************************************************************************/
 	blocksize = input_lengte-2; 
-	
       }
+      
       input_block = (char*) malloc(sizeof(char)*blocksize+2);
       memcpy((void*)input_block, (void*) input_buffer, blocksize+2);
       input_lengte -= blocksize+2; //substract from input_lengte;
       input_buffer += blocksize+2; //add to input_buffer
       
-    /******************************************************************************/
-    /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
-    /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
-    /******************************************************************************/
+      /******************************************************************************/
+      /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
+      /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
+      /******************************************************************************/
       if(compressie_function_pointer < 4){ 
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, DECODEER);
       } 
+
       decoderen_bwt(input_block, blocksize);
       input_block += 2;
       
@@ -166,9 +162,11 @@ int main(int argc, char* argv[]){
       free(input_block);
     }
   }
+
   for(int i = 0 ;i < NUMBER_OF_COMPRESSIE_METHODE; i++){
     free(compressie_methode[i]);
   }
+
   free(compressie_methode);
   return 0;
   
