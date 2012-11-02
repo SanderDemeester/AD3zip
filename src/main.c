@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
   int aantal_ingelezen_bytes = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char)); //4 byte for header
-  unsigned char blocksize_header_format = '\0'; //we will use this to copy our blocksize
+  unsigned char methode_header_format = '\0'; //we will use this to copy our methode identifier
   char *t = NULL;
   char c = '\0';
   char *input_block = NULL;
@@ -86,8 +86,14 @@ int main(int argc, char* argv[]){
     printf("Encodeer\n");
     printf("%d \n", input_lengte);
 #endif
-    fwrite(&blocksize, 1, sizeof(blocksize)/sizeof(int), stdout);
-    fwrite(&compressie_function_pointer,1,1,stdout);
+
+    blocksize = (blocksize & 0x00FFFFFF);
+    methode_header_format = (unsigned char) ((methode & 0x000000FF));
+
+    memcpy(&header[0],&methode_header_format,1);
+    memcpy(&header[1],&blocksize,3);
+    fwrite(&header[0],1,4,stdout);
+
     //    printf("\n");
     while(input_lengte){
       if(input_lengte < blocksize){
