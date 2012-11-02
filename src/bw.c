@@ -54,8 +54,6 @@ void decoderen_bwt(char *bwt_vector, int len){
   //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
   int start_pos = atoi(&bwt_vector[0]);
   
-  //We houden de huidige positie bij tijdens het decoderen.
-  int print_index = start_pos;
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
   int *bwt_rij_index    = (int*) malloc(sizeof(int)*len-1);
@@ -139,6 +137,7 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
   }
 }
 
+#ifdef DEBUG
 static void printlist(char *rij, int *rij_index, int len){
   int i = 0;
   int j = 0;
@@ -151,7 +150,4 @@ static void printlist(char *rij, int *rij_index, int len){
     printf("\n");
   }
 }
-
-
-
- 
+#endif
