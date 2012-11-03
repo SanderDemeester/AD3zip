@@ -20,8 +20,6 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
-  char *first_pos = (char*) malloc(sizeof(char));
-  char *result = NULL;
   int min_number_of_bytes = 1;
 	   
   int i = 0;
@@ -58,8 +56,10 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	if(flag){
 	   //	   printf("%s\n", first_pos);
 	   while(min_number_of_bytes < 8 && i-2 >= (1 << (min_number_of_bytes*8))) min_number_of_bytes++;
-	   first_pos = (char*) realloc(first_pos,min_number_of_bytes);
-	   first_pos = i-2;
+	   /**********************************************************************/
+           /* first_pos = (char*) realloc(first_pos,min_number_of_bytes);	 */
+	   /* first_pos = i-2;							 */
+           /**********************************************************************/
 	   bwt_block[0] = i-2;
 	   bwt_block[1] = '_';
 	}
