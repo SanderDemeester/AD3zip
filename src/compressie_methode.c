@@ -1,5 +1,6 @@
 #include "header/compressie_methode.h"
 #include "header/move_to_front.h"
+#include "header/huffman.c"
 #include <stdio.h>
 
 /************************************************************************/

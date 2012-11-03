@@ -123,7 +123,7 @@ int main(int argc, char* argv[]){
     printf("Decodeer\n");
 #endif
     //Methode is de eerste byte van de header
-    methode = header[0];
+    compressie_function_pointer = header[0];
     
     //De volgende 3 bytes zijn de blocksize
     memcpy(&blocksize,&header[1],3);
