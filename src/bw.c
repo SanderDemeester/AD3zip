@@ -20,6 +20,10 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 
   char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
+  char *first_pos = (char*) malloc(sizeof(char));
+  char *result = NULL;
+  int min_number_of_bytes = 1;
+	   
   int i = 0;
   int flag = 1;
 
@@ -52,13 +56,16 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	  }
 	}
 	if(flag){
-	   sprintf(bwt_block, "%d", i-2);
+	   //	   printf("%s\n", first_pos);
+	   while(min_number_of_bytes < 8 && i-2 >= (1 << (min_number_of_bytes*8))) min_number_of_bytes++;
+	   first_pos = (char*) realloc(first_pos,min_number_of_bytes);
+	   first_pos = i-2;
+	   bwt_block[0] = i-2;
 	   bwt_block[1] = '_';
 	}
 	flag = 1; //Geef de andere nog een kans.
       }
   }
-
   free(bwt_transformatie);
   free(rij_index);
 }
@@ -67,6 +74,7 @@ void decoderen_bwt(char *bwt_vector, int len){
 
   //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
   int start_pos = atoi(&bwt_vector[0]);
+  start_pos = bwt_vector[0];
   
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);

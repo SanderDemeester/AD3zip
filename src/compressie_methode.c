@@ -27,7 +27,5 @@ void semi_mtf(char *input_buffer, int len, int actie){
 }
 
 void debug(char *input_buffer, int len, int actie){
-  for(int i = 0; i < len; i++){
-    fwrite(&input_buffer[i],1,sizeof(input_buffer[i]),stdout);
-  }
+  fwrite(input_buffer, 1,len,stdout);
 }

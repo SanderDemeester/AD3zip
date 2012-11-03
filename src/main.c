@@ -60,6 +60,10 @@ int main(int argc, char* argv[]){
   }else{
     compressie_function_pointer = 4; //Debug methode.
   }
+  if(methode == DECODEER){
+    fread(header,4,1,stdin); //header is 4bytes
+  }
+  
   while((fread(&c,1,1,stdin))) {
     input_lengte++;
     t = (char*) realloc(input_buffer,input_lengte*sizeof(char));
@@ -92,25 +96,23 @@ int main(int argc, char* argv[]){
     memcpy(&header[1],&blocksize,3);
     fwrite(&header[0],1,4,stdout);
 
-    //    printf("\n");
     while(input_lengte){
       if(input_lengte < blocksize){
 	blocksize = input_lengte;
-	#ifdef DEBUG
-	printf("%d \n", blocksize);
-	#endif
+#ifdef DEBUG
+	printf("aanpasen blocksize: %d \n", blocksize);
+#endif
       }
       
-      input_block = (char*) malloc(sizeof(char)*blocksize);
-      memcpy((void*)input_block, (void*) input_buffer, blocksize);
+      input_block = (char*) malloc(sizeof(char)*(blocksize+2)); //alocte genoeg om de blok in op te slaan +2 voor [0-9]_
+      memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 2 plaatsen over.
 
       encoderen_bwt(input_block, blocksize);
-
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
 
       aantal_ingelezen_bytes += blocksize;
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER);
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER); //2 omdat we ook de [0-9]_ willen pringen.
       //free(input_block);
     }
 
@@ -121,13 +123,14 @@ int main(int argc, char* argv[]){
     printf("Decodeer\n");
 #endif
     //Methode is de eerste byte van de header
-    methode = input_buffer[0];
+    methode = header[0];
     
     //De volgende 3 bytes zijn de blocksize
-    memcpy(&blocksize,&input_buffer[1],3);
-    
-    input_buffer+=4;
-    input_lengte-=4;
+    memcpy(&blocksize,&header[1],3);
+    /********************/
+    /* input_buffer+=4; */
+    /* input_lengte-=4; */
+    /********************/
 
     //Zolang er nog input is 
     while(input_lengte > 0){
@@ -153,7 +156,7 @@ int main(int argc, char* argv[]){
       if(compressie_function_pointer < 4){ 
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, DECODEER);
       } 
-
+      
       decoderen_bwt(input_block, blocksize);
       input_block += 2;
       
