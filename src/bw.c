@@ -66,6 +66,10 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	flag = 1; //Geef de andere nog een kans.
       }
   }
+  if(bwt_block[0] > 255){
+    fprintf(stderr,"assert error, bwt index vector size is greater then 255\n");
+    exit(-1);
+  }
   free(bwt_transformatie);
   free(rij_index);
 }
