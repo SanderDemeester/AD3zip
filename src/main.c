@@ -14,17 +14,21 @@ int main(int argc, char* argv[]){
 
   int methode = 0; //default methode is decodeer
   int compressie_function_pointer = 0; //default is debug.
-  int blocksize = 0;
-  int aantal_ingelezen_bytes = 0;
-  char *input_buffer = (char*) malloc(sizeof(char));
+  int blocksize = 0; //de blocksize die wordt gebruikt, dit is de lengte zonder extra header
+  int aantal_ingelezen_bytes = 0; //het aantal bytes dat zijn ingelezen door freader
+  char *input_buffer = (char*) malloc(sizeof(char)); //de buffer die fread gebruikt om zijn data in op te slaan.
   unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char)); //4 byte for header
   unsigned char methode_header_format = '\0'; //we will use this to copy our methode identifier
-  char *t = NULL;
-  char c = '\0';
+  char *t = NULL; //Tijdelijke pointer voor freader
+  char c = '\0'; //hierin laadt fread een byte
   char *input_block = NULL;
   int input_lengte = 0; 
   compressie_argument **compressie_methode = (compressie_argument**) malloc(sizeof(compressie_argument*)*NUMBER_OF_COMPRESSIE_METHODE);
 
+  /**********************************************************************************************************************************************************************************************************************/
+  /* We maken gebruik van een array van structs die een id bevatten per compressie methode en een function pointer naar de bijhorende compressie methode. We gebruiken methode 0 om enkel Burrows-wheeler te gebruiken  */
+  /**********************************************************************************************************************************************************************************************************************/
+  
   for(int i = 0 ;i < NUMBER_OF_COMPRESSIE_METHODE; i++){
     compressie_methode[i] = (compressie_argument*) malloc(sizeof(compressie_argument));
   }
@@ -95,7 +99,9 @@ int main(int argc, char* argv[]){
 
     memcpy(&header[0],&methode_header_format,1);
     memcpy(&header[1],&blocksize,3);
-    fwrite(&header[0],1,4,stdout);
+    
+    fwrite(&header[0],1,4,stdout); //schrijf header naar stdout.
+
     while(input_lengte){
       if(input_lengte < blocksize){
 	blocksize = input_lengte;
@@ -104,7 +110,7 @@ int main(int argc, char* argv[]){
 #endif
       }
       
-      input_block = (char*) malloc(sizeof(char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor 1 int en "_"
+      input_block = (char*) malloc(sizeof(char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor een int en "_"
       memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 5 plaatsen over.
 
       encoderen_bwt(input_block, blocksize);
