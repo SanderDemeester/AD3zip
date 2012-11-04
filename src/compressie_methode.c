@@ -18,9 +18,9 @@ void mtf_huffman(char *input_buffer, int len, int actie){
   move_to_front(input_buffer, len, actie);  
   standaard_huffman(input_buffer, len, actie);
   if(actie){
-    for(int i = 0; i < len; i++){
-      fwrite(&input_buffer[i],1,sizeof(input_buffer[i]),stdout);
-    }
+    //    for(int i = 0; i < len; i++){
+    // fwrite(&input_buffer[i],1,sizeof(input_buffer[i]),stdout);
+    // }
   }
 }
 
