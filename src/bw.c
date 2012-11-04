@@ -37,30 +37,33 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   printf("-----------------\n");
   #endif
 
-  bwt_block[1] = '_';
+  bwt_block[4] = '_';
 
-  for(i = 2; i < blocksize+2; i++){
+  for(i = 5; i < blocksize+5; i++){
 
     //printf("%c\n", *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
-    bwt_block[i] = *(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]);
+    bwt_block[i] = *(&bwt_transformatie[(rij_index[i-5]+(blocksize-1)) % blocksize]);
 
     //printf("(%d,%d) - %c\n", i-2,blocksize-1,*(&bwt_transformatie[(rij_index[i-2]+(blocksize-1)) % blocksize]));
       if(bwt_block[i] == bwt_transformatie[0]){
 	for(int j = 0; j < blocksize; j++){
 	  // printf("%c | %c\n", *(&bwt_transformatie[(rij_index[i-2]+j-1) % blocksize]), bwt_transformatie[j]);
-	  if(*(&bwt_transformatie[(rij_index[i-2]+j-1) % blocksize]) != bwt_transformatie[j]){
+	  if(*(&bwt_transformatie[(rij_index[i-5]+j-1) % blocksize]) != bwt_transformatie[j]){
 	    flag = 0;
 	     break;
 	  }
 	}
 	if(flag){
 	   //	   printf("%s\n", first_pos);
-	   while(min_number_of_bytes < 8 && i-2 >= (1 << (min_number_of_bytes*8))) min_number_of_bytes++;
+	   while(min_number_of_bytes < 8 && i-5 >= (1 << (min_number_of_bytes*8))) min_number_of_bytes++;
 	   /****************************************************************************************************************************************/
            /* Ipv -2 te doen (om de originele waarde te krijgen) doen we hier -1 ->+1, dit doen we om 0 te voorkomen tijdens het decoderen 	   */
            /****************************************************************************************************************************************/
-	   bwt_block[0] = i-1; //+1 to avoid null
-	   bwt_block[1] = '_';
+	   int t = (i-5)^0xF0F0F0F0; //+1 to avoid null an
+	   memcpy(bwt_block,&t,4); //copy byte over
+	   //	   fwrite(bwt_block,1,4,stdout);
+	   bwt_block[4] = '_';
+	   //	   fwrite(bwt_block,1,5,stdout);
 	}
 	flag = 1; //Geef de andere nog een kans.
       }
@@ -75,15 +78,17 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 
 void decoderen_bwt(char *bwt_vector, int len){
 
-  //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
-  int start_pos = atoi(&bwt_vector[0]);
-  start_pos = bwt_vector[0];
-  /******************************************************************************************/
-  /* We doen hier -1 omdat we proberen /0 te vermijden tijden het encoderen van bwt vector. */
-  /*   Tijdens het encodeer proces telllen we er 1 extra bij op (om /0 te vermijden)	    */
-  /******************************************************************************************/
-  start_pos--; 
-  
+  //We gaan er vanuit dat de eerste 4 bytes de bwt index vector zijn.
+  int start_pos = 0;
+  memcpy(&start_pos,bwt_vector,4);
+
+  /**************************************************************************************************/
+  /* Omdat de blocksize in KiB is, moeten we rekening houden met grote indexen voor de bwt vector.  */
+  /* We gebruiken dus fread, maar omdat we 4 bytes gebruiken kunnen de hogere bits gewoon \0 zijn.  */
+  /* Dus daarom gebruiken we XOR, deze xor maken we hier terug ongedaan.			    */
+  /**************************************************************************************************/
+  start_pos = start_pos^0xF0F0F0F0;
+
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
   int *bwt_rij_index    = (int*) malloc(sizeof(int)*len-1);
@@ -96,8 +101,8 @@ void decoderen_bwt(char *bwt_vector, int len){
     bwt_rij_index[i] = i;
   }
   
-  //we tellen 2 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
-  bwt_vector+=2;
+  //we tellen 5 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
+  bwt_vector+=5;
 
   //sorteren van indexen van de bwt transformatie.
   quicksort(bwt_vector, sorted_rij_index, 0,len,len,0);

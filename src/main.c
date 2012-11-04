@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
 
   int methode = 0; //default methode is decodeer
   int compressie_function_pointer = 0; //default is debug.
-  int blocksize = 0; 
+  int blocksize = 0;
   int aantal_ingelezen_bytes = 0;
   char *input_buffer = (char*) malloc(sizeof(char));
   unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char)); //4 byte for header
@@ -104,15 +104,15 @@ int main(int argc, char* argv[]){
 #endif
       }
       
-      input_block = (char*) malloc(sizeof(char)*(blocksize+2)); //alocte genoeg om de blok in op te slaan +2 voor [0-9]_
-      memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 2 plaatsen over.
+      input_block = (char*) malloc(sizeof(char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor 1 int en "_"
+      memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 5 plaatsen over.
 
       encoderen_bwt(input_block, blocksize);
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
 
       aantal_ingelezen_bytes += blocksize;
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2,ENCODEER); //2 omdat we ook de [0-9]_ willen pringen.
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5,ENCODEER); //+5 voor 1 extra int en een _ teken.
       //free(input_block);
     }
 
@@ -136,18 +136,18 @@ int main(int argc, char* argv[]){
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
 
-      if(input_lengte < blocksize+2){
+      if(input_lengte < blocksize+5){
 	/********************************************************************************************************/
-        /* We gebruiken hier -2 omdat er rekening wordt gehouden met de 2 controle chars per deelstring         */
+        /* We gebruiken hier -5 omdat er rekening wordt gehouden met de 2 controle chars per deelstring         */
 	/* bij het decoderen van de bwt vector							                */
         /********************************************************************************************************/
-	blocksize = input_lengte-2; 
+	blocksize = input_lengte-5; 
       }
       
-      input_block = (char*) malloc(sizeof(char)*blocksize+2);
-      memcpy((void*)input_block, (void*) input_buffer, blocksize+2);
-      input_lengte -= blocksize+2; //substract from input_lengte;
-      input_buffer += blocksize+2; //add to input_buffer
+      input_block = (char*) malloc(sizeof(char)*blocksize+5);
+      memcpy((void*)input_block, (void*) input_buffer, blocksize+5);
+      input_lengte -= blocksize+5; //substract from input_lengte;
+      input_buffer += blocksize+5; //add to input_buffer
       
       /******************************************************************************/
       /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
@@ -158,11 +158,11 @@ int main(int argc, char* argv[]){
       } 
       
       decoderen_bwt(input_block, blocksize);
-      input_block += 2;
+      input_block += 5;
       
       //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
       compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
-      input_block-=2;
+      input_block-=5;
       free(input_block);
     }
   }
