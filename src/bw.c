@@ -56,11 +56,10 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	if(flag){
 	   //	   printf("%s\n", first_pos);
 	   while(min_number_of_bytes < 8 && i-2 >= (1 << (min_number_of_bytes*8))) min_number_of_bytes++;
-	   /**********************************************************************/
-           /* first_pos = (char*) realloc(first_pos,min_number_of_bytes);	 */
-	   /* first_pos = i-2;							 */
-           /**********************************************************************/
-	   bwt_block[0] = i-2;
+	   /****************************************************************************************************************************************/
+           /* Ipv -2 te doen (om de originele waarde te krijgen) doen we hier -1 ->+1, dit doen we om 0 te voorkomen tijdens het decoderen 	   */
+           /****************************************************************************************************************************************/
+	   bwt_block[0] = i-1; //+1 to avoid null
 	   bwt_block[1] = '_';
 	}
 	flag = 1; //Geef de andere nog een kans.
@@ -79,6 +78,11 @@ void decoderen_bwt(char *bwt_vector, int len){
   //We gaan er vanuit dat het eerste element in de bwt vector de start pos is.
   int start_pos = atoi(&bwt_vector[0]);
   start_pos = bwt_vector[0];
+  /******************************************************************************************/
+  /* We doen hier -1 omdat we proberen /0 te vermijden tijden het encoderen van bwt vector. */
+  /*   Tijdens het encodeer proces telllen we er 1 extra bij op (om /0 te vermijden)	    */
+  /******************************************************************************************/
+  start_pos--; 
   
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);

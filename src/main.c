@@ -88,6 +88,7 @@ int main(int argc, char* argv[]){
     printf("Encodeer\n");
     printf("%d \n", input_lengte);
 #endif
+    
 
     blocksize = (blocksize & 0x00FFFFFF);
     methode_header_format = (unsigned char) ((compressie_function_pointer & 0x000000FF));
@@ -95,7 +96,6 @@ int main(int argc, char* argv[]){
     memcpy(&header[0],&methode_header_format,1);
     memcpy(&header[1],&blocksize,3);
     fwrite(&header[0],1,4,stdout);
-
     while(input_lengte){
       if(input_lengte < blocksize){
 	blocksize = input_lengte;

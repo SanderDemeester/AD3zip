@@ -26,7 +26,6 @@ void move_to_front(char* string, int len, int actie){
   }
   anker = tijdelijk_anker;
 #endif
-  
   if(actie){
     for(int i = 0; i < len; i++){
       char c = 0;
