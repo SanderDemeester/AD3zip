@@ -1,6 +1,7 @@
 #include "header/huffman.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**********************************************************************************************************************************************/
 /* We weten dat de kans groter is dat de symbolen met een hogeren freqentie verder zullen staan in de input_buffer->symbolen later in de rij  */
@@ -44,6 +45,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 	huffman_toppen[j]->value = (char*) calloc(1,sizeof(char));
 	memcpy(huffman_toppen[j]->value,&i,4);
 	huffman_toppen[j]->weight = freq_tabel[i];
+	j++;
       }
     }
     ssort(freq_tabel, 0,255);
@@ -57,7 +59,6 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     free(huffman_toppen[i]->value);
     free(huffman_toppen[i]);
   }
-  
   free(freq_tabel);
   free(huffman_toppen);
 }
