@@ -7,22 +7,23 @@
 /* We weten dat de kans groter is dat de symbolen met een hogeren freqentie verder zullen staan in de input_buffer->symbolen later in de rij  */
 /* zullen hogere freqentie hebben													      */
 /**********************************************************************************************************************************************/
-static void swap(int *a, int *b){
-  int t = *a; 
+static void swap(huffman_top *a, huffman_top *b){
+  huffman_top t = *a; 
   *a = *b;
   *b = t;
 }
 //Als je iets goed wilt (of gedaan op een manier dat je wilt snappen) doe het zelf.
-static void ssort(int *rij, int begin, int einde){
+static void ssort(huffman_top **rij, int begin, int einde){
   if(einde > begin+1){
-    int piv = rij[begin]; //piv is eerste element van rij
+    //    int piv = rij[begin]; //piv is eerste element van rij
+    huffman_top *piv = rij[begin];
     int links = begin+1;
     int rechts = einde;
     while(links < rechts){
-      if(rij[links] >= piv) links++;
-      else swap(&rij[links],&rij[--rechts]);
+      if(rij[links]->weight >= piv->weight) links++;
+      else swap(rij[links],rij[--rechts]);
     }
-    swap(&rij[--links],&rij[begin]);
+    swap(rij[--links],rij[begin]);
     ssort(rij,begin,links);
     ssort(rij,rechts,einde);
   }
@@ -30,32 +31,35 @@ static void ssort(int *rij, int begin, int einde){
 
 void standaard_huffman(char *input_buffer, int lengte, int actie){
   int *freq_tabel = (int*) calloc(255,4);
-  huffman_blad **huffman_toppen = (huffman_blad**) calloc(lengte,sizeof(huffman_blad*));
-  int j = 0;
+  huffman_top **huffman_toppen = (huffman_top**) calloc(lengte,sizeof(huffman_top*));
+  int number_of_huffman_top = 0; 
   if(actie){
     //encodeer
     //Opbouwen van een freqentie tabel om de huffman boom te maken.
     for(int i = 0; i < lengte; i++){
-      printf("%c \n", input_buffer[i]);
       freq_tabel[(int)input_buffer[i]]++;
     }
     for(int i = 0; i < 255; i++){
       if(freq_tabel[i] > 0){
-	huffman_toppen[j] = (huffman_blad*) calloc(1,sizeof(huffman_blad));
-	huffman_toppen[j]->value = (char*) calloc(1,sizeof(char));
-	memcpy(huffman_toppen[j]->value,&i,4);
-	huffman_toppen[j]->weight = freq_tabel[i];
-	j++;
+	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
+	huffman_toppen[number_of_huffman_top]->value = (char*) calloc(1,sizeof(char));
+	huffman_toppen[number_of_huffman_top]->bin_value = 0;
+	memcpy(huffman_toppen[number_of_huffman_top]->value,&i,4);
+	huffman_toppen[number_of_huffman_top]->weight = freq_tabel[i];
+	number_of_huffman_top++;
       }
     }
-    ssort(freq_tabel, 0,255);
-    for(int i = 0; i < 255; i++){
-      printf("index: %i - value: %d \n", i, freq_tabel[i]);
+    //super sort?
+    ssort(huffman_toppen, 0,number_of_huffman_top);
+    for(int i = 0; i < number_of_huffman_top; i++){
+      printf("symbool: %c, gewicht: %d \n", *huffman_toppen[i]->value, huffman_toppen[i]->weight);
     }
+    
   }else{
     //decodeer
   }
-  for(int i = 0; i < lengte; i++){
+
+  for(int i = 0; i < number_of_huffman_top; i++){
     free(huffman_toppen[i]->value);
     free(huffman_toppen[i]);
   }
