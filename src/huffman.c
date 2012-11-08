@@ -44,6 +44,8 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
 	huffman_toppen[number_of_huffman_top]->value = (char*) calloc(1,sizeof(char));
 	huffman_toppen[number_of_huffman_top]->bin_value = 0;
+	huffman_toppen[number_of_huffman_top]->links = NULL; //blad
+	huffman_toppen[number_of_huffman_top]->rechts = NULL; //blad
 	memcpy(huffman_toppen[number_of_huffman_top]->value,&i,4);
 	huffman_toppen[number_of_huffman_top]->weight = freq_tabel[i];
 	number_of_huffman_top++;
@@ -51,8 +53,17 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     }
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
-    for(int i = 0; i < number_of_huffman_top; i++){
-      printf("symbool: %c, gewicht: %d \n", *huffman_toppen[i]->value, huffman_toppen[i]->weight);
+    for(int i = number_of_huffman_top; i > 0; i--){
+      huffman_top *t_n = (huffman_top*) malloc(sizeof(huffman_top));
+      t_n->value = NULL;
+      t_n->weight = huffman_toppen[i]->weight+huffman_toppen[i-1]->weight;
+      t_n->links =  (struct huffman_top*) huffman_toppen[i];
+      t_n->rechts = (struct huffman_top*) huffman_toppen[i-1];
+      
+      
+
+      printf("%d \n",i);
+
     }
     
   }else{
