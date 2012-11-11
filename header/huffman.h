@@ -12,7 +12,7 @@ typedef struct{
 typedef struct{
   char *code;
   int number_of_bits;
-}huffman_code;
+}huffman_codewoord;
 
 
 void standaard_huffman(char *input_buffer, int lengte, int actie);

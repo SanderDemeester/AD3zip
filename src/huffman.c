@@ -31,7 +31,9 @@ static void ssort(huffman_top **rij, int begin, int einde){
 
 void standaard_huffman(char *input_buffer, int lengte, int actie){
   int *freq_tabel = (int*) calloc(255,4);
-  huffman_top **huffman_toppen = (huffman_top**) calloc(lengte,sizeof(huffman_top*));
+  huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*));
+  huffman_codewoord **code = (huffman_codewoord**) calloc(255,    sizeof(huffman_codewoord*)); //het maximaal aantal code die we kunnen hebben is 255, een macrosymbool is 1 ascii teken -> 1byte.
+  
   int number_of_huffman_top = 0; 
   if(actie){
     //encodeer
@@ -40,6 +42,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
       freq_tabel[(int)input_buffer[i]]++;
     }
     for(int i = 0; i < 255; i++){
+      code[i] = (huffman_codewoord*) calloc(1,sizeof(huffman_codewoord));
       if(freq_tabel[i] > 0){
 	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
 	huffman_toppen[number_of_huffman_top]->value = (char*) calloc(1,sizeof(char));
@@ -54,16 +57,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
     for(int i = number_of_huffman_top; i > 0; i--){
-      huffman_top *t_n = (huffman_top*) malloc(sizeof(huffman_top));
-      t_n->value = NULL;
-      t_n->weight = huffman_toppen[i]->weight+huffman_toppen[i-1]->weight;
-      t_n->links =  (struct huffman_top*) huffman_toppen[i];
-      t_n->rechts = (struct huffman_top*) huffman_toppen[i-1];
-      
-      
-
       printf("%d \n",i);
-
     }
     
   }else{
@@ -74,6 +68,10 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     free(huffman_toppen[i]->value);
     free(huffman_toppen[i]);
   }
+  for(int i = 0; i < 255; i++){
+    free(code[i]);
+  }
   free(freq_tabel);
   free(huffman_toppen);
+  free(code);
 }
