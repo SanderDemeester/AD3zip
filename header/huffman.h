@@ -9,6 +9,11 @@ typedef struct{
   struct huffman_top *rechts;
 }huffman_top;
 
+typedef struct{
+  char *code;
+  int number_of_bits;
+}huffman_code;
+
 
 void standaard_huffman(char *input_buffer, int lengte, int actie);
 
