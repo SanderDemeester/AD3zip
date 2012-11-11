@@ -4,7 +4,7 @@
 typedef struct{
   char *value;
   uint32_t weight;
-  int bin_value;
+  int aantal_elementen;
 }huffman_top;
 
 typedef struct{

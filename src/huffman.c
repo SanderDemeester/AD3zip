@@ -49,7 +49,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
       if(freq_tabel[i] > 0){
 	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
 	huffman_toppen[number_of_huffman_top]->value = (char*) calloc(1,sizeof(char));
-	huffman_toppen[number_of_huffman_top]->bin_value = 0;
+	huffman_toppen[number_of_huffman_top]->aantal_elementen = 1;
 	memcpy(huffman_toppen[number_of_huffman_top]->value,&i,4);
 	huffman_toppen[number_of_huffman_top]->weight = freq_tabel[i];
 	number_of_huffman_top++;
@@ -58,13 +58,35 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
     for(int i = number_of_huffman_top; i > 1; i--){
-      printf("index: %d - symbool: %c - weight: %d \n", i, *huffman_toppen[i-1]->value, huffman_toppen[i-1]->weight);
-      code[(unsigned int)*huffman_toppen[i-1]->value]->code <<= 1;
-      code[(unsigned int)*huffman_toppen[i-2]->value]->code <<= 1;
-      code[(unsigned int)*huffman_toppen[i-2]->value]->code |= 0x0001;
+      printf("index: %d - symbool: %c - weight: %d \n", i, huffman_toppen[i-1]->value[0], huffman_toppen[i-1]->weight);
 
-      printf("%d \n", code[(unsigned int)*huffman_toppen[i-1]->value]->code);
-      printf("%d \n", code[(unsigned int)*huffman_toppen[i-2]->value]->code);
+      for(int k = 0; k  < huffman_toppen[i-1]->aantal_elementen; k++){
+	  code[(unsigned int)huffman_toppen[i-1]->value[k]]->code <<= 1;
+	  }
+
+    for(int k = 0; k  < huffman_toppen[i-2]->aantal_elementen; k++){
+      code[(unsigned int)huffman_toppen[i-2]->value[k]]->code <<= 1;
+      code[(unsigned int)huffman_toppen[i-2]->value[k]]->code |= 0x0001;
+    }
+    
+      printf("%d \n", code[(unsigned int)huffman_toppen[i-1]->value[0]]->code);
+      printf("%d \n", code[(unsigned int)huffman_toppen[i-2]->value[0]]->code);
+      char *t = (char*) malloc(sizeof(char)*huffman_toppen[i-2]->aantal_elementen);
+      memcpy(t,huffman_toppen[i-2]->value, huffman_toppen[i-2]->aantal_elementen);
+      huffman_toppen[i-2]->value = (char*) realloc(huffman_toppen[i-2]->value, huffman_toppen[i-2]->aantal_elementen+huffman_toppen[i-1]->aantal_elementen);
+      
+
+      memcpy(huffman_toppen[i-2]->value, t,huffman_toppen[i-2]->aantal_elementen);
+      memcpy(huffman_toppen[i-2]->value + huffman_toppen[i-2]->aantal_elementen, huffman_toppen[i-1]->value,huffman_toppen[i-1]->aantal_elementen);
+      huffman_toppen[i-2]->aantal_elementen += huffman_toppen[i-1]->aantal_elementen;
+      huffman_toppen[i-2]->weight += huffman_toppen[i-1]->weight;
+      
+      int k = 1;
+      while(huffman_toppen[i-2]->weight > huffman_toppen[(i-2)-k] && (i-2)-k >= 0){
+	swap(huffman_toppen[(i-2)],huffman_toppen[(i-2)-k]);
+	k++;
+      }
+      
       return 0;
     }
     
