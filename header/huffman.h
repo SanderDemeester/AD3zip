@@ -8,7 +8,7 @@ typedef struct{
 }huffman_top;
 
 typedef struct{
-  char *code;
+  int code;
   int number_of_bits;
 }huffman_codewoord;
 

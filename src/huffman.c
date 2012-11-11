@@ -44,7 +44,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     for(int i = 0; i < 255; i++){
       code[i] = (huffman_codewoord*) calloc(1,sizeof(huffman_codewoord));
       code[i]->number_of_bits = 1;
-      code[i]->code = (char*) calloc(1,sizeof(char)*code[i]->number_of_bits);
+      code[i]->code = 0;
 
       if(freq_tabel[i] > 0){
 	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
@@ -57,8 +57,15 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     }
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
-    for(int i = number_of_huffman_top; i > 0; i--){
-      printf("%d \n",i);
+    for(int i = number_of_huffman_top; i > 1; i--){
+      printf("index: %d - symbool: %c - weight: %d \n", i, *huffman_toppen[i-1]->value, huffman_toppen[i-1]->weight);
+      code[(unsigned int)*huffman_toppen[i-1]->value]->code <<= 1;
+      code[(unsigned int)*huffman_toppen[i-2]->value]->code <<= 1;
+      code[(unsigned int)*huffman_toppen[i-2]->value]->code |= 0x0001;
+
+      printf("%d \n", code[(unsigned int)*huffman_toppen[i-1]->value]->code);
+      printf("%d \n", code[(unsigned int)*huffman_toppen[i-2]->value]->code);
+      return 0;
     }
     
   }else{
@@ -70,7 +77,6 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     free(huffman_toppen[i]);
   }
   for(int i = 0; i < 255; i++){
-    free(code[i]->code);
     free(code[i]);
   }
   free(freq_tabel);
