@@ -43,12 +43,13 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     }
     for(int i = 0; i < 255; i++){
       code[i] = (huffman_codewoord*) calloc(1,sizeof(huffman_codewoord));
+      code[i]->number_of_bits = 1;
+      code[i]->code = (char*) calloc(1,sizeof(char)*code[i]->number_of_bits);
+
       if(freq_tabel[i] > 0){
 	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
 	huffman_toppen[number_of_huffman_top]->value = (char*) calloc(1,sizeof(char));
 	huffman_toppen[number_of_huffman_top]->bin_value = 0;
-	huffman_toppen[number_of_huffman_top]->links = NULL; //blad
-	huffman_toppen[number_of_huffman_top]->rechts = NULL; //blad
 	memcpy(huffman_toppen[number_of_huffman_top]->value,&i,4);
 	huffman_toppen[number_of_huffman_top]->weight = freq_tabel[i];
 	number_of_huffman_top++;
@@ -69,6 +70,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     free(huffman_toppen[i]);
   }
   for(int i = 0; i < 255; i++){
+    free(code[i]->code);
     free(code[i]);
   }
   free(freq_tabel);
