@@ -10,6 +10,9 @@ void move_to_front(char* string, int len, int actie){
   anker->prev = NULL;
   anker->ascii_value = '\0';
 
+  printf("output\n");
+  printf("%s && %d \n", string, len);
+  printf("output\n");
   
   for(int i = 0; i <= 255; i++){
     anker->next = (struct ascii_symbol*) malloc(sizeof(ascii_symbol));
@@ -34,6 +37,9 @@ void move_to_front(char* string, int len, int actie){
       while((unsigned char)tijdelijk_anker->ascii_value != (unsigned char)string[i]){
 	tijdelijk_anker = (ascii_symbol*)tijdelijk_anker->next;
 	c++;
+      }
+      if(c == 0){
+	printf("hey i just met you, and this is CRAZY!!\n");
       }
       string[i] = c-1; //overschrijf origineel
       backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;

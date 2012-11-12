@@ -201,7 +201,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     output_buffer = (char*) calloc(number_of_bytes_needed,sizeof(char));
     
     for(i = 0; i < lengte; i++){
-      //printf("plaintext word: %c -> codeword: %d && aantal bits: %d\n", input_buffer[i], code[input_buffer[i]]->code, code[input_buffer[i]]->number_of_bits);
+      printf("plaintext word: %c -> codeword: %d && aantal bits: %d\n", input_buffer[i], code[input_buffer[i]]->code, code[input_buffer[i]]->number_of_bits);
       *output_buffer <<= (unsigned char) code[input_buffer[i]]->number_of_bits;
       *output_buffer |=  (unsigned char) code[input_buffer[i]]->code;
     }
