@@ -9,6 +9,7 @@ void move_to_front(char* string, int len, int actie){
   ascii_symbol* backup_ascii_symbool; //een symbool die we gebruiken om tijdelijk
   anker->prev = NULL;
   anker->ascii_value = '\0';
+
   
   for(int i = 0; i <= 255; i++){
     anker->next = (struct ascii_symbol*) malloc(sizeof(ascii_symbol));

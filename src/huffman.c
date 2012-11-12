@@ -33,12 +33,14 @@ static void ssort(huffman_top **rij, int begin, int einde){
 void standaard_huffman(char *input_buffer, int lengte, int actie){
   int i; // index variabel
   int k; // interne index variabel
-  int j; // interne index variabel
+  //  int j; // interne index variabel
+  int number_of_bytes_in_ouput_buffer = 0; //telt het aantal bytes in de output buffer.
+  int number_of_bytes_needed = 0; //het aantal bytes nodig in de output buffer
   int swap_c = 0; //tijdens het swap proces moeten we de oude postie bijhouden adhv een offset.
   int *freq_tabel = (int*) calloc(255,4); //de freq tabel.
   huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
   huffman_codewoord **code = (huffman_codewoord**) calloc(255,    sizeof(huffman_codewoord*)); //het maximaal aantal code die we kunnen hebben is 255, een macrosymbool is 1 ascii teken -> 1byte.
-  
+  char *output_buffer = NULL;
   int number_of_huffman_top = 0; // het aantal huffman toppen 
   if(actie){
     //encodeer
@@ -65,11 +67,12 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     number_of_huffman_top--; //start from 0
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
-
+#ifdef debug
     printf("aantal toppen in huffman array: %d \n", number_of_huffman_top);
     for(i = number_of_huffman_top; i >= 0; i--){
       printf("index: %d - weight: %d && symbool: %c \n",i, huffman_toppen[i]->weight, huffman_toppen[i]->value[0]);
     }
+#endif
 
     /***************************************************************************************/
     /* Overlopen van al onze toppen in de huffman code opstellen			   */
@@ -81,26 +84,26 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 #ifdef debug
      printf("index: %d \n", i);
      printf("huffman code voor element: %d \n", i);
-#ifdef debug
+#endif
      for(k = 0; k < huffman_toppen[i]->aantal_elementen; k++){
 #ifdef debug
        printf("code voor symbool: %c -> %d \n", huffman_toppen[i]->value[k],code[(int)huffman_toppen[i]->value[k]]->code);
 #endif
        code[(int)huffman_toppen[i]->value[k]]->code <<= 1;
+       code[(int)huffman_toppen[i]->value[k]]->number_of_bits++; 
 #ifdef debug
        printf("code voor symbool: %c -> %d \n", huffman_toppen[i]->value[k],code[(int)huffman_toppen[i]->value[k]]->code);
+       printf("%d \n", ( int)huffman_toppen[i]->value[k]);
 #endif
-#ifdef debug
-	  printf("%d \n", ( int)huffman_toppen[i]->value[k]);
-#endif 
      }
 #ifdef debug
      printf("huffman code voor element: %d \n", i-1);
 #endif
      for(k = 0; k  < huffman_toppen[i-1]->aantal_elementen; k++){
        
-	code[( int)huffman_toppen[i-1]->value[k]]->code <<= 1; //shift in zero bit
-	code[( int)huffman_toppen[i-1]->value[k]]->code |= (1<<0); //flip first bit.
+	code[(int)huffman_toppen[i-1]->value[k]]->code <<= 1; //shift in zero bit
+	code[(int)huffman_toppen[i-1]->value[k]]->code |= (1<<0); //flip first bit.
+	code[(int)huffman_toppen[i-1]->value[k]]->number_of_bits++;
 #ifdef debug
 	printf("code voor symbool: %c -> %d \n", huffman_toppen[i-1]->value[k],code[(int)huffman_toppen[i-1]->value[k]]->code);
 #endif
@@ -178,6 +181,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
       free(huffman_toppen[i]->value);
       free(huffman_toppen[i]);
 
+
       huffman_toppen[i] = NULL; //het element waarmee we zijn samengevoegd mag weg
       if((i+1 >= number_of_huffman_top && i+1 <= number_of_huffman_top) && huffman_toppen[i+1] != NULL){
 #ifdef debug
@@ -190,11 +194,19 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 #ifdef debug
     printf("stop huffman coding\n");
 #endif
-
+    for(i = 0; i < lengte; i++) number_of_bytes_needed += code[input_buffer[i]]->number_of_bits;
+    number_of_bytes_needed = (int)ceil(number_of_bytes_needed/8);
+    if(number_of_bytes_needed == 0) number_of_bytes_needed++;
+    
+    output_buffer = (char*) calloc(number_of_bytes_needed,sizeof(char));
+    
     for(i = 0; i < lengte; i++){
-      printf("plaintext word: %c -> codeword: %d\n", input_buffer[i], code[input_buffer[i]]->code);
-      
+      //printf("plaintext word: %c -> codeword: %d && aantal bits: %d\n", input_buffer[i], code[input_buffer[i]]->code, code[input_buffer[i]]->number_of_bits);
+      *output_buffer <<= (unsigned char) code[input_buffer[i]]->number_of_bits;
+      *output_buffer |=  (unsigned char) code[input_buffer[i]]->code;
     }
+    
+    fwrite(output_buffer, 1,number_of_bytes_needed,stdout);
 
   }else{
     //decodeer
