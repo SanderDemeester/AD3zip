@@ -59,8 +59,7 @@ void encoderen_bwt(char *bwt_block, int blocksize){
 	   /****************************************************************************************************************************************/
            /* Ipv -2 te doen (om de originele waarde te krijgen) doen we hier -1 ->+1, dit doen we om 0 te voorkomen tijdens het decoderen 	   */
            /****************************************************************************************************************************************/
-	   //	   int t = (i-5)^0x10101010; //+1 to avoid null an
-	   int t = i-5;
+	   int t = (i-5)^0x10101010; //+1 to avoid null an
 	   memcpy(bwt_block,&t,4); //copy byte over
 	   //	   fwrite(bwt_block,1,4,stdout);
 	   bwt_block[4] = '_';
@@ -88,7 +87,7 @@ void decoderen_bwt(char *bwt_vector, int len){
   /* We gebruiken dus fread, maar omdat we 4 bytes gebruiken kunnen de hogere bits gewoon \0 zijn.  */
   /* Dus daarom gebruiken we XOR, deze xor maken we hier terug ongedaan.			    */
   /**************************************************************************************************/
-  start_pos = start_pos;//^0x10101010;
+  start_pos = start_pos^0x10101010;
 
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
