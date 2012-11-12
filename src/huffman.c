@@ -45,6 +45,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 
     for(int i = 0; i < lengte; i++){
       freq_tabel[(int)input_buffer[i]]++;
+      printf("%d \n", freq_tabel[(int)input_buffer[i]]);
     }
     for(int i = 0; i < 255; i++){
       code[i] = (huffman_codewoord*) calloc(1,sizeof(huffman_codewoord));
@@ -140,8 +141,9 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     #ifdef debug
     printf("stop huffman coding\n");
     #endif
-    for(int i = 0; i < number_of_huffman_top; i++){
-      printf("plaintext word: %c -> codeword: %d\n", input_buffer[i], i);
+    for(int i = 0; i < lengte; i++){
+      printf("plaintext word: %c -> codeword: %d\n", input_buffer[i], input_buffer[i]);
+      
     }
 
   }else{
