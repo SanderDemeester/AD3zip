@@ -31,17 +31,16 @@ static void ssort(huffman_top **rij, int begin, int einde){
 }
 
 void standaard_huffman(char *input_buffer, int lengte, int actie){
-  int i;
-  int k;
-  int j;
-  int swap_c = 0;
-  int *freq_tabel = (int*) calloc(255,4);
-  huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*));
+  int i; // index variabel
+  int k; // interne index variabel
+  int j; // interne index variabel
+  int swap_c = 0; //tijdens het swap proces moeten we de oude postie bijhouden adhv een offset.
+  int *freq_tabel = (int*) calloc(255,4); //de freq tabel.
+  huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
   huffman_codewoord **code = (huffman_codewoord**) calloc(255,    sizeof(huffman_codewoord*)); //het maximaal aantal code die we kunnen hebben is 255, een macrosymbool is 1 ascii teken -> 1byte.
   
-  int number_of_huffman_top = 0; 
+  int number_of_huffman_top = 0; // het aantal huffman toppen 
   if(actie){
-
     //encodeer
     //Opbouwen van een freqentie tabel om de huffman boom te maken.
     
@@ -67,55 +66,63 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
 
-
-
     printf("aantal toppen in huffman array: %d \n", number_of_huffman_top);
     for(i = number_of_huffman_top; i >= 0; i--){
       printf("index: %d - weight: %d && symbool: %c \n",i, huffman_toppen[i]->weight, huffman_toppen[i]->value[0]);
     }
 
-
-
-    
+    /***************************************************************************************/
+    /* Overlopen van al onze toppen in de huffman code opstellen			   */
+    /* Onze stop voorwaarde hier is "1" omdat er maar 1 top mag overblijven (onze wortel). */
+    /***************************************************************************************/
+  
     for(i = number_of_huffman_top; i >= 1 ; i--){
       
 #ifdef debug
-      printf("index: %d \n", i);
+     printf("index: %d \n", i);
+     printf("huffman code voor element: %d \n", i);
+#ifdef debug
+     for(k = 0; k < huffman_toppen[i]->aantal_elementen; k++){
+#ifdef debug
+       printf("code voor symbool: %c -> %d \n", huffman_toppen[i]->value[k],code[(int)huffman_toppen[i]->value[k]]->code);
 #endif
-
-      printf("huffman code voor element: %d \n", i);
-      for(k = 0; k < huffman_toppen[i]->aantal_elementen; k++){
-	printf("code voor symbool: %c -> %d \n", huffman_toppen[i]->value[k],code[(int)huffman_toppen[i]->value[k]]->code);
-	  code[(int)huffman_toppen[i]->value[k]]->code <<= 1;
-	  printf("code voor symbool: %c -> %d \n", huffman_toppen[i]->value[k],code[(int)huffman_toppen[i]->value[k]]->code);
+       code[(int)huffman_toppen[i]->value[k]]->code <<= 1;
+#ifdef debug
+       printf("code voor symbool: %c -> %d \n", huffman_toppen[i]->value[k],code[(int)huffman_toppen[i]->value[k]]->code);
+#endif
 #ifdef debug
 	  printf("%d \n", ( int)huffman_toppen[i]->value[k]);
 #endif 
-      }
-      printf("huffman code voor element: %d \n", i-1);
-      for(k = 0; k  < huffman_toppen[i-1]->aantal_elementen; k++){
-	code[( int)huffman_toppen[i-1]->value[k]]->code <<= 1;
-	code[( int)huffman_toppen[i-1]->value[k]]->code |= 0x0001;
-	printf("code voor symbool: %c -> %d \n", huffman_toppen[i-1]->value[k],code[(int)huffman_toppen[i-1]->value[k]]->code);
-      }
-
-      
+     }
 #ifdef debug
-      printf("%d \n", code[( int)huffman_toppen[i]->value[0]]->code);
-      printf("%d \n", code[( int)huffman_toppen[i]->value[0]]->code);
+     printf("huffman code voor element: %d \n", i-1);
 #endif
-      
-      char *t = (char*) malloc(sizeof(char)*huffman_toppen[i-1]->aantal_elementen);
-      memcpy(t,huffman_toppen[i-1]->value, huffman_toppen[i-1]->aantal_elementen);
-      huffman_toppen[i-1]->value = (char*) realloc(huffman_toppen[i-1]->value, huffman_toppen[i-1]->aantal_elementen+huffman_toppen[i]->aantal_elementen);
-      
-      memcpy(huffman_toppen[i-1]->value, t,huffman_toppen[i-1]->aantal_elementen);
-      memcpy(huffman_toppen[i-1]->value + huffman_toppen[i-1]->aantal_elementen, huffman_toppen[i]->value,huffman_toppen[i]->aantal_elementen);
-      huffman_toppen[i-1]->aantal_elementen += huffman_toppen[i]->aantal_elementen;
-      huffman_toppen[i-1]->weight += huffman_toppen[i]->weight;
-      
+     for(k = 0; k  < huffman_toppen[i-1]->aantal_elementen; k++){
+       
+	code[( int)huffman_toppen[i-1]->value[k]]->code <<= 1; //shift in zero bit
+	code[( int)huffman_toppen[i-1]->value[k]]->code |= (1<<0); //flip first bit.
 #ifdef debug
-      printf("de top i-1 achter de merge\n");
+	printf("code voor symbool: %c -> %d \n", huffman_toppen[i-1]->value[k],code[(int)huffman_toppen[i-1]->value[k]]->code);
+#endif
+     }
+     
+     
+#ifdef debug
+     printf("%d \n", code[( int)huffman_toppen[i]->value[0]]->code);
+     printf("%d \n", code[( int)huffman_toppen[i]->value[0]]->code);
+#endif
+     
+     char *t = (char*) malloc(sizeof(char)*huffman_toppen[i-1]->aantal_elementen);
+     memcpy(t,huffman_toppen[i-1]->value, huffman_toppen[i-1]->aantal_elementen);
+     huffman_toppen[i-1]->value = (char*) realloc(huffman_toppen[i-1]->value, huffman_toppen[i-1]->aantal_elementen+huffman_toppen[i]->aantal_elementen);
+     
+     memcpy(huffman_toppen[i-1]->value, t,huffman_toppen[i-1]->aantal_elementen);
+     memcpy(huffman_toppen[i-1]->value + huffman_toppen[i-1]->aantal_elementen, huffman_toppen[i]->value,huffman_toppen[i]->aantal_elementen);
+     huffman_toppen[i-1]->aantal_elementen += huffman_toppen[i]->aantal_elementen;
+     huffman_toppen[i-1]->weight += huffman_toppen[i]->weight;
+     
+#ifdef debug
+     printf("de top i-1 achter de merge\n");
       printf("gewicht: %d \n", huffman_toppen[i-1]->weight);
       printf("aantal elementen: %d \n", huffman_toppen[i-1]->aantal_elementen);
       printf("begin to print aantal elementen\n");
@@ -135,10 +142,10 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
       printf("einde printen elementen\n");
 #endif
 
-      k = 1;
-      swap_c = 0;
+      k = 1; //offset naar andere top in array
+      swap_c = 0; //index offset
       while((i-1)-k >= 0 && huffman_toppen[(i-1)-swap_c]->weight > huffman_toppen[(i-1)-k]->weight){
-
+	
 #ifdef debug
 	printf("voor swap, index: %d\n",i);
 	for(j = number_of_huffman_top; j >= 0; j--){
@@ -166,17 +173,16 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 	printf("%d && %d\n",(i-1)-swap_c, (i-1)-k);
 	printf("%d > %d\n", huffman_toppen[(i-1)-swap_c]->weight, huffman_toppen[(i-1)-k]->weight);
 #endif
-
-
       }
 
       free(huffman_toppen[i]->value);
       free(huffman_toppen[i]);
 
-
       huffman_toppen[i] = NULL; //het element waarmee we zijn samengevoegd mag weg
       if((i+1 >= number_of_huffman_top && i+1 <= number_of_huffman_top) && huffman_toppen[i+1] != NULL){
+#ifdef debug
 	printf("opvullen van lege plaats\n");
+#endif
 	swap(huffman_toppen[i+1],huffman_toppen[i]);
       }
     }
