@@ -19,6 +19,8 @@ void mtf_huffman(char *input_buffer, int len, int actie){
   //standaard_huffman(input_buffer, len, actie);
   if(actie){
     fwrite(input_buffer,1,len,stdout);
+  }else{
+    fwrite(input_buffer,1,len,stdout);
   }
 }
 

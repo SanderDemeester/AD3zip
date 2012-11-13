@@ -133,11 +133,14 @@ int main(int argc, char* argv[]){
     
     //De volgende 3 bytes zijn de blocksize
     memcpy(&blocksize,&header[1],3);
+    
+    //layout: 4byte (bwt index)|blocksize byte: bwt vector
+
+    
     /********************/
     /* input_buffer+=4; */
     /* input_lengte-=4; */
     /********************/
-
     //Zolang er nog input is 
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
@@ -160,7 +163,7 @@ int main(int argc, char* argv[]){
       /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
       /******************************************************************************/
       if(compressie_function_pointer < 4){ 
-	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+2, DECODEER);
+	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5, DECODEER);
       } 
       
       decoderen_bwt(input_block, blocksize);

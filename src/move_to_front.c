@@ -40,7 +40,6 @@ void move_to_front(char* string, int len, int actie){
        //no point, we should not rehang the first element in our linkedlist
        printf("hey i just met you, and this is CRAZY!!.. so we should breakup.\n");
        break; //up
-       
      }
      
      backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;
@@ -58,6 +57,14 @@ void move_to_front(char* string, int len, int actie){
 
     }
   }else{
+    #ifdef debug
+    printf("start van move to front\n");
+    printf("input string: %s met een lengte: %d\n", string,len);
+    for(int i = 0; i < len; i++){
+      printf("%d \n", string[i]);
+    }
+    return;
+    #endif
     for(int i = 0; i < len; i++){
       tijdelijk_anker = anker; //terug bij begin
       int j = 0;
@@ -66,7 +73,7 @@ void move_to_front(char* string, int len, int actie){
 	j++;
       }
       tijdelijk_anker = (ascii_symbol*)tijdelijk_anker->next;
-      //      printf("%d - %c \n",j, tijdelijk_anker->ascii_value);
+      printf("%d - %c \n",j, tijdelijk_anker->ascii_value);
       string[i] = tijdelijk_anker->ascii_value;
       
       if(tijdelijk_anker->prev != NULL)
@@ -90,5 +97,6 @@ void move_to_front(char* string, int len, int actie){
       anker->next = (struct ascii_symbol*)tijdelijk_anker;
 
     }
+    printf("einde van move to front decode\n");
   }
 }
