@@ -10,16 +10,12 @@ void move_to_front(char* string, int len, int actie){
   anker->prev = NULL;
   anker->ascii_value = '\0';
 
-  printf("output\n");
-  printf("%s && %d \n", string, len);
-  printf("output\n");
-  
   for(int i = 0; i <= 255; i++){
-    anker->next = (struct ascii_symbol*) malloc(sizeof(ascii_symbol));
-    backup_ascii_symbool = anker;
-    anker = (ascii_symbol*)anker->next;
-    anker->prev = (struct ascii_symbol*)backup_ascii_symbool;
-    anker->ascii_value = (unsigned char)i;
+    anker->next = (struct ascii_symbol*) malloc(sizeof(ascii_symbol)); //allocate genoeg voor next symbool.
+    backup_ascii_symbool = anker; //sla het huidige anker symbool op
+    anker = (ascii_symbol*)anker->next; //sla het anker->next symbool op in anker
+    anker->prev = (struct ascii_symbol*)backup_ascii_symbool; //anker->next->prev = anker
+    anker->ascii_value = (unsigned char)i; //anker->next->value = i 
   }
   anker = tijdelijk_anker;
   
@@ -38,22 +34,28 @@ void move_to_front(char* string, int len, int actie){
 	tijdelijk_anker = (ascii_symbol*)tijdelijk_anker->next;
 	c++;
       }
-      if(c == 0){
-	printf("hey i just met you, and this is CRAZY!!\n");
-      }
+      
       string[i] = c-1; //overschrijf origineel
-      backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;
-      backup_ascii_symbool->next = tijdelijk_anker->next;
-      
-      backup_ascii_symbool = (ascii_symbol*) backup_ascii_symbool->next;
-      backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker->prev;
-      
-      backup_ascii_symbool = (ascii_symbol*) anker->next;
-      backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker;
-      
-      tijdelijk_anker->next = anker->next;
-      tijdelijk_anker->prev = (struct ascii_symbol*)anker;
-      anker->next = (struct ascii_symbol*)tijdelijk_anker;
+     if(c == 0){
+       //no point, we should not rehang the first element in our linkedlist
+       printf("hey i just met you, and this is CRAZY!!.. so we should breakup.\n");
+       break; //up
+       
+     }
+     
+     backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;
+     backup_ascii_symbool->next = tijdelijk_anker->next;
+     
+     backup_ascii_symbool = (ascii_symbol*) backup_ascii_symbool->next;
+     backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker->prev;
+     
+     backup_ascii_symbool = (ascii_symbol*) anker->next;
+     backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker;
+     
+     tijdelijk_anker->next = anker->next;
+     tijdelijk_anker->prev = (struct ascii_symbol*)anker;
+     anker->next = (struct ascii_symbol*)tijdelijk_anker;
+
     }
   }else{
     for(int i = 0; i < len; i++){
@@ -66,8 +68,6 @@ void move_to_front(char* string, int len, int actie){
       tijdelijk_anker = (ascii_symbol*)tijdelijk_anker->next;
       //      printf("%d - %c \n",j, tijdelijk_anker->ascii_value);
       string[i] = tijdelijk_anker->ascii_value;
-      
-      
       
       if(tijdelijk_anker->prev != NULL)
 	backup_ascii_symbool = (ascii_symbol*)tijdelijk_anker->prev;
