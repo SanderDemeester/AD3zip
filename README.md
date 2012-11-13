@@ -3,6 +3,12 @@ Burrows-Wheeler
 
 Project Algoritmes en Datastructuren 3: Data compressie Burrows-Wheeler
 
+### File layout
+-----------------------------------------------
+|4 byte header|4byte bwt-index,1byte_|bwt data|
+-----------------------------------------------
+->1 byte methode_header
+->3 byte blocksize
 ### TODO
 
 Implementeren van BWT decoderen.

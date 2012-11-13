@@ -36,9 +36,11 @@ void move_to_front(char* string, int len, int actie){
       }
       
       string[i] = c-1; //overschrijf origineel
-     if(c == 0){
+      if(c == 0){
+	#ifdef debug
        //no point, we should not rehang the first element in our linkedlist
        printf("hey i just met you, and this is CRAZY!!.. so we should breakup.\n");
+       #endif
        break; //up
      }
      
@@ -58,11 +60,13 @@ void move_to_front(char* string, int len, int actie){
     }
   }else{
 
+    #ifdef debug
     printf("start van move to front\n");
     printf("input string: %s met een lengte: %d\n", string,len);
     for(int i = 0; i < len; i++){
       printf("%d \n", string[i]);
     }
+    #endif
     for(int i = 0; i < len; i++){
       tijdelijk_anker = anker; //terug bij begin
       int j = 0;
