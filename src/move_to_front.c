@@ -57,14 +57,12 @@ void move_to_front(char* string, int len, int actie){
 
     }
   }else{
-    #ifdef debug
+
     printf("start van move to front\n");
     printf("input string: %s met een lengte: %d\n", string,len);
     for(int i = 0; i < len; i++){
       printf("%d \n", string[i]);
     }
-    return;
-    #endif
     for(int i = 0; i < len; i++){
       tijdelijk_anker = anker; //terug bij begin
       int j = 0;

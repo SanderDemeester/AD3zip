@@ -136,7 +136,6 @@ int main(int argc, char* argv[]){
     
     //layout: 4byte (bwt index)|blocksize byte: bwt vector
 
-    
     /********************/
     /* input_buffer+=4; */
     /* input_lengte-=4; */
