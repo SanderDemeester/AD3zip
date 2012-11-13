@@ -16,12 +16,12 @@ int main(int argc, char* argv[]){
   int compressie_function_pointer = 0; //default is debug.
   int blocksize = 0; //de blocksize die wordt gebruikt, dit is de lengte zonder extra header
   int aantal_ingelezen_bytes = 0; //het aantal bytes dat zijn ingelezen door freader
-  char *input_buffer = (char*) malloc(sizeof(char)); //de buffer die fread gebruikt om zijn data in op te slaan.
+  unsigned char *input_buffer = (unsigned char*) malloc(sizeof(unsigned char)); //de buffer die fread gebruikt om zijn data in op te slaan.
   unsigned char* header = (unsigned char*) calloc(4,sizeof(unsigned char)); //4 byte for header
   unsigned char methode_header_format = '\0'; //we will use this to copy our methode identifier
-  char *t = NULL; //Tijdelijke pointer voor freader
-  char c = '\0'; //hierin laadt fread een byte
-  char *input_block = NULL;
+  unsigned char *t = NULL; //Tijdelijke pointer voor freader
+  unsigned char c = '\0'; //hierin laadt fread een byte
+  unsigned char *input_block = NULL;
   int input_lengte = 0; 
   compressie_argument **compressie_methode = (compressie_argument**) malloc(sizeof(compressie_argument*)*NUMBER_OF_COMPRESSIE_METHODE);
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
   
   while((fread(&c,1,1,stdin))) {
     input_lengte++;
-    t = (char*) realloc(input_buffer,input_lengte*sizeof(char));
+    t = (unsigned char*) realloc(input_buffer,input_lengte*sizeof(unsigned char));
     if(t != NULL){
       input_buffer = t;
       input_buffer[input_lengte-1] = c;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]){
 #endif
       }
       
-      input_block = (char*) malloc(sizeof(char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor een int en "_"
+      input_block = (unsigned char*) malloc(sizeof(unsigned char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor een int en "_"
       memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 5 plaatsen over.
 
       encoderen_bwt(input_block, blocksize);
@@ -152,7 +152,7 @@ int main(int argc, char* argv[]){
 	blocksize = input_lengte-5; 
       }
       
-      input_block = (char*) malloc(sizeof(char)*blocksize+5);
+      input_block = (unsigned char*) malloc(sizeof(unsigned char)*blocksize+5);
       memcpy((void*)input_block, (void*) input_buffer, blocksize+5);
       input_lengte -= blocksize+5; //substract from input_lengte;
       input_buffer += blocksize+5; //add to input_buffer
@@ -164,7 +164,6 @@ int main(int argc, char* argv[]){
       if(compressie_function_pointer < 4){ 
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5, DECODEER);
       } 
-      
       decoderen_bwt(input_block, blocksize);
       input_block += 5;
       

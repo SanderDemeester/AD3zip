@@ -10,15 +10,15 @@
 /* Het vierde argument is de index van het laatste element van de rij. BV: als er 4 elementen zijn 0,1,2,3 dan is dit argument 3. */
 /* Het vijfde argument is het aantal elementen in de rij. Bij het voorbeeld hierboven zijn dit dus 4 zijn.  			  */
 /**********************************************************************************************************************************/
-static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, int flag);
+static void quicksort(unsigned char *rij, int* rij_index, int begin, int einde, int len, int flag);
 
 #ifdef DEBUG
-static void printlist(char *rij, int *rij_index, int len);
+static void printlist(unsigned char *rij, int *rij_index, int len);
 #endif
 
-void encoderen_bwt(char *bwt_block, int blocksize){
+void encoderen_bwt(unsigned char *bwt_block, int blocksize){
 
-  char *bwt_transformatie = (char*) malloc(sizeof(char)*blocksize);
+  unsigned char *bwt_transformatie = (unsigned char*) malloc(sizeof(unsigned char)*blocksize);
   int *rij_index = (int*) malloc(sizeof(int)*blocksize);
   int min_number_of_bytes = 1;
 	   
@@ -26,7 +26,7 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   int flag = 1;
 
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
-  bwt_block = (char*) realloc(bwt_block, blocksize+2);
+  bwt_block = (unsigned char*) realloc(bwt_block, blocksize+2);
 
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
 
@@ -76,7 +76,7 @@ void encoderen_bwt(char *bwt_block, int blocksize){
   free(rij_index);
 }
 
-void decoderen_bwt(char *bwt_vector, int len){
+void decoderen_bwt(unsigned char *bwt_vector, int len){
 
   //We gaan er vanuit dat de eerste 4 bytes de bwt index vector zijn.
   int start_pos = 0;
@@ -93,7 +93,7 @@ void decoderen_bwt(char *bwt_vector, int len){
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
   int *bwt_rij_index    = (int*) malloc(sizeof(int)*len-1);
   
-  char *temp = (char*) malloc(sizeof(char)*len);
+  unsigned char *temp = (unsigned char*) malloc(sizeof(unsigned char)*len);
 
   //Get maken van de array van indexen
   for(int i = 0; i < len; i++){
@@ -117,7 +117,7 @@ void decoderen_bwt(char *bwt_vector, int len){
     printf("%c <-> %c\n", bwt_vector[sorted_rij_index[i]], bwt_vector[bwt_rij_index[i]]);
     #endif
 
-    memcpy(&temp[i],&bwt_vector[start_pos],sizeof(char));
+    memcpy(&temp[i],&bwt_vector[start_pos],sizeof(unsigned char));
     start_pos = sorted_rij_index[bwt_rij_index[start_pos]];
   }
 
@@ -134,9 +134,9 @@ static void swap(int *a, int *b){
   *b = t;
 }
 
-static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, int flag){  
+static void quicksort(unsigned char *rij, int* rij_index, int begin, int einde, int len, int flag){  
   if(einde > begin + 1){
-    char piv = rij[rij_index[begin]];
+    unsigned char piv = rij[rij_index[begin]];
     int links = begin+1;
     int rechts = einde;
     while(links < rechts){
@@ -176,7 +176,7 @@ static void quicksort(char *rij, int* rij_index, int begin, int einde, int len, 
 }
 
 #ifdef DEBUG
-static void printlist(char *rij, int *rij_index, int len){
+static void printlist(unsigned char *rij, int *rij_index, int len){
   int i = 0;
   int j = 0;
   for(i=0; i < len; i++){

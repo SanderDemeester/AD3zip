@@ -17,4 +17,4 @@ typedef struct{
 /* De len is het aantal tekens			      */
 /* De actie is encoderen of decoderen		      */
 /******************************************************/
-void move_to_front(char *string, int len, int actie);
+void move_to_front(unsigned char *string, int len, int actie);
