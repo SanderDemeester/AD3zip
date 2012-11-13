@@ -164,6 +164,7 @@ int main(int argc, char* argv[]){
       if(compressie_function_pointer < 4){ 
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5, DECODEER);
       } 
+      
       decoderen_bwt(input_block, blocksize);
       input_block += 5;
       

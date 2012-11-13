@@ -29,7 +29,5 @@ void semi_mtf(unsigned char *input_buffer, int len, int actie){
 }
 
 void debug(unsigned char *input_buffer, int len, int actie){
-  printf("begin block\n");
   fwrite(input_buffer, 1,len,stdout);
-  printf("\neinde block print\n");
 }
