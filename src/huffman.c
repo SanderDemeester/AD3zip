@@ -35,7 +35,6 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
   int i; // index variabel
   int k; // interne index variabel
   //  int j; // interne index variabel
-  int number_of_bytes_in_ouput_buffer = 0; //telt het aantal bytes in de output buffer.
   int number_of_bytes_needed = 0; //het aantal bytes nodig in de output buffer
   int swap_c = 0; //tijdens het swap proces moeten we de oude postie bijhouden adhv een offset.
   int *freq_tabel = (int*) calloc(255,4); //de freq tabel.
@@ -202,9 +201,9 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     output_buffer = (char*) calloc(number_of_bytes_needed,sizeof(char));
     
     for(i = 0; i < lengte; i++){
-      printf("plaintext word: %c -> codeword: %d && aantal bits: %d\n", input_buffer[i], code[input_buffer[i]]->code, code[input_buffer[i]]->number_of_bits);
-      *output_buffer <<= (unsigned char) code[input_buffer[i]]->number_of_bits;
-      *output_buffer |=  (unsigned char) code[input_buffer[i]]->code;
+      printf("plaintext word: %c -> codeword: %d && aantal bits: %d\n", input_buffer[i], code[(unsigned int)input_buffer[i]]->code, code[(unsigned int)input_buffer[i]]->number_of_bits);
+      *output_buffer <<= (unsigned char) code[(unsigned int) input_buffer[i]]->number_of_bits;
+      *output_buffer |=  (unsigned char) code[(unsigned int) input_buffer[i]]->code;
     }
     
     fwrite(output_buffer, 1,number_of_bytes_needed,stdout);
