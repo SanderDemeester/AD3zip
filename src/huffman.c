@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 /**********************************************************************************************************************************************/
 /* We weten dat de kans groter is dat de symbolen met een hogeren freqentie verder zullen staan in de input_buffer->symbolen later in de rij  */
@@ -194,7 +195,7 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
 #ifdef debug
     printf("stop huffman coding\n");
 #endif
-    for(i = 0; i < lengte; i++) number_of_bytes_needed += code[input_buffer[i]]->number_of_bits;
+    for(i = 0; i < lengte; i++) number_of_bytes_needed += code[(unsigned int)input_buffer[i]]->number_of_bits;
     number_of_bytes_needed = (int)ceil(number_of_bytes_needed/8);
     if(number_of_bytes_needed == 0) number_of_bytes_needed++;
     
