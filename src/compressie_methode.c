@@ -16,7 +16,7 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie){
   printf("Move to Front in combinatie met standaard huffman, optie 1\n");
   #endif
   move_to_front(input_buffer, len, actie);  
-  //standaard_huffman(input_buffer, len, actie);
+  standaard_huffman(input_buffer, len, actie);
   if(actie){
     fwrite(input_buffer,1,len,stdout);
   }else{

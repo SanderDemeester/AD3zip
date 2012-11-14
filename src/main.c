@@ -100,7 +100,7 @@ int main(int argc, char* argv[]){
     memcpy(&header[0],&methode_header_format,1);
     memcpy(&header[1],&blocksize,3);
     
-    fwrite(&header[0],1,4,stdout); //schrijf header naar stdout.
+    //    fwrite(&header[0],1,4,stdout); //schrijf header naar stdout.
 
     while(input_lengte){
       if(input_lengte < blocksize){

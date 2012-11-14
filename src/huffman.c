@@ -31,7 +31,7 @@ static void ssort(huffman_top **rij, int begin, int einde){
   }
 }
 
-void standaard_huffman(char *input_buffer, int lengte, int actie){
+void standaard_huffman(unsigned char *input_buffer, int lengte, int actie){
   int i; // index variabel
   int k; // interne index variabel
   //  int j; // interne index variabel
@@ -199,23 +199,85 @@ void standaard_huffman(char *input_buffer, int lengte, int actie){
     if(number_of_bytes_needed == 0) number_of_bytes_needed++;
     
     output_buffer = (char*) calloc(number_of_bytes_needed,sizeof(char));
+    //    printf("aantal bytes nodig: %d \n", number_of_bytes_needed);
+    
+    int index = 0; //De huidige index voor de output array
+    int aantal_bits_in_huidige_byte = 0; //aantal bits die op dit moment in de array zitten
+    int plaats_over = 8; //hoeveel vrije plaatsen er over zijn
+    int rest = 0; //als we over een grens gaan moeten we weten hoeveel we moeten plaatsen in het volgende stuk
+    unsigned char mask = 0xFF; //de mask waarmee we bit grenzen afschermen.
+    
+    unsigned int  codewoord = '\0'; //om simpel te werken hebben we extra velden 
+    int b = 0;
     
     for(i = 0; i < lengte; i++){
-      printf("plaintext word: %c -> codeword: %d && aantal bits: %d\n", input_buffer[i], code[(unsigned int)input_buffer[i]]->code, code[(unsigned int)input_buffer[i]]->number_of_bits);
-      *output_buffer <<= (unsigned char) code[(unsigned int) input_buffer[i]]->number_of_bits;
-      *output_buffer |=  (unsigned char) code[(unsigned int) input_buffer[i]]->code;
+      //Om simpel te werken slaan we ons codewoord en aantal bits op 
+      codewoord = code[(unsigned int) input_buffer[i]]->code;
+      b = code[(unsigned int) input_buffer[i]]->number_of_bits;
+      
+      //Als het aantal bits in de huidige output byte nog plaats heeft voor een deel van ons volgende codewoord
+      //Gaan we de eerste 8 - aantal_bits_in_huidige_byte bits van ons codewoord in de huidige byte opslaan
+      if(aantal_bits_in_huidige_byte + b > 8){
+	//Bepaal hoeveel plaats er nog vrij is in onze huidige output byte
+	plaats_over = 8 - aantal_bits_in_huidige_byte; 
+	
+	//Mask het aantal bits af dat nog vrij is, dit is 2^{plaats nog vrij}-1. BV: 3bits, 2^3-1-> 111
+	mask = (1 << plaats_over) - 1;
+	
+	//Reserveer genoeg plaats in output byte 
+	output_buffer[index] <<= plaats_over;
+	
+	//OR het deel van ons codewoord in de output byte geshift over het verschil in lengte van 
+	//1. lengte codewoord
+	//2. aantal plaatsen
+	// ge-and met ons masker
+	output_buffer[index] |= ((codewoord >> b) - plaats_over) & mask;
+
+	//Ga over naar nieuwe output byte
+	index++;
+	
+	//Het vrije bits in onze nieuwe output byte is terug maximaal
+	aantal_bits_in_huidige_byte = 0;
+	
+	//Hoeveel van het huidige codewoord hebben we nog niet in onze output array opgenomen?
+	rest = b - plaats_over;
+	
+	//Bepaal terug een masker om de rest van ons codewoord eruit te halen.
+	mask = (1 << rest) - 1;
+
+	//Maak genoeg plaats vrij in onze nieuwe output byte
+	output_buffer[index] <<= rest;
+
+	//OR de rest van het codewoord, afgeschermd door de byte in onze nieuwe output byte
+	output_buffer[index] |= codewoord & mask;
+	
+	//Zet het aantal bits dat wordt gebruikt in de output byte op de rest
+	aantal_bits_in_huidige_byte = rest;
+	plaats_over = 8 - rest;
+	rest = 0;
+      }else{
+	output_buffer[index] <<= b;
+	output_buffer[index] |= codewoord;
+	aantal_bits_in_huidige_byte += b;
+	plaats_over -= b;
+	if(aantal_bits_in_huidige_byte == 8){
+	  index++;
+	  aantal_bits_in_huidige_byte = 0;
+	  plaats_over = 8;
+	}
+      }
     }
     
     fwrite(output_buffer, 1,number_of_bytes_needed,stdout);
-
+    
   }else{
     //decodeer
   }
-
+  
   free(huffman_toppen[0]->value);
   free(huffman_toppen[0]);
-
-
+  
+  
   for(i = 0; i < 255; i++){
     free(code[i]);
   }

@@ -8,10 +8,10 @@ typedef struct{
 }huffman_top;
 
 typedef struct{
-  int code;
+  unsigned int code;
   int number_of_bits;
 }huffman_codewoord;
 
 
-void standaard_huffman(char *input_buffer, int lengte, int actie);
+void standaard_huffman(unsigned char *input_buffer, int lengte, int actie);
 
