@@ -129,4 +129,14 @@ void move_to_front(unsigned char* string, int len, int actie){
       }
     }
   }
+  ascii_symbol *n = anker->next;
+  ascii_symbol *f = anker->next;
+  for(int i = 0; i <= 255; i++){
+    n = f->next;
+    free(f);
+    f = n;
+  }
+  free(anker);
 }
+
+

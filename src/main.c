@@ -111,19 +111,19 @@ int main(int argc, char* argv[]){
       }
       
       input_block = (unsigned char*) malloc(sizeof(unsigned char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor een int en "_"
+	    
       memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 5 plaatsen over.
-
       encoderen_bwt(input_block, blocksize);
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
 
       aantal_ingelezen_bytes += blocksize;
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5,ENCODEER); //+5 voor 1 extra int en een _ teken.
-      //free(input_block);
+      free(input_block);
     }
 
-    input_buffer -= aantal_ingelezen_bytes;
-    free(input_buffer);
+    //    input_buffer -= aantal_ingelezen_bytes;
+    //free(input_buffer);
   }else{
 #ifdef DEBUG
     printf("Decodeer\n");
@@ -180,6 +180,8 @@ int main(int argc, char* argv[]){
   }
 
   free(compressie_methode);
+  free(header);
+  free(t);
   return 0;
   
 }

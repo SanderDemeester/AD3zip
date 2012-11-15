@@ -15,8 +15,14 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie){
   #ifdef DEBUG
   printf("Move to Front in combinatie met standaard huffman, optie 1\n");
   #endif
-  move_to_front(input_buffer, len, actie);  
-  standaard_huffman(input_buffer, len, actie);
+  if(actie){
+    //Tijdens encoderen eerst move to front, daarna stadnaard huffman
+    move_to_front(input_buffer, len, actie);  
+    standaard_huffman(input_buffer, len, actie);
+  }else{
+    //Tijdens het decoderen doen we net het omgekeerde
+    
+  }
 }
 
 void semi_mtf(unsigned char *input_buffer, int len, int actie){

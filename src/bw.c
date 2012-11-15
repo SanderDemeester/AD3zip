@@ -24,9 +24,8 @@ void encoderen_bwt(unsigned char *bwt_block, int blocksize){
 	   
   int i = 0;
   int flag = 1;
-
   memcpy((void*)bwt_transformatie, (void*)bwt_block, blocksize); //deep copy
-  bwt_block = (unsigned char*) realloc(bwt_block, blocksize+2);
+  //  bwt_block = (unsigned char*) realloc(bwt_block, blocksize+2); legacy code
 
   for(i = 0; i < blocksize; i++) rij_index[i] = i;
 
@@ -90,8 +89,8 @@ void decoderen_bwt(unsigned char *bwt_vector, int len){
   start_pos = start_pos^0x10101010;
 
   //Rij van gesorteerde indexen.
-  int *sorted_rij_index = (int*) malloc(sizeof(int)*len-1);
-  int *bwt_rij_index    = (int*) malloc(sizeof(int)*len-1);
+  int *sorted_rij_index = (int*) malloc(sizeof(int)*len);
+  int *bwt_rij_index    = (int*) malloc(sizeof(int)*len);
   
   unsigned char *temp = (unsigned char*) malloc(sizeof(unsigned char)*len);
 
