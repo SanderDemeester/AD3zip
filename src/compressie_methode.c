@@ -17,11 +17,6 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie){
   #endif
   move_to_front(input_buffer, len, actie);  
   standaard_huffman(input_buffer, len, actie);
-  if(actie){
-    fwrite(input_buffer,1,len,stdout);
-  }else{
-    //    fwrite(input_buffer,1,len,stdout);
-  }
 }
 
 void semi_mtf(unsigned char *input_buffer, int len, int actie){

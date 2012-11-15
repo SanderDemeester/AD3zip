@@ -267,7 +267,6 @@ void standaard_huffman(unsigned char *input_buffer, int lengte, int actie){
 	}
       }
     }
-    
     fwrite(output_buffer, 1,number_of_bytes_needed,stdout);
     
   }else{
