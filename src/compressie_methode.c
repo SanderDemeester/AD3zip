@@ -21,7 +21,7 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie){
     standaard_huffman(input_buffer, len, actie);
   }else{
     //Tijdens het decoderen doen we net het omgekeerde
-    
+    standaard_huffman(input_buffer,len,actie);    
   }
 }
 

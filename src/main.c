@@ -9,6 +9,7 @@
 #define DECODEER 0
 #define ENCODEER 1
 #define NUMBER_OF_COMPRESSIE_METHODE 5 //+1 for debug mode.
+#define HUFFMAN_HEADER_SIZE 12
 
 int main(int argc, char* argv[]){
 
@@ -134,13 +135,9 @@ int main(int argc, char* argv[]){
     //De volgende 3 bytes zijn de blocksize
     memcpy(&blocksize,&header[1],3);
     
-    //layout: 4byte (bwt index)|blocksize byte: bwt vector
-
-    /********************/
-    /* input_buffer+=4; */
-    /* input_lengte-=4; */
     /********************/
     //Zolang er nog input is 
+    if(compressie_function_pointer == 4){
     while(input_lengte > 0){
       //Als algiment niet klopt, pas dit aan.
 
@@ -172,6 +169,25 @@ int main(int argc, char* argv[]){
       compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
       input_block-=5;
       free(input_block);
+    }
+    }else if(compressie_function_pointer == 0){
+
+      uint32_t huffman_blocksize = 0;
+      while(input_lengte > 0){
+	memcpy(&huffman_blocksize,input_buffer,4);     
+
+	if(input_lengte < huffman_blocksize + HUFFMAN_HEADER_SIZE){
+	  huffman_blocksize = input_lengte-HUFFMAN_HEADER_SIZE;
+	}
+
+	input_block = (unsigned char*) malloc(sizeof(unsigned char)*huffman_blocksize+HUFFMAN_HEADER_SIZE);
+	memcpy((void*) input_block, (void*) input_buffer, huffman_blocksize+HUFFMAN_HEADER_SIZE);
+	
+	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,huffman_blocksize+HUFFMAN_HEADER_SIZE,DECODEER);
+
+	input_lengte -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
+	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header
+      }      
     }
   }
 

@@ -22,3 +22,5 @@ typedef struct{
 
 void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie);
 
+				 
+

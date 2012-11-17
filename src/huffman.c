@@ -32,14 +32,17 @@ static void ssort(huffman_top **rij, int begin, int einde){
 }
 
 void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie){
+
+  uint32_t *freq_tabel = (uint32_t*) calloc(255,sizeof(uint32_t)); //de freq tabel.
+  unsigned char * huffman_boom_zend_string = (unsigned char*) calloc((lengte*5),sizeof(unsigned char)); 
+
+  if(actie){
+    //encodeer
   int i; // index variabel
   int k; // interne index variabel
-  //  int j; // interne index variabel
-
-
   uint32_t number_of_bytes_needed = 0; //het aantal bytes nodig in de output buffer
   uint32_t swap_c = 0; //tijdens het swap proces moeten we de oude postie bijhouden adhv een offset.
-  uint32_t *freq_tabel = (uint32_t*) calloc(255,sizeof(uint32_t)); //de freq tabel.
+
   huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
 
   
@@ -47,13 +50,11 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
   /* Voor elk niet null element in onze huffman boom nemen we 5 bytes, 1 byte voor het teken zelf, en 4 bytes om het codewoord voor te stellen */
   /* Deze 4 bytes is voor het codewoord die een lengte heeft O(n-1) het slechtste geval							       */
   /*********************************************************************************************************************************************/
-  unsigned char * huffman_boom_zend_string = (unsigned char*) calloc((lengte*5),sizeof(unsigned char)); 
+
   huffman_codewoord **code = (huffman_codewoord**) calloc(255, sizeof(huffman_codewoord*)); //het maximaal aantal code die we kunnen hebben is 255, een macrosymbool is 1 ascii teken -> 1byte.
-  uint32_t offset = 0;
+  uint32_t huffman_zend_string_offset = 0;
   char *output_buffer = NULL;
   uint32_t number_of_huffman_top = 0; // het aantal huffman toppen 
-  if(actie){
-    //encodeer
     //Opbouwen van een freqentie tabel om de huffman boom te maken.
     
     for(i = 0; i < lengte; i++){
@@ -73,25 +74,20 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	memcpy(huffman_toppen[number_of_huffman_top]->value,&l,1);
 	huffman_toppen[number_of_huffman_top]->weight = freq_tabel[i];
 	number_of_huffman_top++;
+	
+	memcpy(huffman_boom_zend_string + huffman_zend_string_offset,&l,sizeof(unsigned char));
 
-	memcpy(huffman_boom_zend_string + offset,&l,sizeof(unsigned char));
+	huffman_zend_string_offset += 1;
+	memcpy(huffman_boom_zend_string + huffman_zend_string_offset, &freq_tabel[i],sizeof(uint32_t));
+	huffman_zend_string_offset += sizeof(uint32_t);
 
-	offset += 1;
-	memcpy(huffman_boom_zend_string + offset, &freq_tabel[i],sizeof(uint32_t));
-	offset += sizeof(uint32_t);
       }
     }
-
 
     number_of_huffman_top--; //start from 0
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
-#ifdef debug
-    printf("aantal toppen in huffman array: %d \n", number_of_huffman_top);
-    for(i = number_of_huffman_top; i >= 0; i--){
-      printf("index: %d - weight: %d && symbool: %c \n",i, huffman_toppen[i]->weight, huffman_toppen[i]->value[0]);
-    }
-#endif
+
     /***************************************************************************************/
     /* Overlopen van al onze toppen in de huffman code opstellen			   */
     /* Onze stop voorwaarde hier is "1" omdat er maar 1 top mag overblijven (onze wortel). */
@@ -215,9 +211,8 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
       }
     }
 
-#ifdef debug
-    printf("stop huffman coding\n");
-#endif
+
+    
     for(i = 0; i < lengte; i++) number_of_bytes_needed += code[(uint32_t)input_buffer[i]]->number_of_bits;
     number_of_bytes_needed = (uint32_t)ceil(number_of_bytes_needed/8);
     if(number_of_bytes_needed == 0) number_of_bytes_needed++;
@@ -293,23 +288,24 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
       }
     }
 
-    header->huffman_block_len = number_of_bytes_needed + (lengte*5); //de totale lengte van dit huffman block
+    header->huffman_block_len = number_of_bytes_needed + huffman_zend_string_offset; //de totale lengte van dit huffman block
     header->huffman_code_len = number_of_bytes_needed; //de lengte van de huffman code
-    header->huffman_boom_len = lengte*5; //de lengte van de huffman boom
+    header->huffman_boom_len = huffman_zend_string_offset; //de lengte van de huffman boom
+
+    /* printf("%d \n", header->huffman_block_len); */
+    /* printf("%d \n", header->huffman_code_len); */
+    /* printf("%d \n", header->huffman_boom_len); */
 
     
     fwrite(header,1,12,stdout); //print header
-    fwrite(huffman_boom_zend_string,1,lengte*5,stdout); //print huffman boom
+    fwrite(huffman_boom_zend_string,1,huffman_zend_string_offset,stdout); //print huffman boom
     fwrite(output_buffer, 1,number_of_bytes_needed,stdout); //print huffman code
 
     free(header);
     free(output_buffer);
     free(huffman_boom_zend_string);
-  }else{
-    //decodeer
-  }
-  
-  free(huffman_toppen[0]->value);
+
+free(huffman_toppen[0]->value);
   free(huffman_toppen[0]);
   
   
@@ -319,5 +315,66 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
   free(freq_tabel);
   free(huffman_toppen);
   free(code);
+  
+  }else{
+    uint32_t huffman_block_len = 0;
+    uint32_t huffman_code_len = 0;
+    uint32_t huffman_boom_len = 0;
+    char *codewoorden = NULL;
+    huffman_top **huffman_toppen = (huffman_top**)  calloc((huffman_boom_len/5), sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
+    
+    int index = 0;
+    uint32_t waarde = 0;
+    
+    memcpy(&huffman_block_len, input_buffer, 4);
+    input_buffer += 4;
+    memcpy(&huffman_code_len, input_buffer,4);
+    input_buffer += 4;
+    memcpy(&huffman_boom_len, input_buffer, 4);
+    input_buffer += 4;
+
+    memcpy(huffman_boom_zend_string, input_buffer, huffman_boom_len); //kopieer de huffman boom die we hebbeb gekregen van de input buffer naar de zend string.
+    input_buffer += huffman_boom_len; 
+
+    codewoorden = (char*) malloc(sizeof(char)*huffman_code_len);
+    memcpy(codewoorden,input_buffer, huffman_code_len);
+
+    input_buffer += huffman_code_len; //input buffer is at his end point.
+
+
+    
+
+    //De huidige positie is nu de start van alle codewoorden en de huffman boom, dit heeft een lengte: huffman_block_len
+    printf("huffman_block_len: %d \n", huffman_block_len);
+    printf("huffman_code_len : %d \n", huffman_code_len);
+    printf("huffman_boom_len : %d \n", huffman_boom_len);
+    
+    printf("print huffman zend tree\n");
+    fwrite(huffman_boom_zend_string, 1,huffman_boom_len,stdout);
+
+    printf("\nprint huffman code words\n");
+    fwrite(codewoorden,1,huffman_code_len,stdout);
+
+
+    for(int i = 0; i < huffman_boom_len/5; i++){
+      
+      memcpy(&index, huffman_boom_zend_string,1);
+      memcpy(&waarde,huffman_boom_zend_string+1,4);
+      huffman_toppen[i] = (huffman_top*) calloc(1,sizeof(huffman_top));
+      huffman_toppen[i]->value = (char*) calloc(1,sizeof(char));
+      
+      unsigned char l = (unsigned char)index;
+      
+      memcpy(huffman_toppen[i]->value,&l,1);
+      huffman_toppen[i]->weight = waarde;
+      
+      printf("index: %d -> freq: %d \n", index, waarde);
+      huffman_boom_zend_string+=5;
+    }
+    
+    
+    free(huffman_toppen);
+	free(codewoorden);
+  }  
 }
 
