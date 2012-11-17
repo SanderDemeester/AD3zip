@@ -88,10 +88,181 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     //super sort?
     ssort(huffman_toppen, 0,number_of_huffman_top);
 
-    /***************************************************************************************/
+    build_huffmancode(huffman_toppen,code,number_of_huffman_top);
+    
+    for(i = 0; i < lengte; i++) number_of_bytes_needed += code[(uint32_t)input_buffer[i]]->number_of_bits;
+    number_of_bytes_needed = (uint32_t)ceil(number_of_bytes_needed/8);
+    if(number_of_bytes_needed == 0) number_of_bytes_needed++;
+    
+    output_buffer = (char*) calloc(number_of_bytes_needed,sizeof(char));
+    //    printf("aantal bytes nodig: %d \n", number_of_bytes_needed);
+    
+    uint32_t index = 0; //De huidige index voor de output array
+    uint32_t aantal_bits_in_huidige_byte = 0; //aantal bits die op dit moment in de array zitten
+    uint32_t plaats_over = 8; //hoeveel vrije plaatsen er over zijn
+    uint32_t rest = 0; //als we over een grens gaan moeten we weten hoeveel we moeten plaatsen in het volgende stuk
+    unsigned char mask = 0xFF; //de mask waarmee we bit grenzen afschermen.
+    
+    unsigned int  codewoord = '\0'; //om simpel te werken hebben we extra velden 
+    uint32_t b = 0;
+    huffman_header *header = (huffman_header*) malloc(sizeof(huffman_header));
+    
+    for(i = 0; i < lengte; i++){
+      //Om simpel te werken slaan we ons codewoord en aantal bits op 
+      codewoord = code[(unsigned int) input_buffer[i]]->code;
+      b = code[(unsigned int) input_buffer[i]]->number_of_bits;
+      
+      //Als het aantal bits in de huidige output byte nog plaats heeft voor een deel van ons volgende codewoord
+      //Gaan we de eerste 8 - aantal_bits_in_huidige_byte bits van ons codewoord in de huidige byte opslaan
+      if(aantal_bits_in_huidige_byte + b > 8){
+	//Bepaal hoeveel plaats er nog vrij is in onze huidige output byte
+	plaats_over = 8 - aantal_bits_in_huidige_byte; 
+	
+	//Mask het aantal bits af dat nog vrij is, dit is 2^{plaats nog vrij}-1. BV: 3bits, 2^3-1-> 111
+	mask = (1 << plaats_over) - 1;
+	
+	//Reserveer genoeg plaats in output byte 
+	output_buffer[index] <<= plaats_over;
+	
+	//OR het deel van ons codewoord in de output byte geshift over het verschil in lengte van 
+	//1. lengte codewoord
+	//2. aantal plaatsen
+	// ge-and met ons masker
+	output_buffer[index] |= ((codewoord >> b) - plaats_over) & mask;
+
+	//Ga over naar nieuwe output byte
+	index++;
+	
+	//Het vrije bits in onze nieuwe output byte is terug maximaal
+	aantal_bits_in_huidige_byte = 0;
+	
+	//Hoeveel van het huidige codewoord hebben we nog niet in onze output array opgenomen?
+	rest = b - plaats_over;
+	
+	//Bepaal terug een masker om de rest van ons codewoord eruit te halen.
+	mask = (1 << rest) - 1;
+
+	//Maak genoeg plaats vrij in onze nieuwe output byte
+	output_buffer[index] <<= rest;
+
+	//OR de rest van het codewoord, afgeschermd door de byte in onze nieuwe output byte
+	output_buffer[index] |= codewoord & mask;
+	
+	//Zet het aantal bits dat wordt gebruikt in de output byte op de rest
+	aantal_bits_in_huidige_byte = rest;
+	plaats_over = 8 - rest;
+	rest = 0;
+      }else{
+	output_buffer[index] <<= b;
+	output_buffer[index] |= codewoord;
+	aantal_bits_in_huidige_byte += b;
+	plaats_over -= b;
+	if(aantal_bits_in_huidige_byte == 8){
+	  index++;
+	  aantal_bits_in_huidige_byte = 0;
+	  plaats_over = 8;
+	}
+      }
+    }
+
+    header->huffman_block_len = number_of_bytes_needed + huffman_zend_string_offset; //de totale lengte van dit huffman block
+    header->huffman_code_len = number_of_bytes_needed; //de lengte van de huffman code
+    header->huffman_boom_len = huffman_zend_string_offset; //de lengte van de huffman boom
+
+    /* printf("%d \n", header->huffman_block_len); */
+    /* printf("%d \n", header->huffman_code_len); */
+    /* printf("%d \n", header->huffman_boom_len); */
+
+    
+    fwrite(header,1,12,stdout); //print header
+    fwrite(huffman_boom_zend_string,1,huffman_zend_string_offset,stdout); //print huffman boom
+    fwrite(output_buffer, 1,number_of_bytes_needed,stdout); //print huffman code
+
+    free(header);
+    free(output_buffer);
+    free(huffman_boom_zend_string);
+    
+    free(huffman_toppen[0]->value);
+    free(huffman_toppen[0]);
+  
+  
+  for(i = 0; i < 255; i++){
+    free(code[i]);
+  } 
+  free(freq_tabel);
+  free(huffman_toppen);
+  free(code);
+  
+  }else{
+    uint32_t huffman_block_len = 0;
+    uint32_t huffman_code_len = 0;
+    uint32_t huffman_boom_len = 0;
+    char *codewoorden = NULL;
+    huffman_top **huffman_toppen = (huffman_top**)  calloc((huffman_boom_len/5), sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
+    
+    int index = 0;
+    uint32_t waarde = 0;
+    
+    memcpy(&huffman_block_len, input_buffer, 4);
+    input_buffer += 4;
+    memcpy(&huffman_code_len, input_buffer,4);
+    input_buffer += 4;
+    memcpy(&huffman_boom_len, input_buffer, 4);
+    input_buffer += 4;
+
+    memcpy(huffman_boom_zend_string, input_buffer, huffman_boom_len); //kopieer de huffman boom die we hebbeb gekregen van de input buffer naar de zend string.
+    input_buffer += huffman_boom_len; 
+
+    codewoorden = (char*) malloc(sizeof(char)*huffman_code_len);
+    memcpy(codewoorden,input_buffer, huffman_code_len);
+
+    input_buffer += huffman_code_len; //input buffer is at his end point.
+
+    //De huidige positie is nu de start van alle codewoorden en de huffman boom, dit heeft een lengte: huffman_block_len
+    printf("huffman_block_len: %d \n", huffman_block_len);
+    printf("huffman_code_len : %d \n", huffman_code_len);
+    printf("huffman_boom_len : %d \n", huffman_boom_len);
+    
+    printf("print huffman zend tree\n");
+    fwrite(huffman_boom_zend_string, 1,huffman_boom_len,stdout);
+
+    printf("\nprint huffman code words\n");
+    fwrite(codewoorden,1,huffman_code_len,stdout);
+
+
+    for(int i = 0; i < huffman_boom_len/5; i++){
+      
+      memcpy(&index, huffman_boom_zend_string,1);
+      memcpy(&waarde,huffman_boom_zend_string+1,4);
+      huffman_toppen[i] = (huffman_top*) calloc(1,sizeof(huffman_top));
+      huffman_toppen[i]->value = (char*) calloc(1,sizeof(char));
+      
+      unsigned char l = (unsigned char)index;
+      
+      memcpy(huffman_toppen[i]->value,&l,1);
+      huffman_toppen[i]->weight = waarde;
+      
+      printf("index: %d -> freq: %d \n", index, waarde);
+      huffman_boom_zend_string+=5;
+    }
+    
+    
+    free(huffman_toppen);
+    free(codewoorden);
+  }  
+}
+
+void build_huffmancode(huffman_top **huffman_toppen,
+		       huffman_codewoord **code,
+		       int number_of_huffman_top){
+      /***************************************************************************************/
     /* Overlopen van al onze toppen in de huffman code opstellen			   */
     /* Onze stop voorwaarde hier is "1" omdat er maar 1 top mag overblijven (onze wortel). */
     /***************************************************************************************/
+  int i;
+  int k;
+  int swap_c;
+
     for(i = number_of_huffman_top; i >= 1 ; i--){
       
 #ifdef debug
@@ -210,171 +381,4 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	swap(huffman_toppen[i+1],huffman_toppen[i]);
       }
     }
-
-
-    
-    for(i = 0; i < lengte; i++) number_of_bytes_needed += code[(uint32_t)input_buffer[i]]->number_of_bits;
-    number_of_bytes_needed = (uint32_t)ceil(number_of_bytes_needed/8);
-    if(number_of_bytes_needed == 0) number_of_bytes_needed++;
-    
-    output_buffer = (char*) calloc(number_of_bytes_needed,sizeof(char));
-    //    printf("aantal bytes nodig: %d \n", number_of_bytes_needed);
-    
-    uint32_t index = 0; //De huidige index voor de output array
-    uint32_t aantal_bits_in_huidige_byte = 0; //aantal bits die op dit moment in de array zitten
-    uint32_t plaats_over = 8; //hoeveel vrije plaatsen er over zijn
-    uint32_t rest = 0; //als we over een grens gaan moeten we weten hoeveel we moeten plaatsen in het volgende stuk
-    unsigned char mask = 0xFF; //de mask waarmee we bit grenzen afschermen.
-    
-    unsigned int  codewoord = '\0'; //om simpel te werken hebben we extra velden 
-    uint32_t b = 0;
-    huffman_header *header = (huffman_header*) malloc(sizeof(huffman_header));
-    
-    for(i = 0; i < lengte; i++){
-      //Om simpel te werken slaan we ons codewoord en aantal bits op 
-      codewoord = code[(unsigned int) input_buffer[i]]->code;
-      b = code[(unsigned int) input_buffer[i]]->number_of_bits;
-      
-      //Als het aantal bits in de huidige output byte nog plaats heeft voor een deel van ons volgende codewoord
-      //Gaan we de eerste 8 - aantal_bits_in_huidige_byte bits van ons codewoord in de huidige byte opslaan
-      if(aantal_bits_in_huidige_byte + b > 8){
-	//Bepaal hoeveel plaats er nog vrij is in onze huidige output byte
-	plaats_over = 8 - aantal_bits_in_huidige_byte; 
-	
-	//Mask het aantal bits af dat nog vrij is, dit is 2^{plaats nog vrij}-1. BV: 3bits, 2^3-1-> 111
-	mask = (1 << plaats_over) - 1;
-	
-	//Reserveer genoeg plaats in output byte 
-	output_buffer[index] <<= plaats_over;
-	
-	//OR het deel van ons codewoord in de output byte geshift over het verschil in lengte van 
-	//1. lengte codewoord
-	//2. aantal plaatsen
-	// ge-and met ons masker
-	output_buffer[index] |= ((codewoord >> b) - plaats_over) & mask;
-
-	//Ga over naar nieuwe output byte
-	index++;
-	
-	//Het vrije bits in onze nieuwe output byte is terug maximaal
-	aantal_bits_in_huidige_byte = 0;
-	
-	//Hoeveel van het huidige codewoord hebben we nog niet in onze output array opgenomen?
-	rest = b - plaats_over;
-	
-	//Bepaal terug een masker om de rest van ons codewoord eruit te halen.
-	mask = (1 << rest) - 1;
-
-	//Maak genoeg plaats vrij in onze nieuwe output byte
-	output_buffer[index] <<= rest;
-
-	//OR de rest van het codewoord, afgeschermd door de byte in onze nieuwe output byte
-	output_buffer[index] |= codewoord & mask;
-	
-	//Zet het aantal bits dat wordt gebruikt in de output byte op de rest
-	aantal_bits_in_huidige_byte = rest;
-	plaats_over = 8 - rest;
-	rest = 0;
-      }else{
-	output_buffer[index] <<= b;
-	output_buffer[index] |= codewoord;
-	aantal_bits_in_huidige_byte += b;
-	plaats_over -= b;
-	if(aantal_bits_in_huidige_byte == 8){
-	  index++;
-	  aantal_bits_in_huidige_byte = 0;
-	  plaats_over = 8;
-	}
-      }
-    }
-
-    header->huffman_block_len = number_of_bytes_needed + huffman_zend_string_offset; //de totale lengte van dit huffman block
-    header->huffman_code_len = number_of_bytes_needed; //de lengte van de huffman code
-    header->huffman_boom_len = huffman_zend_string_offset; //de lengte van de huffman boom
-
-    /* printf("%d \n", header->huffman_block_len); */
-    /* printf("%d \n", header->huffman_code_len); */
-    /* printf("%d \n", header->huffman_boom_len); */
-
-    
-    fwrite(header,1,12,stdout); //print header
-    fwrite(huffman_boom_zend_string,1,huffman_zend_string_offset,stdout); //print huffman boom
-    fwrite(output_buffer, 1,number_of_bytes_needed,stdout); //print huffman code
-
-    free(header);
-    free(output_buffer);
-    free(huffman_boom_zend_string);
-
-free(huffman_toppen[0]->value);
-  free(huffman_toppen[0]);
-  
-  
-  for(i = 0; i < 255; i++){
-    free(code[i]);
-  } 
-  free(freq_tabel);
-  free(huffman_toppen);
-  free(code);
-  
-  }else{
-    uint32_t huffman_block_len = 0;
-    uint32_t huffman_code_len = 0;
-    uint32_t huffman_boom_len = 0;
-    char *codewoorden = NULL;
-    huffman_top **huffman_toppen = (huffman_top**)  calloc((huffman_boom_len/5), sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
-    
-    int index = 0;
-    uint32_t waarde = 0;
-    
-    memcpy(&huffman_block_len, input_buffer, 4);
-    input_buffer += 4;
-    memcpy(&huffman_code_len, input_buffer,4);
-    input_buffer += 4;
-    memcpy(&huffman_boom_len, input_buffer, 4);
-    input_buffer += 4;
-
-    memcpy(huffman_boom_zend_string, input_buffer, huffman_boom_len); //kopieer de huffman boom die we hebbeb gekregen van de input buffer naar de zend string.
-    input_buffer += huffman_boom_len; 
-
-    codewoorden = (char*) malloc(sizeof(char)*huffman_code_len);
-    memcpy(codewoorden,input_buffer, huffman_code_len);
-
-    input_buffer += huffman_code_len; //input buffer is at his end point.
-
-
-    
-
-    //De huidige positie is nu de start van alle codewoorden en de huffman boom, dit heeft een lengte: huffman_block_len
-    printf("huffman_block_len: %d \n", huffman_block_len);
-    printf("huffman_code_len : %d \n", huffman_code_len);
-    printf("huffman_boom_len : %d \n", huffman_boom_len);
-    
-    printf("print huffman zend tree\n");
-    fwrite(huffman_boom_zend_string, 1,huffman_boom_len,stdout);
-
-    printf("\nprint huffman code words\n");
-    fwrite(codewoorden,1,huffman_code_len,stdout);
-
-
-    for(int i = 0; i < huffman_boom_len/5; i++){
-      
-      memcpy(&index, huffman_boom_zend_string,1);
-      memcpy(&waarde,huffman_boom_zend_string+1,4);
-      huffman_toppen[i] = (huffman_top*) calloc(1,sizeof(huffman_top));
-      huffman_toppen[i]->value = (char*) calloc(1,sizeof(char));
-      
-      unsigned char l = (unsigned char)index;
-      
-      memcpy(huffman_toppen[i]->value,&l,1);
-      huffman_toppen[i]->weight = waarde;
-      
-      printf("index: %d -> freq: %d \n", index, waarde);
-      huffman_boom_zend_string+=5;
-    }
-    
-    
-    free(huffman_toppen);
-	free(codewoorden);
-  }  
 }
-

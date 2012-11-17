@@ -22,5 +22,9 @@ typedef struct{
 
 void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie);
 
+void build_huffmancode(huffman_top **huffman_toppen,
+		       huffman_codewoord **code,
+		       int number_of_huffman_top);
+
 				 
 
