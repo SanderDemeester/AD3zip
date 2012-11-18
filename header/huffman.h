@@ -19,6 +19,13 @@ typedef struct{
   uint32_t huffman_boom_len;  // de lengte in bytes van de huffman boom.
 }huffman_header;
 
+typedef struct{
+  int is_root;
+  int bit;
+  int is_blad;
+  char *value;
+}huffman_tree_element;
+
 
 void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie);
 

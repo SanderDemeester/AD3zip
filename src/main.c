@@ -171,7 +171,7 @@ int main(int argc, char* argv[]){
       free(input_block);
     }
     }else if(compressie_function_pointer == 0){
-
+      
       uint32_t huffman_blocksize = 0;
       while(input_lengte > 0){
 	memcpy(&huffman_blocksize,input_buffer,4);     
@@ -180,14 +180,14 @@ int main(int argc, char* argv[]){
 	  huffman_blocksize = input_lengte-HUFFMAN_HEADER_SIZE;
 	}
 
-	input_block = (unsigned char*) malloc(sizeof(unsigned char)*huffman_blocksize+HUFFMAN_HEADER_SIZE);
-	memcpy((void*) input_block, (void*) input_buffer, huffman_blocksize+HUFFMAN_HEADER_SIZE);
+	input_block = (unsigned char*) malloc(sizeof(unsigned char)*(huffman_blocksize+HUFFMAN_HEADER_SIZE));
+	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,huffman_blocksize+HUFFMAN_HEADER_SIZE,DECODEER);
-
 	input_lengte -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
 	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header
-      }      
+	free(input_block);
+      }
     }
   }
 
