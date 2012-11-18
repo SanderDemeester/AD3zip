@@ -277,18 +277,48 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     //0->links
     for(int i = 0; i < 255; i++){
       if(code[i]->number_of_bits > 1){
+	huffman_tree_element *w = root;
 	int n = code[i]->number_of_bits;
 	int b = 0;
 	printf("begin seq for value: %d\n",code[i]->code);
 	for(int k = 0; k < code[i]->number_of_bits; k++){
 	  b = (code[i]->code >> (n-1)-k) & 0x01;
-	  if(b)
-	    printf("rechts\n");
-	  else
-	    printf("links\n");
+	  if(b){
+	    //we moeten naar rechts
+	    if(w->rechts == NULL){
+	      //rechts is null
+	      w->rechts = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
+	      w = w->rechts;
+	      w->bit = b;
+	      w->value = NULL;
+	      w->is_root = 0;
+	      w->links = NULL;
+	      w->rechts = NULL;
+	    }else{
+	      //rechts is niet null
+	      w = w->rechts;
+	    }
+	  }else{
+	    //we moeten naar links
+	    if(w->links == NULL){
+	      //w->links is NULL
+	      w->links = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
+	      w = w->links;
+	      w->bit = b;
+	      w->is_root = 0;
+	      w->links = NULL;
+	      w->rechts = NULL;
+	    }else{
+	      //w->links is niet NULL
+	      w = w->links;
+	    }
+	  }
 	  printf("bit: %d\n", (code[i]->code >> (n-1)-k) & 0x01);
 	}
 	printf("end seq\n");
+	w->is_blad = 1;
+	w->value = (char*) malloc(sizeof(char));
+	memcpy(w->value,&i,1);
       }
     }
 
