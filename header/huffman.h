@@ -20,10 +20,12 @@ typedef struct{
 }huffman_header;
 
 typedef struct{
-  int is_root;
-  int bit;
-  int is_blad;
+  int is_root:1;
+  int bit:1;
+  int is_blad:1;
   char *value;
+  struct huffman_tree_element* links;
+  struct huffman_tree_element* rechts;
 }huffman_tree_element;
 
 

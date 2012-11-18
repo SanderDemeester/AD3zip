@@ -262,6 +262,10 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 
     
     build_huffmancode(huffman_toppen,code,(huffman_boom_len/5)-1);
+
+    //Maak een echte tree voor het decoderen
+    
+    huffman_tree_element *root = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
     
     for(int i = 0; i < 255; i++){
       if(code[i]->number_of_bits > 1){
@@ -284,6 +288,8 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     free(code);
     
     free(codewoorden);
+
+    //FREE huffmantree!!!
   }
 }
 
