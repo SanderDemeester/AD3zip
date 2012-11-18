@@ -305,6 +305,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	      w->links = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
 	      w = w->links;
 	      w->bit = b;
+	      w->is_blad = 0;
 	      w->is_root = 0;
 	      w->links = NULL;
 	      w->rechts = NULL;
@@ -321,6 +322,39 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	memcpy(w->value,&i,1);
       }
     }
+
+      char c = codewoorden[0];
+      huffman_tree_element *w = root;
+      int b;
+      int b_pos = 0;
+
+    for(int i = 0; i < huffman_code_len; i++){
+      if(b_pos == 8){
+	c = codewoorden[i];
+      }else{
+	c = codewoorden[i]; //nieuw woord
+	w = root; //reset root
+	b_pos = 0; //reset b_pos
+      }
+      
+      printf("begin woord\n");
+
+      while(!w->is_blad){
+	b = (c >> (7-b_pos) & 0x01);
+	if(b){
+	  //ga rechts
+	  w = w->rechts;
+	}else{
+	  w = w->links;
+	}
+	b_pos++;
+	if(b_pos == 8){
+	  break;
+	}
+      }
+      printf("einde woord\n");
+    }
+    
 
     for(int i = 0; i < 255; i++) free(code[i]);
     
