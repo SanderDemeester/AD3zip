@@ -264,7 +264,14 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     build_huffmancode(huffman_toppen,code,(huffman_boom_len/5)-1);
     
     for(int i = 0; i < 255; i++){
-      printf("bits: %d\n",code[i]->number_of_bits);
+      if(code[i]->number_of_bits > 1){
+	int n = code[i]->number_of_bits;
+	printf("begin seq for value: %d\n",code[i]->code);
+	for(int k = 0; k < code[i]->number_of_bits; k++){
+	  printf("bit: %d\n", (code[i]->code >> (n-1)-k) & 0x01);
+	}
+	printf("end seq\n");
+      }
     }
 
     for(int i = 0; i < 255; i++) free(code[i]);
