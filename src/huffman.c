@@ -266,12 +266,26 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     //Maak een echte tree voor het decoderen
     
     huffman_tree_element *root = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
+    root->is_root = 1;
+    root->bit = 0; //default for root
+    root->is_blad = 0; //geen blad
+    root->value = NULL;
+    root->links = NULL;
+    root->rechts = NULL;
     
+    //1->rechts
+    //0->links
     for(int i = 0; i < 255; i++){
       if(code[i]->number_of_bits > 1){
 	int n = code[i]->number_of_bits;
+	int b = 0;
 	printf("begin seq for value: %d\n",code[i]->code);
 	for(int k = 0; k < code[i]->number_of_bits; k++){
+	  b = (code[i]->code >> (n-1)-k) & 0x01;
+	  if(b)
+	    printf("rechts\n");
+	  else
+	    printf("links\n");
 	  printf("bit: %d\n", (code[i]->code >> (n-1)-k) & 0x01);
 	}
 	printf("end seq\n");
