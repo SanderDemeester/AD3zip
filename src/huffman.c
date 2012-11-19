@@ -46,9 +46,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
   if(actie){
     //encodeer
   int i; // index variabel
-  int k; // interne index variabel
   uint32_t number_of_bytes_needed = 0; //het aantal bytes nodig in de output buffer
-  uint32_t swap_c = 0; //tijdens het swap proces moeten we de oude postie bijhouden adhv een offset.
 
   huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
   uint32_t *freq_tabel = (uint32_t*) calloc(255,sizeof(uint32_t)); //de freq tabel.
@@ -77,7 +75,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 
       if(freq_tabel[i] > 0){
 	huffman_toppen[number_of_huffman_top] = (huffman_top*) calloc(1,sizeof(huffman_top));
-	huffman_toppen[number_of_huffman_top]->value = (char*) calloc(1,sizeof(char));
+	huffman_toppen[number_of_huffman_top]->value = (unsigned char*) calloc(1,sizeof(unsigned char));
 	huffman_toppen[number_of_huffman_top]->aantal_elementen = 1;
 	unsigned char l = (unsigned char)i;
 	memcpy(huffman_toppen[number_of_huffman_top]->value,&l,1);
@@ -115,7 +113,6 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     unsigned int  codewoord = '\0'; //om simpel te werken hebben we extra velden 
     uint32_t b = 0;
     huffman_header *header = (huffman_header*) malloc(sizeof(huffman_header));
-    int j;
     
     for(i = 0; i < lengte; i++){
       //Om simpel te werken slaan we ons codewoord en aantal bits op 
@@ -213,8 +210,6 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     unsigned char * huffman_boom_zend_string = NULL;
     huffman_codewoord **code = NULL;
     
-    huffman_tree_element *pointers_to_free = NULL;
-    int number_of_pointers_to_free = 0;
 
     int index = 0;
     uint32_t waarde = 0;
@@ -259,7 +254,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
       memcpy(&waarde,huffman_boom_zend_string+1,4);
       
       huffman_toppen[i] = (huffman_top*) calloc(1,sizeof(huffman_top));
-      huffman_toppen[i]->value = (char*) calloc(1,sizeof(char));
+      huffman_toppen[i]->value = (unsigned char*) calloc(1,sizeof(unsigned char));
       huffman_toppen[i]->aantal_elementen = 1;
 
       unsigned char l = (unsigned char)index;
@@ -289,7 +284,6 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     for(int i = 0; i < 255; i++){
       if(code[i]->number_of_bits > 1){
 	huffman_tree_element *w = root;
-	int n = code[i]->number_of_bits;
 	int b = 0;
 	printf("begin seq for value: %d\n",code[i]->code);
 	printf("aantal bits: %d \n", code[i]->number_of_bits);
@@ -300,8 +294,8 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	    //we moeten naar rechts
 	    if(w->rechts == NULL){
 	      //rechts is null
-	      w->rechts = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
-	      w = w->rechts;
+	      w->rechts = (struct huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
+	      w = (huffman_tree_element*)w->rechts;
 	      w->bit = b;
 	      w->value = NULL;
 	      w->is_root = 0;
@@ -309,14 +303,14 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	      w->rechts = NULL;
 	    }else{
 	      //rechts is niet null
-	      w = w->rechts;
+	      w = (huffman_tree_element*)w->rechts;
 	    }
 	  }else{
 	    //we moeten naar links
 	    if(w->links == NULL){
 	      //w->links is NULL
-	      w->links = (huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
-	      w = w->links;
+	      w->links = (struct huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
+	      w = (huffman_tree_element*)w->links;
 	      w->bit = b;
 	      w->is_blad = 0;
 	      w->is_root = 0;
@@ -324,7 +318,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	      w->rechts = NULL;
 	    }else{
 	      //w->links is niet NULL
-	      w = w->links;
+	      w = (huffman_tree_element*)w->links;
 	    }
 	  }
 	}
@@ -355,9 +349,9 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	printf("bit: %d \n", b);
 	if(b){
 	  //ga rechts
-	  w = w->rechts;
+	  w = (huffman_tree_element*)w->rechts;
 	}else{
-	  w = w->links;
+	  w = (huffman_tree_element*)w->links;
 	}
 	b_pos--;
 	if(b_pos == -1){
