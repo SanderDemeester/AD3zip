@@ -23,7 +23,6 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie){
     //Tijdens het decoderen doen we net het omgekeerde
     standaard_huffman(input_buffer,len,actie);    
     len = input_buffer[0];
-    input_buffer++;
     fwrite(input_buffer,1,len,stdout);
     return 0;
     //De eerste byte is de lengte van de gedecodeerde huffman code

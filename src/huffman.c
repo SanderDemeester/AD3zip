@@ -9,6 +9,8 @@
 /* zullen hogere freqentie hebben													      */
 /**********************************************************************************************************************************************/
 
+#ifdef debug
+/* print bin string */
 static void p_b(unsigned char v){
   for(int i = 7;  i >= 0 ;i--){
     printf("%d", (v >> i) & 0x01);
@@ -16,6 +18,7 @@ static void p_b(unsigned char v){
   printf("\n");
 
 }
+#endif
 static void swap(huffman_top *a, huffman_top *b){
   huffman_top t = *a; 
   *a = *b;
@@ -271,7 +274,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     memcpy(&padding,input_buffer,1);
     input_buffer++;
     
-    input_buffer -= (huffman_code_len+huffman_boom_len+12);
+    input_buffer -= (huffman_code_len+huffman_boom_len+12)+1;
     //De huidige positie is nu de start van alle codewoorden en de huffman boom, dit heeft een lengte: huffman_block_len
     
 
@@ -403,8 +406,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     int b_pos = 7;
     int i = 0;
     int k = 0;
-    index = 0;
-    int f = 0;
+    index = 1;
     while(k < aantal_bits_in_code){
       if(b_pos <= -1){
 	i++;
