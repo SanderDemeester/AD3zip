@@ -82,20 +82,12 @@ int main(int argc, char* argv[]){
       exit(-1);
     }
   }
-  if(methode == ENCODEER){ //encodeer
-    
+  if(methode == ENCODEER){ 
   /***************************************************************/
   /* input_buffer is de buffer die input tekens van stdin bevat	 */
   /* input_lengte is het aantal tekens dat input_buffer bevat	 */
   /* input_block  is de buffer die de tekens van de buffer bevat */
   /***************************************************************/
-
-#ifdef DEBUG
-    printf("Encodeer\n");
-    printf("%d \n", input_lengte);
-#endif
-    
-
     blocksize = (blocksize & 0x00FFFFFF);
     methode_header_format = (unsigned char) ((compressie_function_pointer & 0x000000FF));
 
@@ -123,40 +115,16 @@ int main(int argc, char* argv[]){
       compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5,ENCODEER,DUMMY); //+5 voor 1 extra int en een _ teken.
       free(input_block);
     }
-
-    //    input_buffer -= aantal_ingelezen_bytes;
-    //free(input_buffer);
   }else{
-    //Standaard lees altijd de header
+    //Standaard lees altijd de header, 4byte
     //Methode is de eerste byte van de header
     compressie_function_pointer = header[0];
     
     //De volgende 3 bytes zijn de blocksize
     memcpy(&blocksize,&header[1],3);
     
-    if(compressie_function_pointer == 4){
-      //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
-      compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode,blocksize);
-
-    }else if(compressie_function_pointer == 0){
-      
-      uint32_t huffman_blocksize = 0;
-      while(input_lengte > 0){
-	memcpy(&huffman_blocksize,input_buffer,4);     
-
-	if(input_lengte < huffman_blocksize + HUFFMAN_HEADER_SIZE){
-	  huffman_blocksize = input_lengte-HUFFMAN_HEADER_SIZE;
-	}
-
-	input_block = (unsigned char*) malloc(sizeof(unsigned char)*(huffman_blocksize+HUFFMAN_HEADER_SIZE));
-	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
-	
-	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,huffman_blocksize+HUFFMAN_HEADER_SIZE,DECODEER,DUMMY);
-	input_lengte -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
-	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header	
-	free(input_block);
-      }
-    }
+    //Delegeer decoderen naar juiste functie.
+    compressie_methode[compressie_function_pointer]->compressie_algoritme(input_buffer,input_lengte, methode,blocksize);
   }
 
   for(int i = 0 ;i < NUMBER_OF_COMPRESSIE_METHODE; i++){

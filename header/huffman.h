@@ -1,6 +1,8 @@
 #define HUFFMAN
 #include <stdint.h>
 
+#define HUFFMAN_HEADER_SIZE 12
+
 typedef struct{
   unsigned char *value;
   uint32_t weight;
