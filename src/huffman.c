@@ -21,6 +21,8 @@ static void swap(huffman_top *a, huffman_top *b){
   *a = *b;
   *b = t;
 }
+
+//Ik heb deze opgezocht
 unsigned int reverse(register unsigned int x)
 {
   x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
@@ -109,7 +111,6 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     if(number_of_bytes_needed == 0) number_of_bytes_needed++;
     
     output_buffer = (unsigned char*) calloc(number_of_bytes_needed+1,sizeof(unsigned char));
-    //    printf("aantal bytes nodig: %d \n", number_of_bytes_needed);
     
     uint32_t index = 0; //De huidige index voor de output array
     uint32_t aantal_bits_in_huidige_byte = 0; //aantal bits die op dit moment in de array zitten
@@ -124,20 +125,20 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     for(i = 0; i < lengte; i++){
       //Om simpel te werken slaan we ons codewoord en aantal bits op
       codewoord = code[(unsigned int) input_buffer[i]]->code;
-      codewoord = reverse(codewoord);
+
+      //reverse order van bits
+      codewoord = reverse(codewoord); 
+
+      //de lengte van onze code
       b = code[(unsigned int) input_buffer[i]]->number_of_bits;
+
+      //shift 32-len van onze code: 1001 ... 0 -> 0 ... 1001
       codewoord = (codewoord >> (32-b));
 
-      /* printf("%d\n",b); */
-      /* for(int k = b-1; k >= 0; k--){ */
-      /* 	printf("%d", (codewoord >> k) & 0x01); */
-      /* } */
-
-      /* printf("\n"); */
-      
       //Als het aantal bits in de huidige output byte nog plaats heeft voor een deel van ons volgende codewoord
       //Gaan we de eerste 8 - aantal_bits_in_huidige_byte bits van ons codewoord in de huidige byte opslaan
       if(aantal_bits_in_huidige_byte + b > 8){
+
 	//Bepaal hoeveel plaats er nog vrij is in onze huidige output byte
 	plaats_over = 8 - aantal_bits_in_huidige_byte; 
 	
@@ -175,30 +176,27 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	aantal_bits_in_huidige_byte = rest;
 	plaats_over = 8 - rest;
 	rest = 0;
-	//	p_b(output_buffer[index]);
       }else{
 	output_buffer[index] <<= b;
 	output_buffer[index] |= codewoord;
 	aantal_bits_in_huidige_byte += b;
 	plaats_over -= b;
-	//	p_b(output_buffer[index]);
 	if(aantal_bits_in_huidige_byte == 8){
 	  index++;
 	  aantal_bits_in_huidige_byte = 0;
 	  plaats_over = 8;
-	  //p_b(output_buffer[index]);
 	}
       }
     }
 
-    /* for(int i = 0; i <= number_of_bytes_needed; i++){ */
-    /*   p_b(output_buffer[i]); */
-    /* } */
-    /* printf("%d \n", number_of_bytes_needed); */
+    //de totale lengte van dit huffman block, number_of_bytes moet hier +1 omdat de len vanaf 0 telt.
+    header->huffman_block_len = (number_of_bytes_needed+1) + huffman_zend_string_offset; 
 
-    header->huffman_block_len = (number_of_bytes_needed+1) + huffman_zend_string_offset; //de totale lengte van dit huffman block
-    header->huffman_code_len = number_of_bytes_needed; //de lengte van de huffman code
-    header->huffman_boom_len = huffman_zend_string_offset; //de lengte van de huffman boom
+    //de lengte van de huffman code
+    header->huffman_code_len = number_of_bytes_needed; 
+
+    //de lengte van de huffman boom
+    header->huffman_boom_len = huffman_zend_string_offset; 
 
     /* printf("%d \n", header->huffman_block_len); */
     /* printf("%d \n", header->huffman_code_len); */
@@ -356,6 +354,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	      w->links = (struct huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
 
 	      list_to_free[aantal_element_to_free++] = w->links;
+	      
 	      w = (huffman_tree_element*)w->links;
 	      w->bit = b;
 	      w->is_blad = 0;
