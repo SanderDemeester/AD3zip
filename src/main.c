@@ -10,6 +10,7 @@
 #define ENCODEER 1
 #define NUMBER_OF_COMPRESSIE_METHODE 5 //+1 for debug mode.
 #define HUFFMAN_HEADER_SIZE 12
+#define DUMMY 0
 
 int main(int argc, char* argv[]){
 
@@ -114,62 +115,29 @@ int main(int argc, char* argv[]){
       input_block = (unsigned char*) malloc(sizeof(unsigned char)*(blocksize+5)); //alocte genoeg om de blok in op te slaan +5 voor een int en "_"
 	    
       memcpy((void*)input_block, (void*) input_buffer, blocksize); //laat 5 plaatsen over.
-      encoderen_bwt(input_block, blocksize);
+      encoderen_bwt(input_block, blocksize); 
       input_lengte -= blocksize; //subtract from input_lengte
       input_buffer += blocksize; //add to input_buffer
 
       aantal_ingelezen_bytes += blocksize;
-      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5,ENCODEER); //+5 voor 1 extra int en een _ teken.
+      compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5,ENCODEER,DUMMY); //+5 voor 1 extra int en een _ teken.
       free(input_block);
     }
 
     //    input_buffer -= aantal_ingelezen_bytes;
     //free(input_buffer);
   }else{
-#ifdef DEBUG
-    printf("Decodeer\n");
-#endif
+    //Standaard lees altijd de header
     //Methode is de eerste byte van de header
     compressie_function_pointer = header[0];
     
     //De volgende 3 bytes zijn de blocksize
     memcpy(&blocksize,&header[1],3);
     
-    /********************/
-    //Zolang er nog input is 
     if(compressie_function_pointer == 4){
-    while(input_lengte > 0){
-      //Als algiment niet klopt, pas dit aan.
-
-      if(input_lengte < blocksize+5){
-	/********************************************************************************************************/
-        /* We gebruiken hier -5 omdat er rekening wordt gehouden met de 2 controle chars per deelstring         */
-	/* bij het decoderen van de bwt vector							                */
-        /********************************************************************************************************/
-	blocksize = input_lengte-5; 
-      }
-      
-      input_block = (unsigned char*) malloc(sizeof(unsigned char)*blocksize+5);
-      memcpy((void*)input_block, (void*) input_buffer, blocksize+5);
-      input_lengte -= blocksize+5; //substract from input_lengte;
-      input_buffer += blocksize+5; //add to input_buffer
-      
-      /******************************************************************************/
-      /* Met deze controle kijken we of onze input enkel maar de bwt is.		  */
-      /*   Deze controle is tijdelijk, en enkel maar nodig voor tijdens devlopement */
-      /******************************************************************************/
-      if(compressie_function_pointer < 4){ 
-	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,blocksize+5, DECODEER);
-      } 
-      
-      decoderen_bwt(input_block, blocksize);
-      input_block += 5;
-      
       //We moeten altijd van onze bwt terug naar normale tekst, dit is niet afhankelijk van de compressie methode.
-      compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode);
-      input_block-=5;
-      free(input_block);
-    }
+      compressie_methode[4]->compressie_algoritme(input_block,blocksize, methode,blocksize);
+
     }else if(compressie_function_pointer == 0){
       
       uint32_t huffman_blocksize = 0;
@@ -183,7 +151,7 @@ int main(int argc, char* argv[]){
 	input_block = (unsigned char*) malloc(sizeof(unsigned char)*(huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	
-	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,huffman_blocksize+HUFFMAN_HEADER_SIZE,DECODEER);
+	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,huffman_blocksize+HUFFMAN_HEADER_SIZE,DECODEER,DUMMY);
 	input_lengte -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
 	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header	
 	free(input_block);
