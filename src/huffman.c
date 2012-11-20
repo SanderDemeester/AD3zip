@@ -223,6 +223,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
   free(code);
   
   }else{
+    /* Om de gedecodeerde string terug te geven zal input_block leeg worden gemaakt, daarna zal de eerste byte het aantal elementen bevatten */
     uint32_t huffman_block_len = 0;
     uint32_t huffman_code_len = 0;
     uint32_t huffman_boom_len = 0;
@@ -231,12 +232,11 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     unsigned char * huffman_boom_zend_string = NULL;
     huffman_codewoord **code = NULL;
     huffman_tree_element** list_to_free = (huffman_tree_element**) calloc(255,sizeof(huffman_tree_element*));
-    int aantal_element_to_free = 0;
-    
+    int aantal_element_to_free = 0;    
 
     int index = 0;
     uint32_t waarde = 0;
-    
+
     memcpy(&huffman_block_len, input_buffer, 4);
     input_buffer += 4;
     memcpy(&huffman_code_len, input_buffer,4);
@@ -253,7 +253,8 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 
     memcpy(huffman_boom_zend_string, input_buffer, huffman_boom_len); //kopieer de huffman boom die we hebbeb gekregen van de input buffer naar de zend string.
     input_buffer += huffman_boom_len; 
-   
+    printf("%p \n", input_buffer);
+    
     codewoorden = (unsigned char*) malloc(sizeof(unsigned char)*huffman_code_len+1);
     memcpy(codewoorden,input_buffer, huffman_code_len+1);
     for(int i = 0; i <= huffman_code_len; i++){
@@ -261,7 +262,8 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     }
 
     input_buffer += huffman_code_len; //input buffer is at his end point.
-
+    
+    input_buffer -= (huffman_code_len+huffman_boom_len+12);
     //De huidige positie is nu de start van alle codewoorden en de huffman boom, dit heeft een lengte: huffman_block_len
     printf("huffman_block_len: %d \n", huffman_block_len);
     printf("huffman_code_len : %d \n", huffman_code_len);
@@ -336,7 +338,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	      //rechts is null
 	      w->rechts = (struct huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
 
-	      list_to_free[aantal_element_to_free++] = w->rechts;
+	      list_to_free[aantal_element_to_free++] = (huffman_tree_element*)w->rechts;
 	      w = (huffman_tree_element*)w->rechts;
 	      w->bit = b;
 	      w->value = NULL;
@@ -353,7 +355,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
 	      //w->links is NULL
 	      w->links = (struct huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
 
-	      list_to_free[aantal_element_to_free++] = w->links;
+	      list_to_free[aantal_element_to_free++] = (huffman_tree_element*)w->links;
 	      
 	      w = (huffman_tree_element*)w->links;
 	      w->bit = b;
@@ -380,49 +382,51 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
     int b;
     int b_pos = 7;
     int i = 0;
+    index = 1;
     while(i < huffman_code_len){
       if(b_pos <= -1){
 	i++;
 	c = codewoorden[i];
 	b_pos = 7;
       }
-      
-      printf("begin woord: %d \n",c);
-
       while(!w->is_blad){
 	b = ((c >> b_pos) & 0x01);
-	printf("bit: %d \n", b);
 	if(b){
 	  //ga rechts
 	  if(w->rechts == NULL){
-	    printf("einde van de code\n");
 	    w = NULL; //signal
 	    break;
 	  }
 	  w = (huffman_tree_element*)w->rechts;
 	}else{
 	  if(w->links == NULL){
-	    printf("einde van de code\n");
 	    w = NULL; //signal
 	    break;
 	  }
 	  w = (huffman_tree_element*)w->links;
 	}
 	b_pos--;
-	if(b_pos == -1){
-	  printf("einde byte\n");
-	  break;
-	}
+	if(b_pos == -1) break;
       }
+#ifdef debug
       printf("einde woord\n");
       printf("aantal bits over: %d \n", b_pos); 
+#endif
       if(w == NULL) break;
       if(w->is_blad){
+	input_buffer[index] = *w->value;
+	index++;
+#ifdef debug
 	printf("%c \n", w->value);
 	printf("reset root\n");      
+#endif
 	w = root;
       }
     }
+    input_buffer[0] = (unsigned char)index;
+    printf("%d \n", input_buffer[0]);
+
+    
     
 
     for(int i = 0; i < 255; i++) free(code[i]);

@@ -129,10 +129,10 @@ void move_to_front(unsigned char* string, int len, int actie){
       }
     }
   }
-  ascii_symbol *n = anker->next;
-  ascii_symbol *f = anker->next;
+  ascii_symbol *n = (ascii_symbol*)anker->next;
+  ascii_symbol *f = (ascii_symbol*)anker->next;
   for(int i = 0; i <= 255; i++){
-    n = f->next;
+    n = (ascii_symbol*)f->next;
     free(f);
     f = n;
   }
