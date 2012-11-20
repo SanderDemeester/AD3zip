@@ -16,13 +16,21 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie){
   printf("Move to Front in combinatie met standaard huffman, optie 1\n");
   #endif
   if(actie){
-    //Tijdens encoderen eerst move to front, daarna stadnaard huffman
+     //Tijdens encoderen eerst move to front, daarna stadnaard huffman
     move_to_front(input_buffer, len, actie);  
     standaard_huffman(input_buffer, len, actie);
   }else{
     //Tijdens het decoderen doen we net het omgekeerde
     standaard_huffman(input_buffer,len,actie);    
-  }
+    len = input_buffer[0];
+    input_buffer++;
+    fwrite(input_buffer,1,len,stdout);
+    return 0;
+    //De eerste byte is de lengte van de gedecodeerde huffman code
+    move_to_front(input_buffer, len, actie);
+    input_buffer--;
+    
+   }
 }
 
 void semi_mtf(unsigned char *input_buffer, int len, int actie){

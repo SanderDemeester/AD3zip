@@ -185,7 +185,7 @@ int main(int argc, char* argv[]){
 	
 	compressie_methode[compressie_function_pointer]->compressie_algoritme(input_block,huffman_blocksize+HUFFMAN_HEADER_SIZE,DECODEER);
 	input_lengte -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
-	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header
+	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header	
 	free(input_block);
       }
     }
