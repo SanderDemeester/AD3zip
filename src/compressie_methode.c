@@ -37,17 +37,29 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie,int blocksize){
 	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	
 	//Pas standaard huffman toe
-	standaard_huffman(input_buffer,len,actie);    
+	standaard_huffman(input_block,len,actie);    
 
 	//De eerste byte is de lengte van de gedecodeerde huffman code
-	len = input_buffer[0];
-	input_buffer++;
+	len = input_block[0];
+	input_block++; //de eerste byte is de lengte
 	
-	move_to_front(input_buffer, len, actie);
-	fwrite(input_buffer, 1,len,stdout);
-	input_buffer--;    
+	//we gebruiken hier -1 omdat in de laatste byte de lengte in padding is.
+	fwrite(input_block,1,len-1,stdout);
+
+	//we gebruiken hier -1 omdat in de laatste byte de lengte in padding is.
+	move_to_front(input_block, len-1, actie);	
+
+	//len-BWT_HEADER_LEN-1 is omdat bwt header niet in rekening wordt gebracht tijdens decoderen van bwt, de -1 is voor padding byte.
+	decoderen_bwt(input_block,len-BWT_HEADER_LEN-1);	
+
+	//print de bwt header niet mee.
+	fwrite(input_block+BWT_HEADER_LEN,1,len-BWT_HEADER_LEN-1,stdout);
+	
+	//decrement input_block om te freeen, we hebben hierbij 1 opgetelt omdat de eerste byte de lengte was van de gedecodeerde string
+	input_block--;
 	
 	len -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
+	
 	input_buffer += huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is thesize of the huffman header	
 	free(input_block);
       }            

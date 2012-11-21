@@ -1,4 +1,5 @@
 #define COMPRESSIE_METHODE
+#define BWT_HEADER_LEN 5
 
 typedef struct{
   int value;
