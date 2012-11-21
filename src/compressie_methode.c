@@ -36,13 +36,13 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie,int blocksize){
 	
 	input_block = (unsigned char*) malloc(sizeof(unsigned char)*(huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
+
 	
 	//Pas standaard huffman toe
 	huffman_result = standaard_huffman(input_block,len,actie);    
-	
+
 	//pas move to front toe.
 	move_to_front(huffman_result->res,huffman_result->aantal_bytes,actie);
-	
 	//len-BWT_HEADER_LEN-1 is omdat bwt header niet in rekening wordt gebracht tijdens decoderen van bwt.
 	decoderen_bwt(huffman_result->res,huffman_result->aantal_bytes-BWT_HEADER_LEN);
 
