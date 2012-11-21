@@ -53,7 +53,7 @@ static void ssort(huffman_top **rij, int begin, int einde){
   }
 }
 
-unsigned char * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie){
+huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie){
 
   if(actie){
     //encodeer
@@ -243,6 +243,11 @@ unsigned char * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, 
     unsigned char * huffman_boom_zend_string = NULL;
     huffman_codewoord **code = NULL;
     huffman_tree_element** list_to_free = (huffman_tree_element**) calloc(255,sizeof(huffman_tree_element*));
+    huffman_decode_result * result  = (huffman_decode_result*) calloc(1,sizeof(huffman_decode_result));
+    
+    result->res = (unsigned char*) calloc(1,sizeof(unsigned char));
+    result->aantal_bytes = 1;
+
     int aantal_element_to_free = 0;    
     int aantal_bits_in_code = 0;
 
@@ -441,12 +446,15 @@ unsigned char * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, 
       
 
       if(w->is_blad){
-	input_buffer[index] = *w->value;
-	index++;
+	memcpy(result->res+(result->aantal_bytes-1),w->value,1);	
+	result->aantal_bytes++;
+	unsigned char *b = (unsigned char*) realloc(result->res,result->aantal_bytes * sizeof(unsigned char));
+	if(b != NULL) result->res = b;
+	else printf("error while using relloc in huffman\n");
 	w = root;
       }
     }
-    input_buffer[0] = (unsigned char)index;
+    result->aantal_bytes--;
     for(int i = 0; i < 255; i++) free(code[i]);
     
     free(huffman_toppen[0]->value);
@@ -465,7 +473,7 @@ unsigned char * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, 
       free(list_to_free[i]);
     }
     free(list_to_free);
-    return NULL;
+    return result;
   }
 }
 

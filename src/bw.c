@@ -121,7 +121,6 @@ void decoderen_bwt(unsigned char *bwt_vector, int len){
   }
 
   memcpy(bwt_vector, temp,len);
-  printf("%p \n", bwt_vector);
 
   free(temp);
   free(sorted_rij_index);
