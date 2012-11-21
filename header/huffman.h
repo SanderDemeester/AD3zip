@@ -31,7 +31,7 @@ typedef struct{
 }huffman_tree_element;
 
 
-void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie);
+unsigned char * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie);
 
 void build_huffmancode(huffman_top **huffman_toppen,
 		       huffman_codewoord **code,

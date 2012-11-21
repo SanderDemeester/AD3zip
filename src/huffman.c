@@ -53,7 +53,7 @@ static void ssort(huffman_top **rij, int begin, int einde){
   }
 }
 
-void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie){
+unsigned char * standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t actie){
 
   if(actie){
     //encodeer
@@ -229,7 +229,10 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
   free(freq_tabel);
   free(huffman_toppen);
   free(code);
-  
+
+  //encoderen heeft gewoon NULL;
+  return NULL;
+		
   }else{
     /* Om de gedecodeerde string terug te geven zal input_block leeg worden gemaakt, daarna zal de eerste byte het aantal elementen bevatten */
     uint32_t huffman_block_len = 0;
@@ -462,6 +465,7 @@ void standaard_huffman(unsigned char *input_buffer, uint32_t lengte, uint32_t ac
       free(list_to_free[i]);
     }
     free(list_to_free);
+    return NULL;
   }
 }
 
