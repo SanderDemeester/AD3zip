@@ -114,7 +114,9 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
     number_of_bytes_needed = (int)f;
 
     if(number_of_bytes_needed == 0) number_of_bytes_needed++;
-    output_buffer = (unsigned char*) calloc(number_of_bytes_needed,sizeof(unsigned char));
+
+    //hier 1 byte extra om eventuele padding op te slaan.
+    output_buffer = (unsigned char*) calloc(number_of_bytes_needed+1,sizeof(unsigned char));
     
     uint32_t index = 0; //De huidige index voor de output array
     uint32_t aantal_bits_in_huidige_byte = 0; //aantal bits die op dit moment in de array zitten
@@ -405,7 +407,11 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
       }
     }
     
-    aantal_bits_in_code = (huffman_code_len*8)-padding;
+    if(padding == 8)
+      aantal_bits_in_code = (huffman_code_len*8);
+    else
+      aantal_bits_in_code = (huffman_code_len*8)-padding;
+    
     /* printf("%d \n", aantal_bits_in_code); */
     unsigned char c = codewoorden[0];
     /* p_b(c,8); */
