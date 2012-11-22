@@ -63,6 +63,7 @@ int main(int argc, char* argv[]){
       if(compressie_methode[i]->value == atoi(argv[2])) compressie_function_pointer = i;
     }
     blocksize = atoi(argv[3]);
+    blocksize = blocksize*1024; //1 -> 1KiB
   }else{
     compressie_function_pointer = 4; //Debug methode.
   }
