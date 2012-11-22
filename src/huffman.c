@@ -61,7 +61,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
   int number_of_bytes_needed = 0; //het aantal bytes nodig in de output buffer
 
   huffman_top **huffman_toppen = (huffman_top**)  calloc(lengte, sizeof(huffman_top*)); //bijhouden van onze huffman toppen.
-  uint32_t *freq_tabel = (uint32_t*) calloc(255,sizeof(uint32_t)); //de freq tabel.
+  uint32_t *freq_tabel = (uint32_t*) calloc(256,sizeof(uint32_t)); //de freq tabel.
   unsigned char * huffman_boom_zend_string = (unsigned char*) calloc((lengte*5),sizeof(unsigned char)); 
 
   
@@ -70,7 +70,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
   /* Deze 4 bytes is voor het codewoord die een lengte heeft O(n-1) het slechtste geval							       */
   /*********************************************************************************************************************************************/
 
-  huffman_codewoord **code = (huffman_codewoord**) calloc(255, sizeof(huffman_codewoord*)); //het maximaal aantal code die we kunnen hebben is 255, een macrosymbool is 1 ascii teken -> 1byte.
+  huffman_codewoord **code = (huffman_codewoord**) calloc(256, sizeof(huffman_codewoord*)); //het maximaal aantal code die we kunnen hebben is 255, een macrosymbool is 1 ascii teken -> 1byte.
   uint32_t huffman_zend_string_offset = 0;
   unsigned char *output_buffer = NULL;
   uint32_t number_of_huffman_top = 0; // het aantal huffman toppen 
@@ -80,7 +80,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
       freq_tabel[(uint32_t)input_buffer[i]]++;
     }
     
-    for(i = 0; i < 255; i++){
+    for(i = 0; i <= 255; i++){
       code[i] = (huffman_codewoord*) calloc(1,sizeof(huffman_codewoord));
       code[i]->number_of_bits = 1;
       code[i]->code = 0;
