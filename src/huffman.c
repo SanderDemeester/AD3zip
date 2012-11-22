@@ -405,7 +405,11 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
       }
     }
     
-    aantal_bits_in_code = (huffman_code_len*8)-padding;
+    if(padding == 8)
+      aantal_bits_in_code = (huffman_code_len*8);
+    else
+      aantal_bits_in_code = (huffman_code_len*8)-padding;
+    
     /* printf("%d \n", aantal_bits_in_code); */
     unsigned char c = codewoorden[0];
     /* p_b(c,8); */
