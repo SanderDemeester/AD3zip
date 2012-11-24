@@ -2,6 +2,7 @@
 #include "header/compressie_methode.h"
 #include "header/move_to_front.h"
 #include "header/huffman.h"
+#include "header/lz77.h"
 #ifndef _GENERIC
 #include "header/generic.h"
 #endif
@@ -62,6 +63,8 @@ void semi_mtf(unsigned char *input_buffer, int len, int actie,int blocksize){
   printf("Semi move to front in combinatie met standaard huffman, optie 3\n");
 }
 
+void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
+}
 void debug(unsigned char *input_buffer, int len, int actie,int blocksize){
   if(actie){
     //Encoderen
