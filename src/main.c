@@ -45,10 +45,12 @@ int main(int argc, char* argv[]){
   compressie_methode[2]->compressie_algoritme = semi_mtf;
 
   compressie_methode[3]->value = 4;
-  compressie_methode[3]->compressie_algoritme = not_implemented;
+  compressie_methode[3]->compressie_algoritme = lz77;
   
   compressie_methode[4]->value = 0; //debug
   compressie_methode[4]->compressie_algoritme = debug;
+
+  
   
   if(argc == 1 || (argc < 4 && strcmp(argv[1],"decodeer"))){
     fprintf(stderr, "Usage: %s [encodeer|decodeer] compressiemethode blocksize", argv[0]);
@@ -95,7 +97,7 @@ int main(int argc, char* argv[]){
     memcpy(&header[0],&methode_header_format,1);
     memcpy(&header[1],&blocksize,3);
     
-    fwrite(&header[0],1,4,stdout); //schrijf header naar stdout.
+    //    fwrite(&header[0],1,4,stdout); //schrijf header naar stdout.
     
     while(input_lengte){
       if(input_lengte < blocksize){
