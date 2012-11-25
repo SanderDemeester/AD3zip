@@ -94,8 +94,6 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
 
     if((end_sliding_window - start_sliding_window) > G)     
       start_sliding_window = end_sliding_window - G;
-
-    
   }
   
   for(int i = 0; i < code_woorde_index-1; i++){
@@ -144,9 +142,6 @@ static void bereken_V(int *V, unsigned char *z, uint32_t z_l){
     if(pos_eerste_mismach == 0) gelijke_tekens = 0; 
     else gelijke_tekens = pos_eerste_mismach-V[pos_eerste_mismach];
   }
-  
-  
-  
   
 }
 void find_longest_match(unsigned char *t, 
