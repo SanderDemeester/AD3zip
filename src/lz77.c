@@ -34,24 +34,43 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
   match_pair *p1 = (match_pair*) calloc(1,sizeof(match_pair));
   match_pair *p2 = (match_pair*) calloc(1,sizeof(match_pair));
 
-  while(index_huidig_element < len && end_sliding_window < len){
+  fwrite(input_buffer+(end_sliding_window+1), 1,1,stdout);
+  printf("hier %c \n", input_buffer[0]);
+  while(index_huidig_element < len-1){
     
-    find_longest_match(input_buffer+(end_sliding_window+1), //het eerste volgende byte volgend op het einde van het sliding window
-		       len-(end_sliding_window+1), //de volledige lengte van de buffer - de lengte van het sliding window
+    printf("index huidig element: %d  && len: %d \n", index_huidig_element, len);
+    printf("print sliding window\n");
+    for(int i = 0; i < end_sliding_window - start_sliding_window; i++){
+      printf("%c \n", input_buffer[start_sliding_window+i]);
+    }
+
+    printf("volgende vrije byte: %c \n", input_buffer[end_sliding_window]);
+    printf("de lengte van de text bufer: %d \n", len-(end_sliding_window));
+
+    find_longest_match(input_buffer+(end_sliding_window), //het eerste volgende byte volgend op het einde van het sliding window
+		       len-(end_sliding_window), //de volledige lengte van de buffer - de lengte van het sliding window
 		       input_buffer + start_sliding_window, //start van sliding window
 		       end_sliding_window - start_sliding_window,
 		       p1,
-		       p2);
-		       
+		       p2);		       
     end_sliding_window++;
-    
-    if((end_sliding_window - start_sliding_window) >= G){
-	printf("hier\n");
-      start_sliding_window++;
+
+    if(p1->l > 0){
+      printf("(%d,%d,%c)\n", p1->p, p1->l,input_buffer[index_huidig_element+p1->l]);
+      index_huidig_element += p1->l+1;
+      end_sliding_window += p1->l; //update sliding window met de lengte van de match.
+    }else{
+      printf("(%d,%d,%c)\n", 0,0,input_buffer[index_huidig_element]);
+      index_huidig_element++;
     }
-    printf("sliding window index, start: %d && end: %d \n", start_sliding_window, end_sliding_window);
-    index_huidig_element++;
-    printf("len: %d \n", len);
+    
+
+    printf("start_sliding_window: %d && end_sliding_window: %d \n", start_sliding_window, end_sliding_window);
+    if((end_sliding_window - start_sliding_window) > G){
+      printf("aanpassen van sliding window\n");
+      start_sliding_window = end_sliding_window - G;
+    }
+    printf("start_sliding_window: %d && end_sliding_window: %d \n", start_sliding_window, end_sliding_window);
     
   }
 
@@ -64,8 +83,14 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
 
 //return pos eerste mis_match.
 static int vergelijk_strings(unsigned char *z, unsigned char*t, int z_l, int t_l, int start, int gelijke_tekens){
-  for(int i = 0; i < z_l; i++)
-    if(z[i] != t[start+i]) return i;
+  for(int i = 0; i < z_l; i++){
+    printf("vergelijk z[start+i]: %c met t[i]: %c\n", z[start+i], t[i]);
+    if(z[start+i] != t[i]){
+      printf("ze zijn verschillende, return\n");
+      return i;
+    }
+    printf("ze zijn gelijk\n");
+  }
 
   return z_l;
 }
@@ -93,10 +118,12 @@ static void bereken_V(int *V, unsigned char *z, uint32_t z_l){
   
   
 }
-void find_longest_match(unsigned char *t, uint32_t t_l, 
-			    unsigned char *z, uint32_t z_l,
-			    match_pair *p1,
-			    match_pair *p2){
+void find_longest_match(unsigned char *t, 
+			int t_l, 
+			unsigned char *z, 
+			int z_l,
+			match_pair *p1,
+			match_pair *p2){
 
   int *V = (int*) calloc(z_l, sizeof(int)); 
   int start = 0;
@@ -109,22 +136,13 @@ void find_longest_match(unsigned char *t, uint32_t t_l,
   //Zet de lengtes gelijk aan elkaar
   p1->l = p2->l = 0;
   p1->p = p2->p = start; 
-  
-  if(t_l - z_l < 0){
-    int t = t_l;
-    unsigned char *b = t;
-    t_l = z_l;
-    z_l = t;
-    
-    t = z;
-    z = b;
-  }
 
+  if(z_l > t_l) z_l = t_l;
   
-  printf("t_l: %d && z_l: %d", t_l, z_l);
-  printf("%d \n", t_l - z_l);
+  printf("t_l: %d && z_l: %d\n", t_l, z_l);
+  printf("t_l - z_l %d \n", t_l - z_l);
 
-  while(start <= (t_l - z_l)){
+  while(start < z_l){
     //Bepaal de positie van de eerste mismatch
     pos_eerste_mismach = vergelijk_strings(z,t,z_l,t_l,start,gelijke_tekens);
     
@@ -149,6 +167,7 @@ void find_longest_match(unsigned char *t, uint32_t t_l,
     }
     
     start += V[pos_eerste_mismach];
+    printf("nieuwe start: %d \n", start);
     if(pos_eerste_mismach == 0) gelijke_tekens = 0; //speciaal geval
     else gelijke_tekens = pos_eerste_mismach - V[pos_eerste_mismach];
   }

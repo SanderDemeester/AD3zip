@@ -66,7 +66,9 @@ void semi_mtf(unsigned char *input_buffer, int len, int actie,int blocksize){
 void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
   //de input die we binnen krijgen zal zijn onderworpen aan bwt.
   if(actie){    
-    lz77_encodeer(input_buffer,len);
+    unsigned char *i ="banaan_baan";
+    int l = 11;
+    lz77_encodeer(i,l);
     
   }else{
     printf("decoderen van lz77\n");
