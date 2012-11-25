@@ -27,12 +27,19 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
   int end_sliding_window = 0;
 
   uint32_t index_huidig_element = 0;
-  uint32_t code_woorde_index = 0;
+  uint32_t code_woorde_index = 1;
 
-  lz77_codewoord **codewoorden = (lz77_codewoord*) calloc(1, sizeof(lz77_codewoord*));
+  lz77_codewoord **codewoorden = (lz77_codewoord**) calloc(1, sizeof(lz77_codewoord*));
+  lz77_codewoord **realloc_codewoorden = NULL;
 
   match_pair *p1 = (match_pair*) calloc(1,sizeof(match_pair));
   match_pair *p2 = (match_pair*) calloc(1,sizeof(match_pair));
+
+  p1->p = 0;
+  p1->l = 0;
+
+  p2->p = 0;
+  p2->l = 0;
 
 #ifdef lz77_debug
   printf("hier %c \n", input_buffer[0]);
@@ -58,10 +65,29 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
 
     if(p1->l > 0){
       printf("(%d,%d,%c)\n", p1->p, p1->l,input_buffer[index_huidig_element+p1->l]);
+      codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
+      codewoorden[code_woorde_index-1]->p = p1->p;
+      codewoorden[code_woorde_index-1]->l = p1->l;
+      codewoorden[code_woorde_index-1]->x = input_buffer[index_huidig_element+p1->l];
+
+      code_woorde_index++;
+      realloc_codewoorden = (lz77_codewoord**) realloc(codewoorden,code_woorde_index*(sizeof(lz77_codewoord*)));
+      if(realloc_codewoorden != NULL)
+	codewoorden = realloc_codewoorden;
+      
       index_huidig_element += p1->l+1;
       end_sliding_window += p1->l; //update sliding window met de lengte van de match.
     }else{
       printf("(%d,%d,%c)\n", 0,0,input_buffer[index_huidig_element]);
+      codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
+      codewoorden[code_woorde_index-1]->p = 0;
+      codewoorden[code_woorde_index-1]->l = 0;
+      codewoorden[code_woorde_index-1]->x = input_buffer[index_huidig_element];
+
+      code_woorde_index++;
+      realloc_codewoorden = (lz77_codewoord**) realloc(codewoorden, code_woorde_index*(sizeof(lz77_codewoord*)));
+      if(realloc_codewoorden != NULL)
+	codewoorden = realloc_codewoorden;
       index_huidig_element++;
     }
     
@@ -71,9 +97,10 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
 
     
   }
-
-  codewoorden[0] = (lz77_codewoord*) calloc(1,sizeof(lz77_codewoord));
-  free(codewoorden[0]);
+  
+  for(int i = 0; i < code_woorde_index; i++){
+    free(codewoorden[i]);
+  }
   free(codewoorden);
   free(p1);
   free(p2);
