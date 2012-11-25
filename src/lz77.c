@@ -34,19 +34,20 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
   match_pair *p1 = (match_pair*) calloc(1,sizeof(match_pair));
   match_pair *p2 = (match_pair*) calloc(1,sizeof(match_pair));
 
-  fwrite(input_buffer+(end_sliding_window+1), 1,1,stdout);
+#ifdef lz77_debug
   printf("hier %c \n", input_buffer[0]);
+#endif
   while(index_huidig_element < len-1){
-    
+#ifdef lz77_debug  
     printf("index huidig element: %d  && len: %d \n", index_huidig_element, len);
     printf("print sliding window\n");
     for(int i = 0; i < end_sliding_window - start_sliding_window; i++){
       printf("%c \n", input_buffer[start_sliding_window+i]);
     }
-
+    
     printf("volgende vrije byte: %c \n", input_buffer[end_sliding_window]);
     printf("de lengte van de text bufer: %d \n", len-(end_sliding_window));
-
+#endif
     find_longest_match(input_buffer+(end_sliding_window), //het eerste volgende byte volgend op het einde van het sliding window
 		       len-(end_sliding_window), //de volledige lengte van de buffer - de lengte van het sliding window
 		       input_buffer + start_sliding_window, //start van sliding window
@@ -65,12 +66,9 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
     }
     
 
-    printf("start_sliding_window: %d && end_sliding_window: %d \n", start_sliding_window, end_sliding_window);
-    if((end_sliding_window - start_sliding_window) > G){
-      printf("aanpassen van sliding window\n");
+    if((end_sliding_window - start_sliding_window) > G)     
       start_sliding_window = end_sliding_window - G;
-    }
-    printf("start_sliding_window: %d && end_sliding_window: %d \n", start_sliding_window, end_sliding_window);
+
     
   }
 
@@ -84,12 +82,18 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
 //return pos eerste mis_match.
 static int vergelijk_strings(unsigned char *z, unsigned char*t, int z_l, int t_l, int start, int gelijke_tekens){
   for(int i = 0; i < z_l; i++){
+#ifdef lz77_debug
     printf("vergelijk z[start+i]: %c met t[i]: %c\n", z[start+i], t[i]);
+#endif
     if(z[start+i] != t[i]){
+#ifdef lz77_debug
       printf("ze zijn verschillende, return\n");
+#endif
       return i;
     }
+#ifdef lz77_debug
     printf("ze zijn gelijk\n");
+#endif
   }
 
   return z_l;
@@ -99,10 +103,9 @@ static void bereken_V(int *V, unsigned char *z, uint32_t z_l){
   int start = 1;
   int gelijke_tekens = 0;
   int pos_eerste_mismach = 0;
-
   V[0] = 1;
   V[1] = 1;
-  
+  if(z_l < 2) return;
   while(start < (z_l-1)){
     pos_eerste_mismach = vergelijk_strings(z,z,z_l,z_l,start,gelijke_tekens);
     if(pos_eerste_mismach == 0) V[start+1] = start+1;
@@ -125,22 +128,30 @@ void find_longest_match(unsigned char *t,
 			match_pair *p1,
 			match_pair *p2){
 
-  int *V = (int*) calloc(z_l, sizeof(int)); 
+  int *V = NULL;
+  if(z_l < 2) 
+    V = (int*) calloc(2, sizeof(int)); 
+  else
+    V = (int*) calloc(z_l, sizeof(int)); 
+  if(V == NULL)
+    printf("probleem\n");
+
   int start = 0;
   int gelijke_tekens = 0;
   int pos_eerste_mismach = 0;
   
   //Bepaal de verschuivings tabel.
-  bereken_V(V,z,t_l);
+  bereken_V(V,z,z_l);
 
   //Zet de lengtes gelijk aan elkaar
   p1->l = p2->l = 0;
   p1->p = p2->p = start; 
 
   if(z_l > t_l) z_l = t_l;
-  
+#ifdef lz77_debug
   printf("t_l: %d && z_l: %d\n", t_l, z_l);
   printf("t_l - z_l %d \n", t_l - z_l);
+#endif
 
   while(start < z_l){
     //Bepaal de positie van de eerste mismatch
@@ -151,8 +162,9 @@ void find_longest_match(unsigned char *t,
     
     //De lengte van de match.
     p1->l = pos_eerste_mismach;
-    
+#ifdef lz77_debug
     printf("pos_eerste_mismatch: %d \n", pos_eerste_mismach);
+#endif
     if(pos_eerste_mismach == z_l){ //we starten met tellen vanaf 0.
       //volledige sliding window is kunnen matchen, woehoe!!
       free(V);
@@ -167,7 +179,9 @@ void find_longest_match(unsigned char *t,
     }
     
     start += V[pos_eerste_mismach];
+#ifdef lz77_debug
     printf("nieuwe start: %d \n", start);
+#endif
     if(pos_eerste_mismach == 0) gelijke_tekens = 0; //speciaal geval
     else gelijke_tekens = pos_eerste_mismach - V[pos_eerste_mismach];
   }
