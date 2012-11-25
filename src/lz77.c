@@ -35,6 +35,8 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
   match_pair *p1 = (match_pair*) calloc(1,sizeof(match_pair));
   match_pair *p2 = (match_pair*) calloc(1,sizeof(match_pair));
 
+  unsigned char *output_buffer;
+
   p1->p = 0;
   p1->l = 0;
 
@@ -99,6 +101,7 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
   for(int i = 0; i < code_woorde_index-1; i++){
     free(codewoorden[i]);
   }
+  printf("%d \n", code_woorde_index-1);
   free(codewoorden);
   free(p1);
   free(p2);
