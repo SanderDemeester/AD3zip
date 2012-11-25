@@ -47,7 +47,7 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
 #ifdef lz77_debug
   printf("hier %c \n", input_buffer[0]);
 #endif
-  while(index_huidig_element < len-1){
+  while(index_huidig_element <= len-1){
 #ifdef lz77_debug  
     printf("index huidig element: %d  && len: %d \n", index_huidig_element, len);
     printf("print sliding window\n");
@@ -70,6 +70,7 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
 #ifdef lz77_debug
       printf("(%d,%d,%c)\n", p1->p, p1->l,input_buffer[index_huidig_element+p1->l]);
 #endif
+
       codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
       codewoorden[code_woorde_index-1]->p = p1->p;
       codewoorden[code_woorde_index-1]->l = p1->l;
@@ -126,11 +127,76 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
     
     free(codewoorden[i]);
   }
-  output_buffer -= 4+(code_woorde_index*9);
+  output_buffer -= 4+(code_woorde_index*LZ77_LEN_CODEWOORD);
   free(codewoorden);
   free(p1);
   free(p2);
   return output_buffer;
+}
+
+lz77_resultaat* lz77_decoderen(unsigned char*input_buffer, int len){
+  //hierin geven we onze bwt vector terug die we hebben geencodeerdt met lz77
+
+  lz77_resultaat*lz77_result = (lz77_resultaat*) malloc(sizeof(lz77_resultaat));
+  lz77_result->res = (unsigned char*) calloc(1,sizeof(unsigned char));
+  lz77_result->aantal_bytes = 0;
+  lz77_codewoord**codewoorden = (lz77_codewoord**) calloc(len/9,sizeof(lz77_codewoord*));
+  
+  unsigned char*b = NULL;
+
+  int start_sliding_window = 0;
+  int end_sliding_window = 0;
+  
+  for(int i = 0; i < len/9; i++){
+    codewoorden[i] = (lz77_codewoord*) calloc(1,sizeof(lz77_codewoord));
+    printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
+    codewoorden[i]->p = *input_buffer; //start pos in sliding window
+    codewoorden[i]->l = *(input_buffer+4); //lengte van de match
+    codewoorden[i]->x = *(input_buffer+8); //volgende byte
+    input_buffer+=LZ77_LEN_CODEWOORD;
+  }
+
+  lz77_result->res[0] = codewoorden[0]->x;
+  lz77_result->aantal_bytes += codewoorden[0]->l+1;
+  b = (unsigned char*) realloc(lz77_result->res,lz77_result->aantal_bytes*sizeof(unsigned char));
+  if(b != NULL) lz77_result->res = b;
+  else printf("Error\n");
+
+  end_sliding_window++; //sliding window wordt verhoogt.
+
+  //start op 1 en (len/9)-1 omdat we het eerste element al buiten de lus hebben gedaan.
+  for(int i = 1;  i < (len/9); i++){
+
+    //de len is +1 omdat we altijd het extra teken die erop volgt mee moeten opnemen in de string.
+    b = (unsigned char*) realloc(lz77_result->res,lz77_result->aantal_bytes+codewoorden[i]->l+1);
+    if(b != NULL) lz77_result->res = b;
+
+    for(int k = 0; k < codewoorden[i]->l; k++)
+      memcpy(lz77_result->res+(end_sliding_window)+k,
+	     lz77_result->res+(start_sliding_window+codewoorden[i]->p)+k,
+	     1);
+    if(codewoorden[i]->l > 0){
+      end_sliding_window+=codewoorden[i]->l;
+    }
+
+    memcpy(lz77_result->res+end_sliding_window,&codewoorden[i]->x,1);
+    lz77_result->aantal_bytes+=codewoorden[i]->l+1;
+    
+    if(codewoorden[i]->l == 0) end_sliding_window++;
+    
+    if((end_sliding_window - start_sliding_window) > G)     
+      start_sliding_window = end_sliding_window - G;    
+  }
+  
+  //  lz77_result->aantal_bytes++;
+  
+  for(int i = 0; i < len/9; i++)
+    free(codewoorden[i]);
+  
+    
+  free(codewoorden);
+  input_buffer-= len;
+  return lz77_result;
 }
 
 //return pos eerste mis_match.
@@ -186,7 +252,7 @@ void find_longest_match(unsigned char *t,
   else
     V = (int*) calloc(z_l, sizeof(int)); 
   if(V == NULL)
-    printf("probleem\n");
+    printf("probleem tijdens het vinden van de langste match bij Knuts&&Pats\n");
 
   int start = 0;
   int gelijke_tekens = 0;
