@@ -14,5 +14,5 @@ typedef struct{
   uint32_t l; //len
 }match_pair;
 
-void lz77_encodeer(unsigned char *input_buffer, int len);
+unsigned char* lz77_encodeer(unsigned char *input_buffer, int len);
 void find_longest_match(unsigned char *t, int t_l, unsigned char *z, int z_l, match_pair* p1, match_pair* p2);

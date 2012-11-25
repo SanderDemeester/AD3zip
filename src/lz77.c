@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #ifdef debug
 static void test_longest_match(){
@@ -22,7 +23,7 @@ static void test_longest_match(){
 }
 #endif
 
-void lz77_encodeer(unsigned char *input_buffer, int len){
+unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
   int start_sliding_window = 0;
   int end_sliding_window = 0;
 
@@ -98,23 +99,34 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
       start_sliding_window = end_sliding_window - G;
   }
   
-  for(int i = 0; i < code_woorde_index-1; i++){
-    free(codewoorden[i]);
-  }
-  printf("%d \n", sizeof(int));
-  //De +4 is om de lengte aan te duiden.
-  output_buffer = (unsigned char*) malloc((code_woorde_index-1)+4*(sizeof(unsigned char)));
-  
-  //fix off by one
+  //fix off by one.
   code_woorde_index--;
-
+  
+  //De +4 is om de lengte aan te duiden.
+  output_buffer = (unsigned char*) malloc(4+(code_woorde_index*9));
+  
   //De eerste 4 bytes van de output_buffer is het aantal lz77 codewoorden er zijn opgeslagen.
   //elke lz77 codewoord is 5bytes lang.
   memcpy(output_buffer, &code_woorde_index, 4);
+  output_buffer+=4;
   
+
+  //FREEDOM!! oooh FREEDOM!!!
+  for(int i = 0; i < code_woorde_index; i++){
+    memcpy(output_buffer,&codewoorden[i]->p,sizeof(uint32_t)); //eerst de start pos
+    output_buffer+=sizeof(uint32_t);
+    memcpy(output_buffer,&codewoorden[i]->l,sizeof(uint32_t)); //daarna de lengte
+    output_buffer+=sizeof(uint32_t);
+    memcpy(output_buffer,&codewoorden[i]->x,sizeof(unsigned char));//daarna de byte zelf
+    output_buffer+=sizeof(unsigned char);
+    
+    free(codewoorden[i]);
+  }
+  output_buffer -= 4+(code_woorde_index*9);
   free(codewoorden);
   free(p1);
   free(p2);
+  return output_buffer;
 }
 
 //return pos eerste mis_match.

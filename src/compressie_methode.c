@@ -65,11 +65,20 @@ void semi_mtf(unsigned char *input_buffer, int len, int actie,int blocksize){
 
 void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
   //de input die we binnen krijgen zal zijn onderworpen aan bwt.
+  unsigned char *lz77_buffer = NULL;
+  int lz77_code_len = 0; 
   if(actie){    
-    lz77_encodeer(input_buffer,len);    
+    lz77_buffer = lz77_encodeer(input_buffer,len);    
+    memcpy(&lz77_code_len,lz77_buffer,4);
+    
+    //Tel er 1byte bij op
+    lz77_buffer+=sizeof(uint32_t);
+
+    lz77_buffer-=sizeof(uint32_t);
   }else{
     printf("decoderen van lz77\n");
   }
+  free(lz77_buffer);
 }
 void debug(unsigned char *input_buffer, int len, int actie,int blocksize){
   if(actie){
