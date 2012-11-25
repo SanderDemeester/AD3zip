@@ -98,7 +98,7 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
     
   }
   
-  for(int i = 0; i < code_woorde_index; i++){
+  for(int i = 0; i < code_woorde_index-1; i++){
     free(codewoorden[i]);
   }
   free(codewoorden);
@@ -125,6 +125,7 @@ static int vergelijk_strings(unsigned char *z, unsigned char*t, int z_l, int t_l
 
   return z_l;
 }
+
 static void bereken_V(int *V, unsigned char *z, uint32_t z_l){
   //z_l = 3-> {0,1,2}
   int start = 1;
@@ -139,7 +140,7 @@ static void bereken_V(int *V, unsigned char *z, uint32_t z_l){
     else
       for(int i = gelijke_tekens+1; i <= pos_eerste_mismach; i++) 
 	V[start+i] = start;
-    start += start+V[pos_eerste_mismach];
+    start += V[pos_eerste_mismach];
     if(pos_eerste_mismach == 0) gelijke_tekens = 0; 
     else gelijke_tekens = pos_eerste_mismach-V[pos_eerste_mismach];
   }
@@ -178,6 +179,7 @@ void find_longest_match(unsigned char *t,
 #ifdef lz77_debug
   printf("t_l: %d && z_l: %d\n", t_l, z_l);
   printf("t_l - z_l %d \n", t_l - z_l);
+
 #endif
 
   while(start < z_l){
@@ -208,6 +210,7 @@ void find_longest_match(unsigned char *t,
     start += V[pos_eerste_mismach];
 #ifdef lz77_debug
     printf("nieuwe start: %d \n", start);
+    printf("V[pos_eerste_misMatch]: %d \n", V[pos_eerste_mismach]);
 #endif
     if(pos_eerste_mismach == 0) gelijke_tekens = 0; //speciaal geval
     else gelijke_tekens = pos_eerste_mismach - V[pos_eerste_mismach];
