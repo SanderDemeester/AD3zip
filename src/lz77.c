@@ -102,6 +102,9 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
     free(codewoorden[i]);
   }
   printf("%d \n", code_woorde_index-1);
+  //De +4 is om de lengte aan te duiden.
+  output_buffer = (unsigned char*) malloc((code_woorde_index-1)+4*(sizeof(unsigned char)));
+					  
   free(codewoorden);
   free(p1);
   free(p2);
