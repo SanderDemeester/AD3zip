@@ -101,10 +101,17 @@ void lz77_encodeer(unsigned char *input_buffer, int len){
   for(int i = 0; i < code_woorde_index-1; i++){
     free(codewoorden[i]);
   }
-  printf("%d \n", code_woorde_index-1);
+  printf("%d \n", sizeof(int));
   //De +4 is om de lengte aan te duiden.
   output_buffer = (unsigned char*) malloc((code_woorde_index-1)+4*(sizeof(unsigned char)));
-					  
+  
+  //fix off by one
+  code_woorde_index--;
+
+  //De eerste 4 bytes van de output_buffer is het aantal lz77 codewoorden er zijn opgeslagen.
+  //elke lz77 codewoord is 5bytes lang.
+  memcpy(output_buffer, &code_woorde_index, 4);
+  
   free(codewoorden);
   free(p1);
   free(p2);
