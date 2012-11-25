@@ -67,7 +67,9 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
     end_sliding_window++;
 
     if(p1->l > 0){
+#ifdef lz77_debug
       printf("(%d,%d,%c)\n", p1->p, p1->l,input_buffer[index_huidig_element+p1->l]);
+#endif
       codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
       codewoorden[code_woorde_index-1]->p = p1->p;
       codewoorden[code_woorde_index-1]->l = p1->l;
@@ -81,7 +83,9 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
       index_huidig_element += p1->l+1;
       end_sliding_window += p1->l; //update sliding window met de lengte van de match.
     }else{
+#ifdef lz77_debug
       printf("(%d,%d,%c)\n", 0,0,input_buffer[index_huidig_element]);
+#endif
       codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
       codewoorden[code_woorde_index-1]->p = 0;
       codewoorden[code_woorde_index-1]->l = 0;
