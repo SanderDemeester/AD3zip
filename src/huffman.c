@@ -225,7 +225,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
     free(huffman_toppen[0]);
   
   
-  for(i = 0; i < 255; i++){
+  for(i = 0; i <= 255; i++){
     free(code[i]);
   } 
   free(freq_tabel);

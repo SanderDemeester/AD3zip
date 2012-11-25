@@ -73,7 +73,7 @@ void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
     
     //Tel er 1byte bij op
     lz77_buffer+=sizeof(uint32_t);
-
+    standaard_huffman(lz77_buffer,lz77_code_len,actie);
     lz77_buffer-=sizeof(uint32_t);
   }else{
     printf("decoderen van lz77\n");
