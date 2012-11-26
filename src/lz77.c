@@ -149,7 +149,7 @@ lz77_resultaat* lz77_decoderen(unsigned char*input_buffer, int len){
   
   for(int i = 0; i < len/9; i++){
     codewoorden[i] = (lz77_codewoord*) calloc(1,sizeof(lz77_codewoord));
-    printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
+    //    printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
     codewoorden[i]->p = *input_buffer; //start pos in sliding window
     codewoorden[i]->l = *(input_buffer+4); //lengte van de match
     codewoorden[i]->x = *(input_buffer+8); //volgende byte
@@ -167,25 +167,36 @@ lz77_resultaat* lz77_decoderen(unsigned char*input_buffer, int len){
   //start op 1 en (len/9)-1 omdat we het eerste element al buiten de lus hebben gedaan.
   for(int i = 1;  i < (len/9); i++){
 
+    /* printf("(%d,%d,%c)\n", codewoorden[i]->p,codewoorden[i]->l,codewoorden[i]->x); */
+    /* printf("start sliding window:%d && end_sliding_window:%d\n", start_sliding_window,end_sliding_window); */
+    /* printf("print sliding window\n"); */
+    /* for(int i = 0; i < end_sliding_window - start_sliding_window; i++){ */
+    /*   printf("%c \n", codewoorden[i]->x); */
+    /* } */
+    
+    /* printf("lengte volgende codewoord:%d \n", codewoorden[i]->l); */
+
     //de len is +1 omdat we altijd het extra teken die erop volgt mee moeten opnemen in de string.
     b = (unsigned char*) realloc(lz77_result->res,lz77_result->aantal_bytes+codewoorden[i]->l+1);
     if(b != NULL) lz77_result->res = b;
-
-    for(int k = 0; k < codewoorden[i]->l; k++)
-      memcpy(lz77_result->res+(end_sliding_window)+k,
-	     lz77_result->res+(start_sliding_window+codewoorden[i]->p)+k,
-	     1);
+    
     if(codewoorden[i]->l > 0){
+      for(int k = 0; k < codewoorden[i]->l; k++)
+	memcpy(lz77_result->res+(end_sliding_window)+k,
+	       lz77_result->res+(start_sliding_window+codewoorden[i]->p)+k,
+	       1);
+
       end_sliding_window+=codewoorden[i]->l;
     }
+    
 
-    memcpy(lz77_result->res+end_sliding_window,&codewoorden[i]->x,1);
+    memcpy(lz77_result->res+(end_sliding_window),&codewoorden[i]->x,1);
+    end_sliding_window++;
     lz77_result->aantal_bytes+=codewoorden[i]->l+1;
-    
-    if(codewoorden[i]->l == 0) end_sliding_window++;
-    
+
     if((end_sliding_window - start_sliding_window) > G)     
       start_sliding_window = end_sliding_window - G;    
+    /* printf("einde iteratie\n"); */
   }
   
   //  lz77_result->aantal_bytes++;

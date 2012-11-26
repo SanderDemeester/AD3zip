@@ -87,7 +87,6 @@ void decoderen_bwt(unsigned char *bwt_vector, int len){
   /* Dus daarom gebruiken we XOR, deze xor maken we hier terug ongedaan.			    */
   /**************************************************************************************************/
   start_pos = start_pos^0x10101010;
-  printf("%d \n", start_pos);
 
   //Rij van gesorteerde indexen.
   int *sorted_rij_index = (int*) malloc(sizeof(int)*len);

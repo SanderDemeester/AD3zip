@@ -97,20 +97,16 @@ void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
 	
 	//decodeer lz77 string.
 	lz77_result = lz77_decoderen(huffman_result->res,huffman_result->aantal_bytes);
-	fwrite(lz77_result->res,1,lz77_result->aantal_bytes,stdout);
-	return 0;
-	int x = 0;
-	memcpy(&x,lz77_result->res,4);
-	printf("%d \n", x^0x10101010);
-	return 0;
-	decoderen_bwt(lz77_result->res,7);
-
+	
+	decoderen_bwt(lz77_result->res,lz77_result->aantal_bytes-BWT_HEADER_LEN);
+	fwrite(lz77_result->res+BWT_HEADER_LEN,1,lz77_result->aantal_bytes-BWT_HEADER_LEN,stdout);
 
 	len -= huffman_blocksize+HUFFMAN_HEADER_SIZE; //HUFFMAN_HEADER_SIZE bytes is the size of the huffman header
 	
 	free(input_block);
 	free(huffman_result->res);
 	free(huffman_result);
+	free(lz77_result->res);
 	free(lz77_result);
       }
   }
