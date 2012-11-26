@@ -99,7 +99,7 @@ void decoderen_bwt(unsigned char *bwt_vector, int len){
     sorted_rij_index[i] = i;
     bwt_rij_index[i] = i;
   }
-  
+
   //we tellen 5 op bij de bwt_vector om de start pos van de '_' niet mee te sorteren.
   bwt_vector+=5;
 

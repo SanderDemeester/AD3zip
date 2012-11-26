@@ -34,7 +34,6 @@ void mtf_huffman(unsigned char *input_buffer, int len, int actie,int blocksize){
 	if(len < huffman_blocksize + HUFFMAN_HEADER_SIZE){
 	  huffman_blocksize = len-HUFFMAN_HEADER_SIZE;
 	}
-	
 	input_block = (unsigned char*) malloc(sizeof(unsigned char)*(huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
 
@@ -68,13 +67,13 @@ void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
   unsigned char *lz77_buffer = NULL;
   int lz77_code_len = 0; 
   if(actie){    
-    
+
     lz77_buffer = lz77_encodeer(input_buffer,len);    
     memcpy(&lz77_code_len,lz77_buffer,sizeof(uint32_t));
     
     //Tel er 1byte bij op
     lz77_buffer+=sizeof(uint32_t);
-    standaard_huffman(lz77_buffer,lz77_code_len*LZ77_LEN_CODEWOORD,actie);
+    standaard_huffman(lz77_buffer,(lz77_code_len*LZ77_LEN_CODEWOORD),actie);
     lz77_buffer-=sizeof(uint32_t);
   }else{
     /* De eerste fase voor het decoderen van lz77 is het decoderen van huffman */
@@ -94,8 +93,9 @@ void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
 	memcpy((void*) input_block, (void*) input_buffer, (huffman_blocksize+HUFFMAN_HEADER_SIZE));
 	
 	//Pas standaard huffman toe.
-	huffman_result = standaard_huffman(input_block,len,actie);    
-	
+	huffman_result = standaard_huffman(input_block,len,actie);  
+
+
 	//decodeer lz77 string.
 	lz77_result = lz77_decoderen(huffman_result->res,huffman_result->aantal_bytes);
 	

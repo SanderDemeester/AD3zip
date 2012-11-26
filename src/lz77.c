@@ -87,7 +87,7 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
       index_huidig_element += p1->l+1;
       end_sliding_window += p1->l; //update sliding window met de lengte van de match.
     }else{
-#ifdef lz77_debug
+#ifdef lz77
       printf("(%d,%d,%c)\n", 0,0,input_buffer[index_huidig_element]);
 #endif
       codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
@@ -149,9 +149,9 @@ lz77_resultaat* lz77_decoderen(unsigned char*input_buffer, int len){
   int start_sliding_window = 0;
   int end_sliding_window = 0;
   
-  for(int i = 0; i < len/9; i++){
+  for(int i = 0; i < (len/9); i++){
     codewoorden[i] = (lz77_codewoord*) calloc(1,sizeof(lz77_codewoord));
-    //    printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
+    printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
     codewoorden[i]->p = *input_buffer; //start pos in sliding window
     codewoorden[i]->l = *(input_buffer+4); //lengte van de match
     codewoorden[i]->x = *(input_buffer+8); //volgende byte
@@ -183,18 +183,21 @@ lz77_resultaat* lz77_decoderen(unsigned char*input_buffer, int len){
     if(b != NULL) lz77_result->res = b;
     
     if(codewoorden[i]->l > 0){
+      lz77_result->aantal_bytes+=codewoorden[i]->l+1;
       for(int k = 0; k < codewoorden[i]->l; k++)
 	memcpy(lz77_result->res+(end_sliding_window)+k,
 	       lz77_result->res+(start_sliding_window+codewoorden[i]->p)+k,
 	       1);
 
       end_sliding_window+=codewoorden[i]->l;
+    }else{
+      lz77_result->aantal_bytes++;
     }
-    
 
     memcpy(lz77_result->res+(end_sliding_window),&codewoorden[i]->x,1);
     end_sliding_window++;
-    lz77_result->aantal_bytes+=codewoorden[i]->l+1;
+
+    //    lz77_result->aantal_bytes+=codewoorden[i]->l+1;
 
     if((end_sliding_window - start_sliding_window) > G)     
       start_sliding_window = end_sliding_window - G;    

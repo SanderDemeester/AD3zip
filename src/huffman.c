@@ -225,7 +225,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
     free(huffman_toppen[0]);
   
   
-  for(i = 0; i <= 255; i++){
+  for(i = 0; i < 256; i++){
     free(code[i]);
   } 
   free(freq_tabel);
@@ -244,7 +244,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
     huffman_top **huffman_toppen = NULL;
     unsigned char * huffman_boom_zend_string = NULL;
     huffman_codewoord **code = NULL;
-    huffman_tree_element** list_to_free = (huffman_tree_element**) calloc(255,sizeof(huffman_tree_element*));
+    huffman_tree_element** list_to_free = (huffman_tree_element**) calloc(2048,sizeof(huffman_tree_element*));
     huffman_decode_result * result  = (huffman_decode_result*) calloc(1,sizeof(huffman_decode_result));
     
     result->res = (unsigned char*) calloc(1,sizeof(unsigned char));
@@ -269,7 +269,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
     huffman_boom_zend_string = (unsigned char*) calloc(huffman_boom_len,sizeof(unsigned char));
     
     //Dit moet 255 zijn. 
-    code = (huffman_codewoord**) calloc(255,sizeof(huffman_codewoord*));
+    code = (huffman_codewoord**) calloc(256,sizeof(huffman_codewoord*));
 
     //kopieer de huffman boom die we hebbeb gekregen van de input buffer naar de zend string.
     memcpy(huffman_boom_zend_string, input_buffer, huffman_boom_len); 
@@ -298,7 +298,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
     /* } */
 
 
-    for(int i = 0; i < 255; i++){
+    for(int i = 0; i <= 255; i++){
       code[i] = (huffman_codewoord*) calloc(1,sizeof(huffman_codewoord));
       code[i]->number_of_bits = 1;
       code[i]->code = 0;
@@ -349,7 +349,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
 
     //1->rechts
     //0->links
-    for(int i = 0; i < 255; i++){
+    for(int i = 0; i <= 255; i++){
       if(code[i]->number_of_bits > 1){
 	code[i]->code = reverse(code[i]->code);
 	code[i]->code = (code[i]->code >> (32-code[i]->number_of_bits));
@@ -369,6 +369,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
 	      w->rechts = (struct huffman_tree_element*) calloc(1,sizeof(huffman_tree_element));
 
 	      list_to_free[aantal_element_to_free++] = (huffman_tree_element*)w->rechts;
+	      
 	      w = (huffman_tree_element*)w->rechts;
 	      w->bit = b;
 	      w->value = NULL;
@@ -461,7 +462,7 @@ huffman_decode_result * standaard_huffman(unsigned char *input_buffer, uint32_t 
       }
     }
     result->aantal_bytes--;
-    for(int i = 0; i < 255; i++) free(code[i]);
+    for(int i = 0; i <= 255; i++) free(code[i]);
     
     free(huffman_toppen[0]->value);
     free(huffman_toppen[0]);
