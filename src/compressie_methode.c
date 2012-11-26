@@ -68,6 +68,7 @@ void lz77(unsigned char* input_buffer, int len, int actie, int blocksize){
   unsigned char *lz77_buffer = NULL;
   int lz77_code_len = 0; 
   if(actie){    
+    
     lz77_buffer = lz77_encodeer(input_buffer,len);    
     memcpy(&lz77_code_len,lz77_buffer,sizeof(uint32_t));
     

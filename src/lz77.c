@@ -74,7 +74,10 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
       codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
       codewoorden[code_woorde_index-1]->p = p1->p;
       codewoorden[code_woorde_index-1]->l = p1->l;
-      codewoorden[code_woorde_index-1]->x = input_buffer[index_huidig_element+p1->l];
+      if(index_huidig_element+p1->l >= len-1)
+	codewoorden[code_woorde_index-1]->x = input_buffer[index_huidig_element+p1->l-1];
+      else
+	codewoorden[code_woorde_index-1]->x = input_buffer[index_huidig_element+p1->l];
 
       code_woorde_index++;
       realloc_codewoorden = (lz77_codewoord**) realloc(codewoorden,code_woorde_index*(sizeof(lz77_codewoord*)));
@@ -115,7 +118,6 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
   memcpy(output_buffer, &code_woorde_index, 4);
   output_buffer+=4;
   
-
   //FREEDOM!! oooh FREEDOM!!!
   for(int i = 0; i < code_woorde_index; i++){
     memcpy(output_buffer,&codewoorden[i]->p,sizeof(uint32_t)); //eerst de start pos
@@ -230,14 +232,14 @@ static int vergelijk_strings(unsigned char *z, unsigned char*t, int z_l, int t_l
   return z_l;
 }
 
-static void bereken_V(int *V, unsigned char *z, uint32_t z_l){
+static void bereken_V(uint32_t *V, unsigned char *z, uint32_t z_l){
   //z_l = 3-> {0,1,2}
   int start = 1;
   int gelijke_tekens = 0;
   int pos_eerste_mismach = 0;
   V[0] = 1;
   V[1] = 1;
-  if(z_l < 2) return;
+  if(z_l <= 2) return;
   while(start < (z_l-1)){
     pos_eerste_mismach = vergelijk_strings(z,z,z_l,z_l,start,gelijke_tekens);
     if(pos_eerste_mismach == 0) V[start+1] = start+1;
@@ -257,11 +259,12 @@ void find_longest_match(unsigned char *t,
 			match_pair *p1,
 			match_pair *p2){
 
-  int *V = NULL;
+  uint32_t *V = NULL;
   if(z_l < 2) 
-    V = (int*) calloc(2, sizeof(int)); 
+    V = (uint32_t*) calloc(2+1, sizeof(uint32_t));
   else
-    V = (int*) calloc(z_l, sizeof(int)); 
+    V = (uint32_t*) calloc(z_l+1, sizeof(uint32_t));
+
   if(V == NULL)
     printf("probleem tijdens het vinden van de langste match bij Knuts&&Pats\n");
 
