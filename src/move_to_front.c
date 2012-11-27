@@ -113,23 +113,26 @@ void move_to_front(unsigned char* string, int len, int actie){
       
       string[i] = tijdelijk_anker->ascii_value;
       if(j > 0){
-	backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;
-      backup_ascii_symbool->next = tijdelijk_anker->next;
-      
-      backup_ascii_symbool = (ascii_symbol*) backup_ascii_symbool->next;
-      backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker->prev;
-
-      //op dit moment unlinkt van de ketting
-      
-      first = (ascii_symbol*) anker->next;
-      tijdelijk_anker->prev = (struct ascii_symbol*)first->prev;
-      first->prev = (struct ascii_symbol*) tijdelijk_anker;
-      
-      tijdelijk_anker->next = (struct ascii_symbol*) first;
-
-      anker->next = (struct ascii_symbol*)tijdelijk_anker;
-      }else if(j==255){
-	anker->next = (struct ascii_symbol*) tijdelijk_anker;
+	prev = (ascii_symbol*)tijdelijk_anker->prev;  //prev<--->tijdelijk_anker<--->next
+	next = (ascii_symbol*)tijdelijk_anker->next;
+	
+	prev->next = (struct ascii_symbol*)next;
+	next->prev = (struct ascii_symbol*)prev;
+	
+	first = (ascii_symbol*) anker->next; //eerste element;
+	
+	//invullen van tijdelijk_anker next && prev
+	tijdelijk_anker->prev = first->prev;
+	tijdelijk_anker->next = (struct ascii_symbol*)first;
+	
+	//fixen van volgende symbool
+	backup_ascii_symbool = (ascii_symbol*)first->prev;
+	backup_ascii_symbool->next = (struct ascii_symbol*)tijdelijk_anker;
+	
+	//invullen van tijdelijk_anker next && prev
+	first->prev = (struct ascii_symbol*)tijdelijk_anker;
+	//first next blijft zijn volgende element.
+	anker->next = (struct ascii_symbol*)tijdelijk_anker;
       }
     }
   }

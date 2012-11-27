@@ -86,5 +86,10 @@ Wat de volledige complexiteit voor het decoderen $O(2n + \log n)$ maakt.
 \section*{move\_to\_front.c}
 Met de \emph{Move to front}-methode proberen we het idee dat we proberen te bereiken met Burrows-Wheeler (nl, vaak voorkomende tekens samen te groeperen en lieft met zoon klein mogelijk index nummer). Move to front dit exact dit, het gaat gegeven een input string en een alfabet alle symbolen in de input string overlopen en de index van het huidige symbool opslaan en vooraan plaatsen in het alfabet. Dit zal tot gevolg hebben dat symbolen die vaak voorkomen in de input string zullen resulteren in een laag index positie nummer in het resultaat omdat deze tekens vaak vooraan blijven zitten in het alfabet.\\
 
+Voor mijn implementatie heb ik gebruikt gemaakt van een dubbele cyclische gelinked lijst die als waardes een unsigned byte bijhoudt en een pointer naar het volgende en vorige element. De volledige  gelinked lijst heeft standaard als waardes die kunnen worden voorgesteld door 1 byte, nl 256 waarden.\\ 
+Een simpele for-lus overloopt alle waardes in de input string en maakt daarin gebruik van een while lus die door de gelinked lijst loopt tot dat de gezochte waarde is gevonden in de gelinked lijst, er wordt een teller bijgehouden die kijkt wat de positie is van het gezocht symbool in de gelinked lijst en die wegschrijft.\\
 
+Voor simpliciteit beschouwen we 2 gevallen in deze linkedlist, als het eerste element vooraan staat moet niks gebeuren (dit is het geval als c==0), in het andere geval verhangen we het gevonden element naar de eerste plaats.\\
+
+Ook voor deze code heb ik een aparte unit test file gemaakt om te kunnen garanderen dat deze code correct werkt. 
 \end{document}
