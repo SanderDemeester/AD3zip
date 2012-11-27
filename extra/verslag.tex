@@ -180,10 +180,18 @@ We testen eerst het encoderen van standaard huffman, we zullen de vergelijking m
 \subsubsection*{Samenvatting en conclusie}
 \subsection*{LZ77}
 \subsubsection*{Samenvatting en conclusie}
-LZ77 Maakt gebruikt van een \emph{Sliding window} dat wordt gebruikt om een dynamische woordenboek te maken op basis van de te encoderen tekst. Het voordeel hier is dat in tegelstelling tot huffman er geen extra meta informatie moet worden doorgestuurdt.\\
+LZ77 is een "Variable-Rate coding" en  maakt gebruikt van een \emph{sliding window} dat wordt gebruikt om een dynamische woordenboek op te bouwen op basis van de te encoderen tekst. Het voordeel hier is dat in tegelstelling tot huffman er geen extra meta informatie moet doorsturen naar de ontvanger.\\
 
 Een nadeel bij dit algoritme is dat het "computation intensive" is, dit komt rechtstreeks door $G$, wat de grote is van het \emph{sliding window}, hoe groter we $G$ maken hoe meer werk het zal zijn een mogelijke langste match te vinden. We merken wel op dat, hoe groter we $G$ maken, hoe beter onze compressie zal zijn.\\
 
-Wat we met LZ77-compresie bekomen is "contextueel comprimeren". Dit is de herkenning dat bepaalde delen van een file een "context" hebben, bv een tekst bestand kan eerst gaan over een onderwerp waar eventueel herhaaldelijk	kan worden gebruikt gemaakt van vakjargon. Of een tekst kan eerst gaan over een zeker onderwerp, endan overgaan tot een ander onderwerp. Het sliding window kunnen we zien als een herkenning dat er een soort van taalkundige lokaliteit is in tekst bestanden.
+Wat we met LZ77-compresie bekomen is "contextueel comprimeren". Dit is de herkenning dat bepaalde delen van een file een "context" hebben, bv een tekst bestand kan eerst gaan over een onderwerp waar eventueel herhaaldelijk	kan worden gebruikt gemaakt van vakjargon. Of een tekst kan eerst gaan over een zeker onderwerp, endan overgaan tot een ander onderwerp. Het sliding window kunnen we zien als een herkenning dat er een soort van taalkundige lokaliteit is in tekst bestanden.\\
 
+LZ77-compressie zal zeer goed comprimeren voor tekst bestanden en bestanden waarin contextuele lokaliteit aanwezig is. Om dit nog extra uit te buiten pas ik eerst Burrows-Wheeler toe (veel herhalingen die voorkomen in groepen). Een finale opmerking is, hoe groter we $G$ kiezen, hoe beter de compressie zal zijn maar hoe trager het algoritme werkt. Het decoderen kan in lineaire tijd\\
+
+De complexiteit 
+Als we de complexiteit beschouwen van LZ77 moeten kijken naar het gebruikte string matching algoritme en de complexiteit van LZ77 zelf.  Voor LZ77 zelf moeten we alle tekens minimaal 1 keer overlopen en per iteratie zoeken achter de langste deelstring. Als we enkel de while-lus bekijken over het aantal tekens:
+\begin{lstlisting}
+while(index_huidig_element <= len-1){
+\end{lstlisting}
+Dan zal deze $O(n)$ werk moeten doen, het probleem ligt hem in het string matching algoritme. De complexiteit van het standaard "Knuth-Morris-Pratt"-algoritme is $O(l+k)$, waar $l$ de lengte is van van de zoekstring en $k$ de lengte is van de tekst waarin moet worden gezocht. Dit zal dus leiden tot $O(n(l+k))$ complexiteit. Maar het algoritme is lichtjes aangepast, $l$ is de lengte van mijn \emph{sliding window}, dus $l=G$, $k$ kan in dit geval varieren tot $n-(G+o)$, waar $o$ het aantal bytes is voor de start van het \emph{sliding window}, wat dus gewoon de rest van de string is vanaf het einde van het \emph{sliding window}. Maar dit is niet het geval in mijn implementatie die $G$ als een bovengrens neemt voor $l$, dus resulteert dus in de complexiteit: $O(n(G+G))$, waar $G$ variabel is.
 \end{document}
