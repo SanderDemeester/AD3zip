@@ -3,6 +3,7 @@
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{minibox}
 \usepackage{amssymb}
 \usepackage{listings}
 \usepackage{fullpage}
@@ -55,18 +56,16 @@ Daarna zal een aangepaste versie van het quicksort sorteer algoritme worden gebr
 
 Het quicksort algoritme is lichtjes aangepast om correct te kunnen werken met de voorstelling van de Burrows-Wheeler transformatie, nl als er gelijke elementen zijn moeten kijken naar het volgende element in de huidige rij van deze matrix, dit is enkel maar bij het encoderen want bij het decoderen passen we een andere manier van elementen vergelijken toe. Er wordt gebruikt gemaakt van de volgende c-notatie om dit correct te laten gebeuren. 
 \begin{lstlisting}
- while(*(&rij[(rij_index[links]+offset)%len]) == *(&rij[(rij_index[begin]+offset)%len])){
-	    if(offset+1 == len){	  
-	      break;
-	    } 
-	    offset = (offset+1) % len;
-	  }
-	  
-	  if(*(&rij[(rij_index[links]+offset) % len]) > *(&rij[(rij_index[begin]+offset) % len])){
-	    swap(&(rij_index[links]),&(rij_index[--rechts]));
-	  }else{
-	    links++;	  
-	  }
+ while(*(&rij[(rij_index[links]+offset)%len]) == *(&rij[(rij_index[begin]+offset)%len]))
+    {
+    if(offset+1 == len) break;  
+    offset = (offset+1) % len;
+    }
+	 
+ if(*(&rij[(rij_index[links]+offset) % len]) > *(&rij[(rij_index[begin]+offset) % len]))
+	 swap(&(rij_index[links]),&(rij_index[--rechts]));
+ else
+	 links++;	 
 \end{lstlisting}
 We houden een offset bij en maken terug gebruik van de modulo operator om naar het correct element te gaan dat wordt aangeduid door de pointer in \emph{rij\_index} waarop we dan de offset bijtellen om te kijken of deze volgende tekens duidelijk van elkaar verschillen.\\
 
@@ -113,11 +112,78 @@ We werken nog altijd met $(t_{n-1},t_{n})$. Het veld \emph{aantal\_elementen} za
 
 Er wordt uiteraardt geen nieuwe top aangemaakt maar top $t_{n-1}$ wordt herbruikt, dit wordt herhaalt tot er nog 1 top over is. \\
 
-Daarna wordt de originele tekst gebruikt als indexen naar de codes en worden code bits uit deze code geshift in een output buffer, de code is slim genoeg om te merken hoeveel plaats er nog vrij is de huidige output byte en kan codewoorden opdelen zodat het aantal output bytes optimaal kan worden benut.
+Daarna wordt de originele tekst gebruikt als indexen naar de code tabel en worden code-bits uit deze code geshift in een output buffer. Hierbij is het belangrijk dat de bit sequentie die is opgeslagen in de huffman codewoorden wordt omgedraaidt. De reden hiervoor is omdat we tijdens het encoderen zijn vertrokken bij de toppen met de laagste frequentie (de bladeren van onze huffman boom) en langzaam zijn we in aantal toppen geminderd opweg naar de top met de hoogste frequentie. Dus onze bit sequentie $b_{1},b_{2},\cdots,b_{k}$ voor een gegeven codewoord die is opgesteld door \emph{build\_huffmancode} heeft als MSB bit $b_{1}$ en stelt in het geval dat we deze voorbeeld code nemen het blad voor van de code. En het pad $p_{i}$ van blad naar wortel is in termen van bit sequentie niet het zelfde als pad $p_{j}$ waar zowel het zelfde blad als wortel voor beide padden de eind punten zijn. We mogen dus niet in deze volgorde onze coden versturen omdat de ontvanger niet correct de codewoorden zou interpreteren. \\
+
+De code is slim genoeg om te merken hoeveel plaats er nog vrij is de huidige output byte en kan codewoorden opdelen zodat het aantal output bytes optimaal kan worden benut.
 Daarna wordt een huffman header opgestelt die uit 12byte bestaat.\\
 De eerste 4bytes is de lengte van het volledige huffman blok, incl de huffmancode en huffman frequentie  (zonder de header). 
 De volgende 4 bytes is de lengte van de huffman code zelf. De laatste 4 bytes is de lengte van de huffman frequentie.\\
 
 Bij elk huffman blok wordt ook de huffman frequentie doorgegeven. Elke frequentie blok heeft een lengte van 5 bytes, 4 bytes om het aantal voorkomens mee aan te duiden en 1 byte om het originele teken zelf voor te stellen. Enkel de frequenties voor niet 0 bytes worden opgenomen in deze huffman frequentie. Ik maak geen gebruik van relatieve frequenties omdat er gevallen zijn waar afronding van floating point getallen zou kunnen leiden tot verkeerde frequenties endus tot verkeerde codes bij het decoderen.\\
+Daarna schrijven we alles ook in de zelfde volgorde weg, als laatste byte geven we nog mee hoeveel bits we hebben gebruikt als "padding" bij het maken van huffman code.
 \subsubsection*{Decoderen}
+Het decoderen verloopt voor het eerste deel gelijk met het encoderen. Eerst wordt adhv van de huffman frequentie de frequentie opgebouwd voor de verschillende originele bytes, en opnieuw wordt terug een lijst opgebouwd van huffman codewoorden. Dit keer zullen we een echte "boom" opstellen langswaar we tijdens het decoderen zullen wandelen tot we een blad tegenkomen met een waarde. We zullen tijdens het opstellen elk codewoord als een pad beschouwen langswaar we wandelen enz takken in onze boom defineren, aangezien elk codewoord uniek is zal ook elke wandeling uniek zijn endus zal de boom correct zijn.\\
+
+Daarna wordt voor elke bit in de ontvangen huffman-code de boom doorlopen, en het resultaat opgeslagen in een output buffer. 
+\subsection*{lz77.c}
+Voor deel 2 van de opgave heb ik gekozen voor puntje 4, "Het kiezen van een eigen compressie algoritme". heb ik gekozen om lz77 te gebruiken waarvan de input is getransformeerdt met Burrows-Wheeler en de output wordt geencodeerdt met standaard huffman. \\
+
+Een lz77 codewoord is van de vorm (p,l,x), waar de "p" staat voor de start van de langste een match in het sliding window, "l" staat voor de lengte van de match en "x" bevat de byte die volgt op de match.\\
+
+Voor de implementatie maak ik gebruik van het concept "Match-pair", een match-pair is een return type voor de functie \emph{find\_longest\_string} en heeft de start positie en de lengte van de langste match terug die start in het sliding window. Daarnaast maak ik ook gebruik van 2 index variabelen die de start en het einde van het sliding window aanduiden.\\
+
+Ik maak gebruik van het zoek string algoritme "Knuth-Morris-Pratt" dat lichtjes is aangepast om de langste match te vinden in het sliding window, ik beschrijf deze aanpassingen hier.\\
+
+Beschouw een reeks van tekens:
+$$(x_{0},x_{1},x_{2},\cdots,x_{|t|-1})$$
+en een sliding window die 
+$$
+(x_{O},x_{1},\cdots,x_{i})$$
+bevat. De functie \emph{vergelijk\_strings} zal proberen de langest match vinden die start in het sliding window waar het eerste symbool van de de zoekstring $Z$ het symbool $c_{i+1}$ is. Het algoritme heeft dus een lichte aanpassing ondergaan, nl:
+\begin{lstlisting}
+static int vergelijk_strings(unsigned char *z, unsigned char*t, int z_l, int t_l, int start, int gelijke_tekens){
+  for(int i = 0; i < z_l; i++){
+    if(z[start+i] != t[i]) return i; 
+  }
+  return z_l;
+}
+\end{lstlisting}
+Zoals kan worden gezien in bovenstaande C-code wordt de start variabel gebruikt als offset in het sliding window (hier aangeduid door lijst "z") enzo gezocht naar de langste match in het sliding window. Zoals helaas kan worden gezien in bovenstaande code zal de match ook eindigen in het sliding window, wat niet het standaard lz77 algoritme is, deze beperking is opgelegt door mijn gebruik van het "Knuth-Morris-Pratt" algoritme, we zouden de offset-tabel van een onbekende lengte moeten maken omdat de gezochte string in lengte kan varieren. \\
+
+Voor elke lz77 codewoord beschoud ik 9 bytes, 4 bytes voor "p", 4 bytes voor "l" en 1 byte voor "x", al deze bytes worden samen dan nog eens gedecodeerd met standaard huffman. 
+\subsubsection*{Correctheid van de implementatie}
+Dit algoritme werkt en de implementatie werkt ook, helaas niet voor alle test gevallen die ik heb beschouwd. Het probleem bevind zich in het decoderen, als het laatste lz77 codewoord een match heeft in het sliding window en de tekst is kleiner dan het sliding window zal dit resulteren tot een foutief resultaat, hieronder vind U wat voorbeelden van gevallen waar dit wel voor werkt!.
+
+
+\framebox[1.1\width]{\minibox{echo "Algoritmes en Datastructuren 3 is cool" $|./$AD3zip encodeer 4 1 $|./$AD3zip decodeer\\
+Algoritmes en Datastructuren 3 is cool \\
+\hline
+cat tests/file $|./$AD3zip encodeer 4 1 $|./$AD3zip decodeer\\
+Er was eens een lief klein kabouwtertje, die zat op een rode paddenstoel geen en weer te springen.\\
+\hline
+echo "do or do not there is no try" $|./$AD3zip encodeer 4 1 $|./$AD3zip decodeer\\
+do or do not there is no try}}\\
+Bij mijn test files zit een bash-script die bovenstaande output genereert.  
+
+\section*{Complexiteit en Prestaties}
+\subsection*{Standaard huffman}
+We testen eerst het encoderen van standaard huffman, we zullen de vergelijking maken tussen 3 soorteren bestanden.
+\begin{enumerate}
+\item Random files
+\item Tekst files
+\item Binaire files
+\end{enumerate}
+
+\subsubsection*{Random files}
+\subsubsection*{Tekst files}
+\subsection*{Binaire files}
+\subsubsection*{Samenvatting en conclusie}
+\subsection*{LZ77}
+\subsubsection*{Samenvatting en conclusie}
+LZ77 Maakt gebruikt van een \emph{Sliding window} dat wordt gebruikt om een dynamische woordenboek te maken op basis van de te encoderen tekst. Het voordeel hier is dat in tegelstelling tot huffman er geen extra meta informatie moet worden doorgestuurdt.\\
+
+Een nadeel bij dit algoritme is dat het "computation intensive" is, dit komt rechtstreeks door $G$, wat de grote is van het \emph{sliding window}, hoe groter we $G$ maken hoe meer werk het zal zijn een mogelijke langste match te vinden. We merken wel op dat, hoe groter we $G$ maken, hoe beter onze compressie zal zijn.\\
+
+Wat we met LZ77-compresie bekomen is "contextueel comprimeren". Dit is de herkenning dat bepaalde delen van een file een "context" hebben, bv een tekst bestand kan eerst gaan over een onderwerp waar eventueel herhaaldelijk	kan worden gebruikt gemaakt van vakjargon. Of een tekst kan eerst gaan over een zeker onderwerp, endan overgaan tot een ander onderwerp. Het sliding window kunnen we zien als een herkenning dat er een soort van taalkundige lokaliteit is in tekst bestanden.
+
 \end{document}
