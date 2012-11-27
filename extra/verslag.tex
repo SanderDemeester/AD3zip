@@ -83,7 +83,7 @@ for(int i = 0; i < len; i++){
 }
 \end{lstlisting}
 Wat de volledige complexiteit voor het decoderen $O(2n + \log n)$ maakt.
-\section*{move\_to\_front.c}
+\subsection*{move\_to\_front.c}
 Met de \emph{Move to front}-methode proberen we het idee dat we proberen te bereiken met Burrows-Wheeler (nl, vaak voorkomende tekens samen te groeperen en lieft met zoon klein mogelijk index nummer). Move to front dit exact dit, het gaat gegeven een input string en een alfabet alle symbolen in de input string overlopen en de index van het huidige symbool opslaan en vooraan plaatsen in het alfabet. Dit zal tot gevolg hebben dat symbolen die vaak voorkomen in de input string zullen resulteren in een laag index positie nummer in het resultaat omdat deze tekens vaak vooraan blijven zitten in het alfabet.\\
 
 Voor mijn implementatie heb ik gebruikt gemaakt van een dubbele cyclische gelinked lijst die als waardes een unsigned byte bijhoudt en een pointer naar het volgende en vorige element. De volledige  gelinked lijst heeft standaard als waardes die kunnen worden voorgesteld door 1 byte, nl 256 waarden.\\ 
@@ -92,4 +92,32 @@ Een simpele for-lus overloopt alle waardes in de input string en maakt daarin ge
 Voor simpliciteit beschouwen we 2 gevallen in deze linkedlist, als het eerste element vooraan staat moet niks gebeuren (dit is het geval als c==0), in het andere geval verhangen we het gevonden element naar de eerste plaats.\\
 
 Ook voor deze code heb ik een aparte unit test file gemaakt om te kunnen garanderen dat deze code correct werkt. 
+\subsection*{huffman.c}
+Deze source file bevat alle code die betrekking heeft op mijn implementatie van het standaard huffman algoritme. Het encoderen en decoderen van het algoritme is  ge\"emplementeerd in de zelfde functie, adhv een paramter kan worden beslist wat er moet worden uitgevoerd. \\
+
+\subsubsection*{Encoderen}
+Eerst wordt een frequentietabel gebouwde van bytes in de input\_string. Daarna gaan we 256 codewoorden aanmaken (van het type huffman\_codewoord). Deze codewoorden worden geindexeerd met de ascii waarden van de originele byte (de byte die ze voorstellen) en bevatten 2 velden, het aantal bits dat deze code bevat en de code zelf. Ook worden huffman\_toppen aangemaakt, deze toppen stellen de originele bytes voor die een freqentie hebben groter dan 0. Deze lijst van toppen zal worden gebruikt om de huffman code op te stellen. \\
+
+In de hulp functie \emph{build\_huffman\_code} zullen deze toppen in omgekeerd sorteeerde volgorde worden overlopen (van lage frequentie naar hoge frequentie). 
+$$(t_{0},t_{1},\cdots,t_{n-1},t_{n}) | w(t_{i}) < w(t_{i-1})$$
+met $w(t)$ het frequentie gewicht van top $t$. We beschouwen de 2 elementen met de laagste frequentie, dit zijn $(t_{n-1},t_{n})$, deze bevatten een lijst van value (de eerste keer dat dit wordt uitgevoerd bevat elke top maar 1 value, voor de volgende iteraties zullen deze toppen meer values bevatten) die we gaan gebruiken als indexen in onze code tabel waar we bits gaan shiften. Voor $t_{n-1}$ bit "1", resp voor $t_{n}$ bit "0". In c-notatie:
+\begin{lstlisting}
+for(k = 0; k  < huffman_toppen[i-1]->aantal_elementen; k++){       
+	code[(uint32_t)huffman_toppen[i-1]->value[k]]->code <<= 1; 
+	code[(uint32_t)huffman_toppen[i-1]->value[k]]->code |= (1<<0);
+	code[(uint32_t)huffman_toppen[i-1]->value[k]]->number_of_bits++;
+\end{lstlisting}
+
+Eenmaal dit is gedaan zullen we de 2 laagste toppen samenvoegen tot 1
+We werken nog altijd met $(t_{n-1},t_{n})$. Het veld \emph{aantal\_elementen} zal de som van beide vleden \emph{aantal\_elementen} zijn van de 2 toppen, het gewicht (de frequentie) zal ook samen worden getelt en originele bytes die de toppen voorstelde zullen ook worden samengevoegd. Daarna zal deze nieuwe top een opwaarste perculatie maken tot dat zijn frequentie waarde net kleiner is dan de top boven hem in de lijst.\\
+
+Er wordt uiteraardt geen nieuwe top aangemaakt maar top $t_{n-1}$ wordt herbruikt, dit wordt herhaalt tot er nog 1 top over is. \\
+
+Daarna wordt de originele tekst gebruikt als indexen naar de codes en worden code bits uit deze code geshift in een output buffer, de code is slim genoeg om te merken hoeveel plaats er nog vrij is de huidige output byte en kan codewoorden opdelen zodat het aantal output bytes optimaal kan worden benut.
+Daarna wordt een huffman header opgestelt die uit 12byte bestaat.\\
+De eerste 4bytes is de lengte van het volledige huffman blok, incl de huffmancode en huffman frequentie  (zonder de header). 
+De volgende 4 bytes is de lengte van de huffman code zelf. De laatste 4 bytes is de lengte van de huffman frequentie.\\
+
+Bij elk huffman blok wordt ook de huffman frequentie doorgegeven. Elke frequentie blok heeft een lengte van 5 bytes, 4 bytes om het aantal voorkomens mee aan te duiden en 1 byte om het originele teken zelf voor te stellen. Enkel de frequenties voor niet 0 bytes worden opgenomen in deze huffman frequentie. Ik maak geen gebruik van relatieve frequenties omdat er gevallen zijn waar afronding van floating point getallen zou kunnen leiden tot verkeerde frequenties endus tot verkeerde codes bij het decoderen.\\
+\subsubsection*{Decoderen}
 \end{document}
