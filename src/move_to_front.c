@@ -28,6 +28,10 @@ void move_to_front(unsigned char* string, int len, int actie){
   ascii_symbol *tijdelijk_anker = anker; //een symbool die we gebruiken om het anker tijdelijk in te bewaren
   ascii_symbol* backup_ascii_symbool; //een symbool die we gebruiken om tijdelijk
   ascii_symbol *first = NULL;
+  /* Wat hulp variabelen om het vervangen wat simpeler te maken */
+  
+  ascii_symbol*prev = NULL; 
+  ascii_symbol*next = NULL;
   anker->prev = NULL;
   anker->ascii_value = '\0';
   anker->next = (struct ascii_symbol*) malloc(sizeof(ascii_symbol));
@@ -68,32 +72,32 @@ void move_to_front(unsigned char* string, int len, int actie){
 	#endif
 	c++;
       }     
-
-      #ifdef MTF_DEBUG
+      
+#ifdef MTF_DEBUG
       printf("c:%d \n");
-      #endif
-
+#endif
+      
       string[i] = c; //overschrijf origineel
-      if(c == 255){
-	first = (ascii_symbol*) anker->next; //oude first element
-	tijdelijk_anker->next = (struct ascii_symbol*) first;
-	anker->next = (struct ascii_symbol*) tijdelijk_anker;
-      }else if(c > 0){
-	backup_ascii_symbool = (ascii_symbol*) tijdelijk_anker->prev;
-	backup_ascii_symbool->next = tijdelijk_anker->next;
+      if(c > 0){
+	prev = (ascii_symbol*)tijdelijk_anker->prev;  //prev<--->tijdelijk_anker<--->next
+	next = (ascii_symbol*)tijdelijk_anker->next;
 	
-	backup_ascii_symbool = (ascii_symbol*) backup_ascii_symbool->next;
-	backup_ascii_symbool->prev = (struct ascii_symbol*) tijdelijk_anker->prev;
+	prev->next = (struct ascii_symbol*)next;
+	next->prev = (struct ascii_symbol*)prev;
 	
-	//op dit moment unlinkt van de ketting
+	first = (ascii_symbol*) anker->next; //eerste element;
 	
+	//invullen van tijdelijk_anker next && prev
+	tijdelijk_anker->prev = first->prev;
+	tijdelijk_anker->next = (struct ascii_symbol*)first;
 	
-	first = (ascii_symbol*) anker->next;
-	tijdelijk_anker->prev = (struct ascii_symbol*)first->prev;
-	first->prev = (struct ascii_symbol*) tijdelijk_anker;
+	//fixen van volgende symbool
+	backup_ascii_symbool = (ascii_symbol*)first->prev;
+	backup_ascii_symbool->next = (struct ascii_symbol*)tijdelijk_anker;
 	
-	tijdelijk_anker->next = (struct ascii_symbol*) first;
-	
+	//invullen van tijdelijk_anker next && prev
+	first->prev = (struct ascii_symbol*)tijdelijk_anker;
+	//first next blijft zijn volgende element.
 	anker->next = (struct ascii_symbol*)tijdelijk_anker;
       }
     }
