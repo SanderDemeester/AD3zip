@@ -151,7 +151,7 @@ lz77_resultaat* lz77_decoderen(unsigned char*input_buffer, int len){
   
   for(int i = 0; i < (len/9); i++){
     codewoorden[i] = (lz77_codewoord*) calloc(1,sizeof(lz77_codewoord));
-    printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
+    //   printf("(%d,%d,%c)\n",*input_buffer,*(input_buffer+4),*(input_buffer+8));
     codewoorden[i]->p = *input_buffer; //start pos in sliding window
     codewoorden[i]->l = *(input_buffer+4); //lengte van de match
     codewoorden[i]->x = *(input_buffer+8); //volgende byte

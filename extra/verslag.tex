@@ -1,4 +1,5 @@
 \documentclass[10pt,a4paper]{report}
+\setlength\parindent{0pt}
 \usepackage[latin1]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -9,7 +10,21 @@
 \maketitle
 \begin{abstract}
 In dit verslag leg ik kort uit welke algoritmes ik heb ge\"implementeerd en op welke manier ik dit heb gedaan, ik zal ook kort toelichten hoe mijn code is gestructureerde en welke ontwikkelings beslissingen ik heb genomen en waarom.\\
-\hline
+
 Daarna wat het effect is van de verschillende algoritmes op voorbeeld test bestanden en tijdsmetingen van verschillende implementaties van die algoritmen. 
 \end{abstract}
+\section*{Beschrijving implementatie}
+\subsection*{main.c}
+Om de verschillende implementaties op een elegante manier te laten uitvoeren adhv een parameter die wordt meegeggeven heb ik gebruik gemaakt van functie pointers die in een struct (compressie\_argument) zitten samen met een value. Deze value wordt mee in de header geschreven om daarna te worden ingelezen door het decoderen in de variabel compressie\_function\_pointer, een simpele for-lus zal daarna het correct algoritme uitvoeren op basis van die variabel.\\
+
+De file wordt hier ingelezen en verdeeld in blokken van grote $\text{blocksize}*1024$ om daarna in seqentie te worden verwerkt door het gespecificeerde algoritme, de stub voor al deze algoritmes bevind zich in de source-file "compressie\_methode.c".
+\subsection*{compressie\_methode.c}
+Deze source file bevat de stub voor het encoderen en decoderen van de verschilende algoritmes, het werk wordt via de struct compressie\_argument gedelegeert naar hier. Algoritme 1 is standaard huffman met move to front toegepaste op een Burrows-Wheeler vector, Burrows-Wheeler wordt altijd eerst uitgevoerdt in main.c, testen hebben aangeduid dat dit bijna altijd een optimalere tekst maakt lostaand van welk algoritme we dan ook gebruiken om onze tekst mee te encoderen. Er wordt een parameter meegegeven aan deze functie die zeggen of ze de input buffer moeten zien als en blok en enkel deze blokken moeten encoderen, of ze zelf de gegeven input buffer nog moeten in blokken segmenteren en elk van deze blokken moeten gaan decoderen. Het doorgeven en terug geven van resulaten van deze stub code naar de correcte functies gebeurdt voor het encoderen van die zelfde buffer, wanneer de buffer wordt gealloceerd wordt er rekening meegehouden dat de lengte van het resultaat in de eerste 4bytes zal staan van de buffer. \\
+
+Voor het terug geven van het resultaat bij het decoderen is er een speciale struct voorzien, nl ("huffman\_decode\_result") en ("lz77\_result"). 
+\subsection*{bw.c}
+Elke implementatie van een algoritme heeft de mogelijkheid individueel te worden getest, dit is om eenvoudiger bugs op te sporen en indivuduele tijdsmeetingen te doen, via algoritme parameter "0" is het mogelijk om enkel Burrows-Wheeler toe te passen op een tekst.\\
+
+Om enkel de snelheid van Burrow-Wheeler te testen heb ik 20 random files aangemaakt met grote 1MiB tem 20Mib en deze laten encoderen met varierende blokgrotes, 1 tem 5KiB\\
+
 \end{document}
