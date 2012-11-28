@@ -5,10 +5,11 @@ set autoscale
 set xlabel "MiB"
 set ylabel "Tijd in seconden"
 set title "Huffman encoderen"
+set key left top
 set style line 1 lt 1 lw 2 pt 2 linecolor rgb "red"
 set style line 2 lt 1 lw 2 pt 2 linecolor rgb "green"
 set style line 3 lt 1 lw 2 pt 2 linecolor rgb "yellow"
 set style line 4 lt 1 lw 2 pt 2 linecolor rgb "orange"
 set style line 5 lt 1 lw 2 pt 2 linecolor rgb "blue"
 
-plot "./blocksize1" using 1:2 with lines title "Blocksize 1", "./blocksize2" using 1:2 with lines title "Blocksize 2", "./blocksize3" using 1:2 with lines title "Blocksize 3", "./blocksize4" using 1:2 with lines title "Blocksize 4", "./blocksize5" using 1:2 with lines title "Blocksize 5"
+plot "./bb10" using 1:2 with lines title "Blocksize 10", "./b100_b" using 1:2 with lines title "Blocksize 100", "./b1000_b" using 1:2 with lines title "Blocksize 1000", "./b2000_b" using 1:2 with lines title "Blocksize 2000", "./b3000_b" using 1:2 with lines title "Blocksize 3000","./b3000_b" using 1:2 with lines title "Blocksize 4000", "./b5000_b" using 1:2 with lines title "Blocksize 5000"

@@ -5,7 +5,9 @@
 \usepackage{amsfonts}
 \usepackage{minibox}
 \usepackage{amssymb}
+\usepackage{graphicx}
 \usepackage{listings}
+\usepackage{wrapfig}
 \usepackage{fullpage}
 
 \author{Sander Demeester}
@@ -13,17 +15,21 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-In dit verslag leg ik kort uit welke algoritmes ik heb ge\"implementeerd en op welke manier ik dit heb gedaan, ik zal ook kort toelichten hoe mijn code is gestructureerde en welke ontwikkelings beslissingen ik heb genomen en waarom.\\
+In dit verslag leg ik kort uit welke algoritmes ik heb ge\"implementeerd en op welke manier ik dit heb gedaan. Ik zal ook kort toelichten hoe mijn code is gestructureerde en welke ontwikkelings beslissingen ik heb genomen en waarom.\\
 
-Daarna wat het effect is van de verschillende algoritmes op voorbeeld test bestanden en tijdsmetingen van verschillende implementaties van die algoritmen. 
+Daarna wat het effect is van de verschillende algoritmes op voorbeeld test bestanden en tijdsmetingen van de verschillende implementaties van deze algoritmen. 
 \end{abstract}
 \section*{Beschrijving implementatie}
 \subsection*{main.c}
-Om de verschillende implementaties op een elegante manier te laten uitvoeren adhv een parameter die wordt meegeggeven heb ik gebruik gemaakt van functie pointers die in een struct (compressie\_argument) zitten samen met een value. Deze value wordt mee in de header geschreven om daarna te worden ingelezen door het decoderen in de variabel compressie\_function\_pointer, een simpele for-lus zal daarna het correct algoritme uitvoeren op basis van die variabel.\\
+Om te kunnen kiezen tussen de verschillende implementaties en deze op een elegante manier te laten uitvoeren adhv een parameter die wordt meegeggeven met het programma heb ik gebruik gemaakt van functie pointers. Deze functie pointer zitten in een struct (compressie\_argument) samen met een value die ze uniek identificeert. Deze value wordt mee in de header geschreven tijdens het encoderen om daarna te worden ingelezen door het decoderen in de variabel compressie\_function\_pointer. Een simpele for-lus zal daarna het correct algoritme uitvoeren op basis van deze variabel.\\
 
-De file wordt hier ingelezen en verdeeld in blokken van grote $\text{blocksize}*1024$ om daarna in seqentie te worden verwerkt door het gespecificeerde algoritme, de stub voor al deze algoritmes bevind zich in de source-file "compressie\_methode.c".
+Het bestand wordt hier ingelezen en verdeeld in blokken van grote $\text{blocksize}*1024$ om daarna in seqentie te worden verwerkt door het gespecificeerde algoritme, de stub voor al deze algoritmes bevind zich in de source-file "compressie\_methode.c".
 \subsection*{compressie\_methode.c}
-Deze source file bevat de stub voor het encoderen en decoderen van de verschilende algoritmes, het werk wordt via de struct compressie\_argument gedelegeert naar hier. Algoritme 1 is standaard huffman met move to front toegepaste op een Burrows-Wheeler vector, Burrows-Wheeler wordt altijd eerst uitgevoerdt in main.c, testen hebben aangeduid dat dit bijna altijd een optimalere tekst maakt lostaand van welk algoritme we dan ook gebruiken om onze tekst mee te encoderen. Er wordt een parameter meegegeven aan deze functie die zeggen of ze de input buffer moeten zien als en blok en enkel deze blokken moeten encoderen, of ze zelf de gegeven input buffer nog moeten in blokken segmenteren en elk van deze blokken moeten gaan decoderen. Het doorgeven en terug geven van resulaten van deze stub code naar de correcte functies gebeurdt voor het encoderen van die zelfde buffer, wanneer de buffer wordt gealloceerd wordt er rekening meegehouden dat de lengte van het resultaat in de eerste 4bytes zal staan van de buffer. \\
+Deze source file bevat de stub voor het encoderen en decoderen van de verschilende algoritmes, het werk wordt via de struct compressie\_argument gedelegeert naar deze source file.\\
+
+Algoritme 1 is standaard huffman in combinatie met move to front toegepaste op een Burrows-Wheeler vector. Burrows-Wheeler wordt altijd eerst uitgevoerdt vanuit main.c, testen hebben aangeduid dat dit bijna altijd resulteert in een optimalere tekst voor compressie, lostaand welke compresie algoritme nadien wordt gebruikt. Aan alle functies in \emph{compressie\_methode.c} wordt een argument meegeven die zegt of de input buffer al is gesegmenteerd of nog gesegmenteerd moet worden.\\
+
+Het door- en terug geven van resulaten aan deze stub code gebeurdt voor het encoderen via de zelfde buffer als waar de input zit, voor het decoderen wordt een speciale struct gebruikt. Tijdens het alloceren van geheugen wordt hiermee rekening gehouden.
 
 Voor het terug geven van het resultaat bij het decoderen is er een speciale struct voorzien, nl ("huffman\_decode\_result") en ("lz77\_result"). 
 \subsection*{bw.c}
@@ -164,20 +170,69 @@ Er was eens een lief klein kabouwtertje, die zat op een rode paddenstoel geen en
 echo "do or do not there is no try" $|./$AD3zip encodeer 4 1 $|./$AD3zip decodeer\\
 do or do not there is no try}}\\
 Bij mijn test files zit een bash-script die bovenstaande output genereert.  
-
+\pagebreak
 \section*{Complexiteit en Prestaties}
 \subsection*{Standaard huffman}
-We testen eerst het encoderen van standaard huffman, we zullen de vergelijking maken tussen 3 soorteren bestanden.
+We testen eerst het encoderen van standaard huffman, we zullen de vergelijking maken tussen 3 groepen van soorten bestanden.
 \begin{enumerate}
-\item Random files
+\item Pseudo random files
 \item Tekst files
-\item Binaire files
+\item JPG/MP3 en Binaire files
 \end{enumerate}
 
-\subsubsection*{Random files}
+\subsubsection*{Pseudo random files}
+Dit zijn bestanden waar de bytes willekeurig zijn gekozen, er is geen relatie tussen byte op positie $b_{i}$ en $b_{i+1}$. Het uitvoeren van Burrows-Wheeler op dit soort bestanden heeft weinig tot geen zin omdat de getransformeerde vector die we zouden bekomen een evengrote entropy zou hebben als de originele tekst.\\
+
+Om te testen hoe goed deze soort teksten comprimeren heb ik 20 bestanden aangemaakt met als source /dev/urandom op helios. Deze bestanden hebben een sequentiele var\"iatie in grote die gaat van 1MiB tot 20MiB. We laten deze bestanden comprimeren met standaard huffman, het resultaat was dat dat voor bijna elk bestand het aantal bytes nodig om het voor te stelde groeide met ongeveer $\frac{1}{4}$ van de originele grote.\\
+
+Ook heb ik met deze 20 bestanden de uitvoeringstijd proberen te bepalen van mijn huffman implementatie. 
+Onderstaande figuur toont voor var\"ierende blokgrote de uitvoeringstijd. Op eerste zicht lijkt dat op een linaire algoritme met een zekere constante $C$, al we even nadenken weten we dat voor elke inkomende blok deze bij Burrows-Wheeler moet worden gesorteerdt met quicksort, wat dus $\frac{\text{Bestandgrote}}{\text{blokgrote}}O(n\log n)$ keer moet gebeuren in het gemiddelde geval. Hoe groter de blocksize is, hoe minder keer het quicksort algoritme moet worden uitgevoerd. Het quicksort algoritme moet wel maar elementen verwerken, maar dat is niet erg! De elementen die quicksort zal moeten verwerken zijn random, en quicksort heeft enkel aanleiding tot $O(n^{2})$ als de reeks van elementen al zou gesorteerdt zijn.\\
+
+Bij het comprimeren van een bestand wordt het quicksort algoritme meerdere keren uitgevoerdt, eenmaal bij Burrows-Wheeler en eenmaal bij Huffman zelf (om de elementen te sorteren op hun frequentie). De volgende stap zal zijn om het aantal bewerkingen te bepalen voor het huffman algoritme. We introduceren de huffman-boom, waar elk origineel symbool zich in de bladen bevindt. Om het aantal bewerkingen in de huffman boom te bepalen zullen we eerst aantonen dat de maximale diepte van de huffman boom $O(n-1)$ is. Als we een lijst van symbolen beschouwen.\\
+\begin{center}
+\begin{tabular}{llr}
+\hline
+Frequentie & Symbool \\
+\hline
+$f_{1}$ & $x_{1}$ \\
+$f_{2}$ & $x_{2}$ \\
+$f_{3}$ & $x_{3}$ \\
+$f_{4}$ & $x_{4}$ \\
+$f_{5}$ & $x_{5}$ \\
+$f_{6}$ & $x_{6}$ \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+Als we nu de som $s_{i}$ nemen van de 2 laagste frequenties, in ons voorbeeld $f_{6},f_{5}$ en $s_{i} < f_{4}$ en dit geldt voor alle frequenties in onze tabel, dan zal dit leiden tot een boom die volldig is gevult langs zijn rechterpad endus een diepte heeft van $O(n-1)$. Daarnaast zullen we nog een constante $C$ identifieren als het extra werk, dit extra werk houdt vooral korte for-lussen in om variabelen en tabllen te initialiseren en hebben een bovengrens van 256. We noemen de uiteindelijk complexiteit in het slechste geval: 
+$$
+\frac{\text{Bestandgrote}}{\text{Blokgrote}} (O(n-1) 2 n\log n) + C
+$$
+\begin{figure}[hbt]
+\includegraphics[scale=0.5]{huffman_encoderen.png}
+\caption{Uitvoeringstijd voor het encoderen van 20 pseudo random bestanden met een variabele blokgrote.}
+\end{figure}
 \subsubsection*{Tekst files}
-\subsection*{Binaire files}
+Om de compressie te testen van gewone tekst bestanden heb ik bepaalde RFC teksten gedownload van verschillende grote var\"ierend van 11KiB tot 167Kib. Al deze tekst bestanden heb ik laten comprimeren en terug decomprimeren (om te controleren dat het resultaat van de decompressie nog altijd correct was met het origineel), en ook dit laten uitvoeren voor verschillende blokgrotes, deze keer was de variatie kleiner omdat de bestanden kleiner waren. Voor elk getest bestand was het resultaat een kleiner bestand, hoe groter de blokgrote hoe beter de uiteindelijke compressie was, voor bepaalde blokgrotes was het resultaat 40\% kleiner. Het resultaat de compressie voor rfc 3918 en rfc 1946 vind u hieronder.\\
+
+\includegraphics[scale=0.5]{rfc_compressie1.jpg}\\
+\includegraphics[scale=0.5]{rfc_compressie2.jpg}\\
+
+De reden dat hier zoon goeie compressie kan worden bekomen tegenover binaire bestanden (wat we hieronder zullen beschouwen) is dat Burrows-Wheeler en move-to-front echt zeer goed werken op teksten waar er een verband is tussen de opeenvolgende bytes.
+\subsubsection*{JPG/MP3 en Binaire files}
+In tegenstelling tot mijn verwachtingen comprimeren JPG/MP3 en binaire bestanden niet goed met mijn implementatie van huffman. De reden hiervoor is omdat deze 2 bestandsformaten al zijn gecomprimeerd en er geen redundantie meer aanwezig is die kan worden gebruikt om het bestand nog kleiner te maken.
+\begin{figure}[hbt]
+\includegraphics[scale=0.5]{audio-compressie.jpg}
+\caption{Comprimeren van een 50MB MP3 Audio bestand, we zien voor de laaste 3 blokgrotes een zelfde resultaat, dit is omdat het originele bestand volledig kan worden bevat in de blokgrote.}
+\end{figure}
+\begin{figure}[hbt]
+\includegraphics[scale=0.5]{jpg-compressie.jpg}\\
+\pagebreak
+\caption{Comprimeren van een JPG-bestand}
+\end{figure}
 \subsubsection*{Samenvatting en conclusie}
+We merken nog enkele interesante dingen op. Als we meerdere test bestanden maken waarin we enkel de zelfde byte herhalen zullen we een zeer goede compressie bekomen, maar de performantie zal zeer sterk dalen. De reden hiervoor is het gebruik van quicksort. Quicksort heeft een slechtste geval van $O(n^{2})$,nl alle gelijke symbolen zullen op het laagste punt in de recursie moeten worden opgelost. Het sorteren van de elementen zal de overhand nemen en de performantie zal zeer slecht zijn.\\
+
 \subsection*{LZ77}
 \subsubsection*{Samenvatting en conclusie}
 LZ77 is een "Variable-Rate coding" en  maakt gebruikt van een \emph{sliding window} dat wordt gebruikt om een dynamische woordenboek op te bouwen op basis van de te encoderen tekst. Het voordeel hier is dat in tegelstelling tot huffman er geen extra meta informatie moet doorsturen naar de ontvanger.\\
