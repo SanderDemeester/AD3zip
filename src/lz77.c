@@ -221,6 +221,7 @@ static int vergelijk_strings(unsigned char *z, unsigned char*t, int z_l, int t_l
 #ifdef lz77_debug
     printf("vergelijk z[start+i]: %c met t[i]: %c\n", z[start+i], t[i]);
 #endif
+    //aanpassing aan het originele zoek algoritme. We verschuiven in onze zoekstring, niet in onze tekst
     if(z[start+i] != t[i]){
 #ifdef lz77_debug
       printf("ze zijn verschillende, return\n");
@@ -255,6 +256,9 @@ static void bereken_V(uint32_t *V, unsigned char *z, uint32_t z_l){
   }
   
 }
+
+/*We gebruiken ons sliding window als zoekstring, en onze bytes na het sliding window
+als onze zoek tekst */
 void find_longest_match(unsigned char *t, 
 			int t_l, 
 			unsigned char *z, 
