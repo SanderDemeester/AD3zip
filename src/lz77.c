@@ -72,8 +72,8 @@ unsigned char* lz77_encodeer(unsigned char *input_buffer, int len){
 #endif
 
       codewoorden[code_woorde_index-1] = (lz77_codewoord*) malloc(sizeof(lz77_codewoord));
-      codewoorden[code_woorde_index-1]->p = p1->p;
-      codewoorden[code_woorde_index-1]->l = p1->l;
+      codewoorden[code_woorde_index-1]->p = p1->p; //pos van match in sliding window
+      codewoorden[code_woorde_index-1]->l = p1->l; //lengte van de gevonden deelstring
       if(index_huidig_element+p1->l >= len-1)
 	codewoorden[code_woorde_index-1]->x = input_buffer[index_huidig_element+p1->l-1];
       else
